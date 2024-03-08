@@ -1,0 +1,72 @@
+﻿@model List<OlcumWeb.dbOlcum.Bedenler>
+
+<div class="row" style="margin-bottom:5px;">
+    <div class="input-group">
+        @Html.DropDownList("bedenTuru", new List<SelectListItem> {
+        new SelectListItem {
+             Text="Harf Sistemi(S, M, L, XL vb.)",
+                Value="0" },
+        new SelectListItem {
+                 Text="Sayı Sistemi(24, 26, 28 vb.)",
+                Value="1" },
+        new SelectListItem {
+                Text="Çocuk Pantolonu(104, 110, 116 vb.)",
+                Value="2" }
+         }, new { @class = "form-control select2", @id = "bedenTuru" })
+    </div>
+</div>
+
+<div class="row">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        <div class="row" style="padding-right:10px; margin-top:30px; margin-bottom:25px;">
+            <div class="pretty p-icon p-smooth" style=" margin-left:50px" id="MyDiv">
+                <input type="checkbox" name="bedenler" value="@Model[i].beden" data-id="@Model[i].ID">
+                <div class="state p-success">
+                    <i class="icon fa fa-check"></i>
+                    <label style=" padding-right:35%;">@Model[i].beden</label>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="row"><button type="button" class="btn btn-primary" id="btnKaydet">Kaydet</button></div>
+
+
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    var bedenList = [];
+    $("#bedenTuru").change(function () {
+        var selectedIndex = $("#bedenTuru").prop('selectedIndex');
+        $.post("/TanimlamaEkrani/Bedenler", { bedenSistemi: selectedIndex, selectedIndex: selectedIndex }, function (deger) {
+            $('#beden_Modal').html(deger);
+            $("#bedenTuru").prop('selectedIndex', selectedIndex);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    });
+
+    $('#btnKaydet').click(function () {
+        $('input[name="bedenler"]:checked').each(function () {
+            bedenList.push({ 'value': this.value, 'id': $(this).data('id') });
+        });
+
+        for (var i = 0; i < bedenList.length; i++) {
+            $('#tableHead').append("<th tabIndex = '1' id = 'beden_"+i+"' data-tableID = '" + bedenList[i].id + "'>" + bedenList[i].value + "</th>");
+        }
+
+        var rowCount = $('#tableBody tr').length;
+
+        for (var i = 0; i < rowCount; i++) {
+            for (var j = 0; j < bedenList.length; j++) {
+                $('#satir_' + i).append("<td tabIndex = '1' id = 'cell_"+i+"_"+j+"' >0</td>");
+            }
+        }
+
+        $('#cardFooterID').show();
+        $('#bedenModal').modal('toggle');
+    });
+</script>

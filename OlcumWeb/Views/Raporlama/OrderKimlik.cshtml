@@ -1,0 +1,107 @@
+﻿@model List<OlcumWeb.Controllers.KazanDetayModel>
+@{
+    ViewBag.Title = "OrderKimlik";
+}
+
+@if (Model != null)
+{
+    <div class="card card-success">
+        <div class="card-header">
+            <button class="btn btn-icon btn-success" id="raporaDonBtn" style="margin-right:5%" onclick="RaporaDon()"><i class="fas fa-backspace"></i></button>
+
+            <h4>Order Listesi</h4>
+        </div>
+        <div class="card-body">
+            <div id="searchSection">
+                <div class="table-responsive">
+                    <table class="table table-striped table-md">
+                        <tbody>
+                            <tr>
+                                <th>Order No</th>
+                                <th>Model Adı</th>
+                                <th>Model No</th>
+                                <th>Kumaş Adı</th>
+                                <th>Müşteri</th>
+                                <th>Atölye Adı</th>
+                                <th>Yıkama Yeri</th>
+                                <th>Tarih</th>
+                                <th>Ölçü Türü</th>
+                                <th>Tablo Türü</th>
+                            </tr>
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="#" class="btn btn-info" onclick="Print(@Model[i].kazanDetayID)"><span style="color:white">@Model[i].orderNo</span> </a>
+
+                                    </td>
+                                    <td>
+                                        @Model[i].modelAdi
+                                    </td>
+                                    <td>
+                                        @Model[i].modelNo
+                                    </td>
+                                    <td>
+                                        @Model[i].kumasAdi
+                                    </td>
+                                    <td>
+                                        @Model[i].musteri
+                                    </td>
+                                    <td>
+                                        @Model[i].atolyeAd
+                                    </td>
+                                    <td>
+                                        @Model[i].yikamaYeri
+                                    </td>
+                                    <td>
+                                        @Model[i].tarih.ToShortDateString()
+                                    </td>
+                                    <td>
+                                        @Model[i].olcuTuru
+                                    </td>
+                                    <td>
+                                        @Model[i].tabloTuru
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div id="orderKimlik">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#raporaDonBtn').hide();
+        });
+
+        function Print(elem) {
+            var detayID = elem;
+
+            $.post("/KazanFormu/kazanPrint", { kazanDetayId: detayID }, function (printSucc) {
+                $('#searchSection').hide();
+                $('#orderKimlik').html(printSucc);
+                $('#orderKimlik').show();
+                $('#raporaDonBtn').show();
+                            console.log(printSucc);
+
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+
+        }
+
+        function RaporaDon() {
+            $('#raporaDonBtn').hide();
+            $('#orderKimlik').hide();
+            $('#searchSection').show();
+        }
+    </script>
+}

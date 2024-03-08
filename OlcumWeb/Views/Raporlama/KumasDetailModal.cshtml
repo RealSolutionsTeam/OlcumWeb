@@ -1,0 +1,479 @@
+﻿
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<style>
+    .separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+    }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #000;
+        }
+
+        .separator:not(:empty)::before {
+            margin-right: .25em;
+        }
+
+        .separator:not(:empty)::after {
+            margin-left: .25em;
+        }
+
+    #kumasListDropDown {
+        z-index: 100000;
+    }
+</style>
+
+<div class="form-row">
+    <div class="form-group col-md-12">
+        <label>Kumaş Listesi:</label>
+        @Html.DropDownList("kumasListDropDown", new SelectList(ViewBag.KumasAdList, "Konstrüksiyon"), "Seçiniz...", new { @class = "form-control select2", @id = "kumasListDropDown" })
+    </div>
+</div>
+
+@{
+    var kumasKarakteriNumune = ViewBag.kumasKarakteriFromNumunePage;
+}
+
+<div class="separator">veya</div>
+<br />
+@if (kumasKarakteriNumune.kesilebilirEnOrtalama == 0 && kumasKarakteriNumune.elastikiyetAtkiOrtalama == 0 && kumasKarakteriNumune.kumasEnCekmeOrtalama == 0 && kumasKarakteriNumune.kumasBoyCekmeOrtalama == 0)
+{
+    <span style="color:red;display:inherit" id="silkError">*Kumaşla ilgili veriler senteze girilmemiştir lütfen kumaş departmanıyla iletişime geçiniz.</span>
+
+}
+else
+{
+    <span style="color:red;display:none" id="silkError">*Kumaşla ilgili veriler senteze girilmemiştir lütfen kumaş departmanıyla iletişime geçiniz.</span>
+
+}
+
+<div class="form-row">
+    <div class="form-group col-md-4">
+        <label>Seçilen Kumaşın Kesilebilir Kumaş Eni:</label>
+        <span id="kumasKesilebilirAranan">@((kumasKarakteriNumune.id == 0 || kumasKarakteriNumune.kesilebilirEnOrtalama == 0) ? 0 : Convert.ToDouble(kumasKarakteriNumune.kesilebilirEnOrtalama).ToString().Replace(',', '.'))</span>
+    </div>
+
+    <div class="form-group col-md-4">
+        <label>Min. Kesilebilir Kumaş Eni:</label>
+        <input id="kumasEniMin" type="number" style="width:75%" value="@((kumasKarakteriNumune.id == 0  || kumasKarakteriNumune.kesilebilirEnOrtalama == 0) ? 0 : (kumasKarakteriNumune.kesilebilirEnOrtalama - 3).ToString().Replace(',','.') )" step="0.01" />
+    </div>
+
+    <div class="form-group col-md-4">
+        <label>Maks. Kesilebilir Kumaş Eni:</label>
+        <input id="kumasEniMax" type="number" style="width:75%" value="@((ViewBag.kumasKarakteriFromNumunePage.id == 0 || ViewBag.kumasKarakteriFromNumunePage.kesilebilirEnOrtalama == 0) ? 0 : Convert.ToDouble(kumasKarakteriNumune.kesilebilirEnOrtalama + 3).ToString().Replace(',','.'))" step="0.01" />
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-4">
+        <label>Seçilen Kumaşın Kumaş Stretchabilitysi:</label>
+        <span id="kumasStrechAranan">@((ViewBag.kumasKarakteriFromNumunePage.id == 0 || ViewBag.kumasKarakteriFromNumunePage.elastikiyetAtkiOrtalama == 0) ? 0 : (ViewBag.kumasKarakteriFromNumunePage.elastikiyetAtkiOrtalama).ToString().Replace(',', '.'))</span>
+    </div>
+
+
+    <div class="form-group col-md-4">
+        <label>Min. Kumaş Stretchability:</label>
+        <input id="kumasStrechMin" type="number" style="width:75%" value="@((ViewBag.kumasKarakteriFromNumunePage.id == 0 || ViewBag.kumasKarakteriFromNumunePage.elastikiyetAtkiOrtalama == 0) ? 0 : (ViewBag.kumasKarakteriFromNumunePage.elastikiyetAtkiOrtalama - 3).ToString().Replace(',','.'))" step="0.01" />
+    </div>
+
+    <div class="form-group col-md-4">
+        <label>Maks. Kumaş Stretchability:</label>
+        <input id="kumasStretchMax" type="number" style="width:75%" value="@((ViewBag.kumasKarakteriFromNumunePage.id == 0 || ViewBag.kumasKarakteriFromNumunePage.elastikiyetAtkiOrtalama == 0) ? 0 : (ViewBag.kumasKarakteriFromNumunePage.elastikiyetAtkiOrtalama + 3).ToString().Replace(',','.'))" step="0.01" />
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-4">
+        <label>Seçilen Kumaşın Kumaş En Çekmesi:</label>
+        <span id="kumasEnAranan">@((ViewBag.kumasKarakteriFromNumunePage.id == 0 || ViewBag.kumasKarakteriFromNumunePage.kumasEnCekmeOrtalama == 0) ? 0 : ViewBag.kumasKarakteriFromNumunePage.kumasEnCekmeOrtalama.ToString().Replace(',', '.'))</span>
+    </div>
+
+
+    <div class="form-group col-md-4">
+        <label>Min. Kumaş En Çekmesi:</label>
+        <input id="kumasEnMin" type="number" style="width:75%" value="@((ViewBag.kumasKarakteriFromNumunePage.id == 0 || ViewBag.kumasKarakteriFromNumunePage.kumasEnCekmeOrtalama == 0) ? 0 : (ViewBag.kumasKarakteriFromNumunePage.kumasEnCekmeOrtalama - 2).ToString().Replace(',','.'))" step="0.01" />
+    </div>
+
+    <div class="form-group col-md-4">
+        <label>Maks. Kumaş En Çekmesi:</label>
+        <input id="kumasEnMax" type="number" style="width:75%" value="@((ViewBag.kumasKarakteriFromNumunePage.id == 0 || ViewBag.kumasKarakteriFromNumunePage.kumasEnCekmeOrtalama == 0) ? 0 : (ViewBag.kumasKarakteriFromNumunePage.kumasEnCekmeOrtalama + 2).ToString().Replace(',','.'))" step="0.01" />
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-4">
+        <label>Seçilen Kumaşın Kumaş Boy Çekmesi:</label>
+        <span id="kumasBoyAranan">@((ViewBag.kumasKarakteriFromNumunePage.id == 0 || ViewBag.kumasKarakteriFromNumunePage.kumasBoyCekmeOrtalama == 0) ? 0 : ViewBag.kumasKarakteriFromNumunePage.kumasBoyCekmeOrtalama.ToString().Replace(',', '.'))</span>
+    </div>
+
+
+    <div class="form-group col-md-4">
+        <label>Min. Kumaş Boy Çekmesi:</label>
+        <input id="kumasBoyMin2" type="number" style="width:75%" value="@((ViewBag.kumasKarakteriFromNumunePage.id == 0 || ViewBag.kumasKarakteriFromNumunePage.kumasBoyCekmeOrtalama == 0) ? 0 : (ViewBag.kumasKarakteriFromNumunePage.kumasBoyCekmeOrtalama - 2).ToString().Replace(',','.'))" step="0.01" />
+    </div>
+
+    <div class="form-group col-md-4">
+        <label>Maks. Kumaş Boy Çekmesi:</label>
+        <input id="kumasBoyMax2" type="number" style="width:75%" value="@((ViewBag.kumasKarakteriFromNumunePage.id == 0 || ViewBag.kumasKarakteriFromNumunePage.kumasBoyCekmeOrtalama == 0) ? 0 : (ViewBag.kumasKarakteriFromNumunePage.kumasBoyCekmeOrtalama + 2).ToString().Replace(',','.'))" step="0.01" />
+    </div>
+</div>
+<div class="form-row">
+    <div class="form-group col-md-10">
+        <label>Kumaş Konstrüksiyonu:</label>
+        @Html.DropDownList("kumasKonstruksiyon", new SelectList(ViewBag.KumasKonstruksiyon, "Konstrüksiyon"), "Seçiniz...", new { @class = "form-control select2", @id = "kumasKonstruksiyon" })
+    </div>
+    <div class="form-group col-md-2" style="margin-top:7%">
+        <a href="#" class="btn btn-icon btn-info" onclick="AddKonstruksiyon()"><i class="fas fa-plus" style="color:white"></i></a>
+    </div>
+</div>
+
+<ul id="konstruksiyonInputs" style="list-style-type: none;">
+    @if (ViewBag.kumasKarakteriFromNumunePage != null)
+    {
+        var kumasKarakteri = ViewBag.kumasKarakteriFromNumunePage;
+
+        if (kumasKarakteri.konstrüksiyonParametre1 != null)
+        {
+            <li>
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <input type="text" readonly id="@(kumasKarakteri.konstrüksiyonParametre1)Parameter" value="@kumasKarakteri.konstrüksiyonParametre1" />
+                    </div>
+                    <div class="form-group col-md-5">
+                        <input type="number" id="@(kumasKarakteri.konstrüksiyonParametre1)Value" onchange="ValueChanged()" value="@kumasKarakteri.konstrüksiyonDeger1" />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="@kumasKarakteri.konstrüksiyonParametre1" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>
+                    </div>
+                </div>
+            </li>
+        }
+
+        if (kumasKarakteri.konstrüksiyonParametre2 != null)
+        {
+            <li>
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <input type="text" readonly id="@(kumasKarakteri.konstrüksiyonParametre2)Parameter" value="@kumasKarakteri.konstrüksiyonParametre2" />
+                    </div>
+                    <div class="form-group col-md-5">
+                        <input type="number" id="@(kumasKarakteri.konstrüksiyonParametre2)Value" onchange="ValueChanged()" value="@kumasKarakteri.konstrüksiyonDeger2" />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="@kumasKarakteri.konstrüksiyonParametre2" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>
+                    </div>
+                </div>
+            </li>
+        }
+
+        if (kumasKarakteri.konstrüksiyonParametre3 != null)
+        {
+            <li>
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <input type="text" readonly id="@(kumasKarakteri.konstrüksiyonParametre3)Parameter" value="@kumasKarakteri.konstrüksiyonParametre3" />
+                    </div>
+                    <div class="form-group col-md-5">
+                        <input type="number" id="@(kumasKarakteri.konstrüksiyonParametre3)Value" onchange="ValueChanged()" value="@kumasKarakteri.konstrüksiyonDeger3" />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="@kumasKarakteri.konstrüksiyonParametre3" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>
+                    </div>
+                </div>
+            </li>
+        }
+
+        if (kumasKarakteri.konstrüksiyonParametre4 != null)
+        {
+            <li>
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <input type="text" readonly id="@(kumasKarakteri.konstrüksiyonParametre4)Parameter" value="@kumasKarakteri.konstrüksiyonParametre4" />
+                    </div>
+                    <div class="form-group col-md-5">
+                        <input type="number" id="@(kumasKarakteri.konstrüksiyonParametre4)Value" onchange="ValueChanged()" value="@kumasKarakteri.konstrüksiyonDeger4" />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="@kumasKarakteri.konstrüksiyonParametre4" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>
+                    </div>
+                </div>
+            </li>
+        }
+
+        if (kumasKarakteri.konstrüksiyonParametre5 != null)
+        {
+            <li>
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <input type="text" readonly id="@(kumasKarakteri.konstrüksiyonParametre5)Parameter" value="@kumasKarakteri.konstrüksiyonParametre5" />
+                    </div>
+                    <div class="form-group col-md-5">
+                        <input type="number" id="@(kumasKarakteri.konstrüksiyonParametre5)Value" onchange="ValueChanged()" value="@kumasKarakteri.konstrüksiyonDeger5" />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="@kumasKarakteri.konstrüksiyonParametre5" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>
+                    </div>
+                </div>
+            </li>
+        }
+
+        if (kumasKarakteri.konstrüksiyonParametre6 != null)
+        {
+            <li>
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <input type="text" readonly id="@(kumasKarakteri.konstrüksiyonParametre6)Parameter" value="@kumasKarakteri.konstrüksiyonParametre6" />
+                    </div>
+                    <div class="form-group col-md-5">
+                        <input type="number" id="@(kumasKarakteri.konstrüksiyonParametre6)Value" onchange="ValueChanged()" value="@kumasKarakteri.konstrüksiyonDeger6" />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="@kumasKarakteri.konstrüksiyonParametre6" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>
+                    </div>
+                </div>
+            </li>
+        }
+    }
+</ul>
+
+
+
+
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2({
+            width: '100%',
+            theme: 'classic',
+        });
+    };
+
+    @if(ViewBag.kumasKarakteriFromNumunePage != null)
+     {
+        <text>
+
+        var kumasKarakteriFromNumune = @Html.Raw(Json.Encode(ViewBag.kumasKarakteriFromNumunePage));
+
+        $('#kumasListDropDown').val(kumasKarakteriFromNumune.kumasAdı).trigger('change');
+        </text>
+     }
+
+
+    var kumasKonstruksiyonList = []
+
+    function AddKonstruksiyon() {
+        var seciliDeger = $('#kumasKonstruksiyon').val();
+
+        var konstruksiyonHtmlString = '<li> ' +
+            '<div class="form-row">' +
+            '<div class="form-group col-md-5">' +
+            '<input type="text" readonly id="' + seciliDeger + 'Parameter" value="' + seciliDeger + '"/>' +
+            '</div>' +
+            '<div class="form-group col-md-5">' +
+            '<input type="number" id="' + seciliDeger + 'Value" onchange="ValueChanged()" value="0" />' +
+            '</div>' +
+            '<div class="form-group col-md-2">' +
+            '<a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="' + seciliDeger + '" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>' +
+            '</div>' +
+            '</div>' +
+            '</li>';
+
+        $('#konstruksiyonInputs').append(konstruksiyonHtmlString);
+    }
+
+    function RemoveKonstruksiyon(elem) {
+        var seciliDeger = $(elem).data('konstruksiyon');
+        $(elem).parent().parent().parent().remove();
+    }
+
+    function ValueChanged() {
+        var sumInsıde = 0;
+        $('#konstruksiyonInputs').find('li').each(function () {
+            var seciliDeger = parseFloat($(this).children().find('input[type="number"]').val());
+
+            sumInsıde += seciliDeger;
+
+            if (sumInsıde > 100) {
+                $(this).children().find('input[type="number"]').val(0);
+                alert("Toplam 100'ü geçemez");
+            }
+        });
+    }
+
+    $('#kumasListDropDown').on('change', function () {
+        var kumasAdi = $(this).val();
+
+        $.post("/Raporlama/GetKumasDetail", { kumasAd: kumasAdi }, function (data) {
+            console.log(data);
+
+            if (data.kesilebilirEnOrtalama == 0 && data.elastikiyetAtkiOrtalama == 0 && data.kumasEnCekmeOrtalama == 0 && data.kumasBoyCekmeOrtalama == 0) {
+                $('#silkError').show();
+            }
+            else {
+                $('#silkError').hide();
+
+            }
+            $('#konstruksiyonInputs').empty();
+            if (data.kesilebilirEnOrtalama != 0) {
+                $('#kumasEniMin').val(data.kesilebilirEnOrtalama - 3);
+                $('#kumasEniMax').val(data.kesilebilirEnOrtalama + 3);
+                $('#kumasKesilebilirAranan').html(data.kesilebilirEnOrtalama);
+            }
+            else {
+                $('#kumasEniMin').val(0);
+                $('#kumasEniMax').val(0);
+                $('#kumasKesilebilirAranan').html('YOK');
+
+            }
+
+            if (data.elastikiyetAtkiOrtalama != 0) {
+                $('#kumasStrechMin').val(data.elastikiyetAtkiOrtalama - 3);
+                $('#kumasStretchMax').val(data.elastikiyetAtkiOrtalama + 3);
+                $('#kumasStrechAranan').html(data.elastikiyetAtkiOrtalama);
+            }
+            else {
+                $('#kumasStrechMin').val(0);
+                $('#kumasStretchMax').val(0);
+                $('#kumasStrechAranan').html('YOK');
+            }
+
+            if (data.kumasEnCekmeOrtalama != 0) {
+                $('#kumasEnMin').val(data.kumasEnCekmeOrtalama - 2);
+                $('#kumasEnMax').val(data.kumasEnCekmeOrtalama + 2);
+                $('#kumasEnAranan').html(data.kumasEnCekmeOrtalama);
+            }
+            else {
+                $('#kumasEnMin').val(0);
+                $('#kumasEnMax').val(0);
+                $('#kumasEnAranan').html('YOK');
+
+            }
+
+            if (data.kumasBoyCekmeOrtalama != 0) {
+                $('#kumasBoyMin2').val(data.kumasBoyCekmeOrtalama - 2);
+                $('#kumasBoyMax2').val(data.kumasBoyCekmeOrtalama + 2);
+                $('#kumasBoyAranan').html(data.kumasBoyCekmeOrtalama);
+            }
+            else {
+                $('#kumasBoyMin2').val(0);
+                $('#kumasBoyMax2').val(0);
+                $('#kumasBoyAranan').html('YOK');
+            }
+
+            if (data.konstrüksiyonParametre1 != null) {
+                var konstruksiyonHtmlString1 = '<li> ' +
+                    '<div class="form-row">' +
+                    '<div class="form-group col-md-5">' +
+                    '<input type="text" readonly id="' + data.konstrüksiyonParametre1 + 'Parameter" value="' + data.konstrüksiyonParametre1 + '"/>' +
+                    '</div>' +
+                    '<div class="form-group col-md-5">' +
+                    '<input type="number" id="' + data.konstrüksiyonParametre1 + 'Value" onchange="ValueChanged()" value="' + data.konstrüksiyonDeger1 + '" />' +
+                    '</div>' +
+                    '<div class="form-group col-md-2">' +
+                    '<a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="' + data.konstrüksiyonParametre1 + '" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>' +
+                    '</div>' +
+                    '</div>' +
+                    '</li>';
+
+                $('#konstruksiyonInputs').append(konstruksiyonHtmlString1);
+
+                if (data.konstrüksiyonParametre2 != null) {
+                    var konstruksiyonHtmlString2 = '<li> ' +
+                        '<div class="form-row">' +
+                        '<div class="form-group col-md-5">' +
+                        '<input type="text" readonly id="' + data.konstrüksiyonParametre2 + 'Parameter" value="' + data.konstrüksiyonParametre2 + '"/>' +
+                        '</div>' +
+                        '<div class="form-group col-md-5">' +
+                        '<input type="number" id="' + data.konstrüksiyonParametre2 + 'Value" onchange="ValueChanged()" value="' + data.konstrüksiyonDeger2 + '" />' +
+                        '</div>' +
+                        '<div class="form-group col-md-2">' +
+                        '<a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="' + data.konstrüksiyonParametre2 + '" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>' +
+                        '</div>' +
+                        '</div>' +
+                        '</li>';
+
+                    $('#konstruksiyonInputs').append(konstruksiyonHtmlString2);
+
+                    if (data.konstrüksiyonParametre3 != null) {
+                        var konstruksiyonHtmlString3 = '<li> ' +
+                            '<div class="form-row">' +
+                            '<div class="form-group col-md-5">' +
+                            '<input type="text" readonly id="' + data.konstrüksiyonParametre3 + 'Parameter" value="' + data.konstrüksiyonParametre3 + '"/>' +
+                            '</div>' +
+                            '<div class="form-group col-md-5">' +
+                            '<input type="number" id="' + data.konstrüksiyonParametre3 + 'Value" onchange="ValueChanged()" value="' + data.konstrüksiyonDeger3 + '" />' +
+                            '</div>' +
+                            '<div class="form-group col-md-2">' +
+                            '<a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="' + data.konstrüksiyonParametre3 + '" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>' +
+                            '</div>' +
+                            '</div>' +
+                            '</li>';
+
+                        $('#konstruksiyonInputs').append(konstruksiyonHtmlString3);
+
+                        if (data.konstrüksiyonParametre4 != null) {
+                            var konstruksiyonHtmlString4 = '<li> ' +
+                                '<div class="form-row">' +
+                                '<div class="form-group col-md-5">' +
+                                '<input type="text" readonly id="' + data.konstrüksiyonParametre4 + 'Parameter" value="' + data.konstrüksiyonParametre4 + '"/>' +
+                                '</div>' +
+                                '<div class="form-group col-md-5">' +
+                                '<input type="number" id="' + data.konstrüksiyonParametre4 + 'Value" onchange="ValueChanged()" value="' + data.konstrüksiyonDeger4 + '" />' +
+                                '</div>' +
+                                '<div class="form-group col-md-2">' +
+                                '<a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="' + data.konstrüksiyonParametre4 + '" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>' +
+                                '</div>' +
+                                '</div>' +
+                                '</li>';
+
+                            $('#konstruksiyonInputs').append(konstruksiyonHtmlString4);
+
+                            if (data.konstrüksiyonParametre5 != null) {
+                                var konstruksiyonHtmlString5 = '<li> ' +
+                                    '<div class="form-row">' +
+                                    '<div class="form-group col-md-5">' +
+                                    '<input type="text" readonly id="' + data.konstrüksiyonParametre5 + 'Parameter" value="' + data.konstrüksiyonParametre5 + '"/>' +
+                                    '</div>' +
+                                    '<div class="form-group col-md-5">' +
+                                    '<input type="number" id="' + data.konstrüksiyonParametre5 + 'Value" onchange="ValueChanged()" value="' + data.konstrüksiyonDeger5 + '" />' +
+                                    '</div>' +
+                                    '<div class="form-group col-md-2">' +
+                                    '<a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="' + data.konstrüksiyonParametre5 + '" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>' +
+                                    '</div>' +
+                                    '</div>' +
+                                    '</li>';
+
+                                $('#konstruksiyonInputs').append(konstruksiyonHtmlString5);
+
+                                if (data.konstrüksiyonParametre6 != null) {
+                                    var konstruksiyonHtmlString6 = '<li> ' +
+                                        '<div class="form-row">' +
+                                        '<div class="form-group col-md-5">' +
+                                        '<input type="text" readonly id="' + data.konstrüksiyonParametre6 + 'Parameter" value="' + data.konstrüksiyonParametre6 + '"/>' +
+                                        '</div>' +
+                                        '<div class="form-group col-md-5">' +
+                                        '<input type="number" id="' + data.konstrüksiyonParametre6 + 'Value" onchange="ValueChanged()" value="' + data.konstrüksiyonDeger6 + '" />' +
+                                        '</div>' +
+                                        '<div class="form-group col-md-2">' +
+                                        '<a href="#" class="btn btn-icon btn-danger" data-konstruksiyon="' + data.konstrüksiyonParametre6 + '" onclick="RemoveKonstruksiyon(this)"><i class="fas fa-trash" style="color:white"></i></a>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</li>';
+
+                                    $('#konstruksiyonInputs').append(konstruksiyonHtmlString6);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    });
+</script>

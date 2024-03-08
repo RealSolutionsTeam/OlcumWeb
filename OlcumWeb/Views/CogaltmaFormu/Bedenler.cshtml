@@ -1,0 +1,54 @@
+﻿@model Tuple<int, List<string>>
+
+<div style="padding-bottom:5%">
+    <h4>Lütfen beden seçiniz.</h4>
+</div>
+
+<div class="row" style="padding-bottom:5%">
+    @for (int i = 0; i < Model.Item2.Count(); i++)
+    {
+        <div class="pretty p-icon p-smooth markerDiv" style=" margin-left:50px" id="MyDiv_@i ">
+            <input type="checkbox" name="bedenler" value="@Model.Item2[i]">
+            <div class="state p-success">
+                <i class="icon fa fa-check"></i>
+                <label style=" padding-right:35%;">@Model.Item2[i]</label>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="row"><button type="button" class="btn btn-primary" id="btnKaydet">Kaydet</button></div>
+
+
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    var detayID = @Html.Raw(Json.Encode(Model.Item1));
+    var bedenList = [];
+
+    $('#btnKaydet').click(function () {
+        $('input[name="bedenler"]:checked').each(function () {
+            bedenList.push(this.value);
+        });
+
+         $.post("/CogaltmaFormu/TabloYok", { 'detayID': detayID, 'bedenler': bedenList }, function (deger) {
+                $('#tableContent').html(deger);
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+            $('#bedenModal').modal('toggle');
+
+    });
+
+
+    $(".markerDiv").click(function (e) {
+
+        if (!$(e.target).is('input:checkbox')) {
+            var $checkbox = $(this).find('input:checkbox');
+            $checkbox.prop('checked', !$checkbox.prop('checked'));
+        }
+
+    });
+</script>
+

@@ -1,0 +1,28 @@
+﻿.scissoricon {
+    background-image: url('icons8-cut-30.png');
+    background-repeat: no-repeat;
+    padding-left:30px;
+    background-size: 20px;
+}
+
+.clothesicon {
+    background-image: url('clothes.png');
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    background-size: 20px;
+}
+
+.fashionicon {
+    background-image: url('fashion.png');
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    background-size: 20px;
+}
+
+.reporticon {
+    background-image: url('bars.png');
+    background-repeat: no-repeat;
+    padding-left: 30px;
+    background-size: 20px;
+}
+

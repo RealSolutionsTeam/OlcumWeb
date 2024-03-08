@@ -1,0 +1,374 @@
+﻿@model Tuple<List<OlcumWeb.dbOlcum.CogaltmaDetay>, List<List<List<OlcumWeb.Models.DTO.DTONumuneTabloGetir>>>, List<string>>
+
+<style>
+    #tableForm table {
+        border-collapse: collapse;
+    }
+
+    #tableForm table, .table-responsive table td, .table-responsive table tr {
+        border: 1px solid #aaaaaa;
+    }
+</style>
+
+<div class="card card-success">
+    <div class="card-header">
+        <h4>Çoğaltma Tablosu</h4>
+        <div class="card-header-action">
+            <a href="#" class="btn btn-lg btn-icon icon-left btn-success"><i class="fas fa-print" style="color:white"></i> <span style="color:white">Yazdır</span></a>
+        </div>
+    </div>
+    <div class="card-body">
+        <ul class="nav nav-pills" id="myTab3" role="tablist">
+            @for (int i = 0; i < Model.Item1.Count; i++)
+            {
+                string deger = "";
+
+                if (i == 0)
+                {
+                    deger = "active";
+                }
+                else
+                {
+                    deger = "";
+                }
+
+                <li class="nav-item">
+                    <a class="nav-link @deger" id="home-tab3" data-index="@i" data-toggle="tab" href="#numunePage_@i" data-detayid="@Model.Item1[i].id" onclick="TabChange(this)" role="tab" aria-controls="home" aria-selected="true">@(Model.Item1[i].tarih.Value.ToShortDateString())</a>
+                </li>
+            }
+            <li class="nav-item">
+                <a href="#" class="btn btn-icon btn-lg btn-info" onclick="tabloEkle()"><i class="fas fa-plus" style="color:white"></i></a>
+            </li>
+        </ul>
+        <hr />
+        <div class="tab-content" id="myTabContent2">
+            @for (int i = 0; i < Model.Item1.Count; i++)
+            {
+                string deger = "";
+                if (i == 0)
+                {
+                    deger = "show active";
+                }
+                else
+                {
+                    deger = "";
+                }
+                <div class="tab-pane fade @deger" id="numunePage_@i" role="tabpanel" aria-labelledby="home-tab3">
+                    <div class="row" style="margin-bottom: 3%;">
+                        <div class="col-md-6">
+                            Reçete Kodu: @Html.TextBox("receteKod", Model.Item1[i].receteKod, new { @class = "form-control", @id = "receteKod_" + i })
+                        </div>
+                        <div class="col-md-6">
+                            Adı Soyadı: @Html.TextBox("kullanıcıAd", Model.Item3[i], new { @class = "form-control", @id = "kullanıcıAd_" + i, @readonly = "true" })
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-1">
+                            <ul class="nav nav-pills flex-column" id="myTab_@i" role="tablist">
+                                @for (int j = 0; j < Model.Item2[i].Count; j++)
+                                {
+                                    string deger2 = "";
+                                    if (j == 0)
+                                    {
+                                        deger2 = "active";
+                                    }
+                                    else
+                                    {
+                                        deger2 = "";
+                                    }
+
+                                    <li class="nav-item">
+                                        <a class="nav-link @deger2" id="numuneTab_@(i+ "_" + j)" data-toggle="tab" href="#numuneTablo_@(i + "_" +j)" role="tab" aria-controls="home" aria-selected="true">@Model.Item2[i][j][0].beden</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="col-11">
+                            <div class="tab-content no-padding" id="myTab2Content">
+                                @for (int j = 0; j < Model.Item2[i].Count; j++)
+                                {
+                                    string deger2 = "";
+                                    if (j == 0)
+                                    {
+                                        deger2 = "show active";
+                                    }
+                                    else
+                                    {
+                                        deger2 = "";
+                                    }
+
+                                    <div class="tab-pane fade @deger2" id="numuneTablo_@(i + "_" +j)" role="tabpanel" aria-labelledby="home-tab4">
+                                        <div class="table-responsive" id="numuneTableForm_@(i + "_" +j)">
+                                            <table id="numuneTable_@(i + "_" +j)" class="table table-striped" style="cursor: pointer;">
+                                                <thead>
+                                                    <tr id="numuneTableHead_@(i + "_" +j)">       
+                                                        <th id="column_@(i + "_" +j)_0">Ölçü Noktası</th>
+                                                        <th id="column_@(i + "_" +j)_1">Kalıp Ölçüsü</th>
+                                                        <th id="column_@(i + "_" +j)_2">Tölerans</th>
+                                                        <th id="column_@(i + "_" +j)_3">Y.Ö Tablo</th>
+                                                        <th id="column_@(i + "_" +j)_4">Y.Ö Fark</th>
+                                                        <th id="column_@(i + "_" +j)_5">Y.Ö Ölçülen</th>
+                                                        <th id="column_@(i + "_" +j)_6">Çekme</th>
+                                                        <th id="column_@(i + "_" +j)_7">Y.S Ölçülen</th>
+                                                        <th id="column_@(i + "_" +j)_8">Y.S Fark</th>
+                                                        <th id="column_@(i + "_" +j)_9">Y.S Tablo</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="numuneTableBody_@(i + "_" +j)">
+                                                    @{ int rowIndex = 0;}
+                                                    @for (int k = 0; k < Model.Item2[i][j].Count; k++)
+                                                    {
+                                                        if (k == 0)
+                                                        {
+                                                            <tr id="satir_@(i + "_" + j + "_" + rowIndex)">
+                                                                <td data-editable="false" id="cell_@(i + "_" + j + "_" + rowIndex)_0" data-olcunoktasi="@Model.Item2[i][j][k].olcuNoktasi" data-araid="@Model.Item2[i][j][k].id">
+                                                                    @Model.Item2[i][j][k].olcuNoktasi
+                                                                </td>
+
+                                                                @for (int z = 1; z <= 9; z++)
+                                                                {
+                                                                    <td tabindex="1" id="cell_@(i + "_"+ j + "_" + rowIndex + "_" + z)" data-tabloIndex="@(i + "_" +j)" data-rowIndex="@rowIndex" data-columnIndex="@z" onchange="DegerBul(this)">@Model.Item2[i][j][k].deger[z - 1]</td>
+                                                                }
+
+                                                            </tr>
+                                                            rowIndex++;
+
+                                                        }
+                                                        else
+                                                        {
+                                                            if (@Model.Item2[i][j][k].olcuNoktasi != @Model.Item2[i][j][k - 1].olcuNoktasi)
+                                                            {
+
+                                                                <tr id="satir_@(i + "_" + j + "_" + rowIndex)">
+                                                                    <td data-editable="false" id="cell_@(i + "_" + j + "_" + rowIndex)_0" data-olcunoktasi="@Model.Item2[i][j][k].olcuNoktasi" data-araid="@Model.Item2[i][j][k].id">
+                                                                        @Model.Item2[i][j][k].olcuNoktasi
+                                                                    </td>
+
+                                                                    @for (int z = 1; z <= 9; z++)
+                                                                    {
+                                                                        <td tabindex="1" id="cell_@(i + "_"+ j + "_" + rowIndex + "_" + z)" data-tabloIndex="@(i + "_" +j)" data-rowIndex="@rowIndex" data-columnIndex="@z" onchange="DegerBul(this)">@Model.Item2[i][j][k].deger[z - 1]</td>
+                                                                    }
+
+                                                                </tr>
+                                                                rowIndex++;
+                                                            }
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                            <input style="position: absolute; display: none;">
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="row" style="margin-left:1%"><button type="button" class="btn btn-primary" id="btnSec" onclick="TabloGuncelle()">Güncelle</button></div>
+    </div>
+</div>
+
+<script src="~/editable-table-master/mindmup-editabletable.js"></script>
+
+<script>
+
+    function deneme() {
+        $('#orderContent').show();
+        $('#tableContent').hide();
+        if ($("#tabloyaDonBtn").length > 0) {
+
+        }
+        else {
+            $('#buttonEklemek').append('<button id="tabloyaDonBtn" class="btn btn-warning" onclick="TabloyaDon()"><span style="color:white">Tabloya Dön</span></button>');
+        }
+
+        $('#breadcrumb li:last-child').remove();
+    };
+
+    @for (var i = 0; i < Model.Item2.Count; i++) {
+        for (var j = 0; j < Model.Item2[i].Count; j++) {
+            <text>$('#numuneTable_' + @i + "_" + @j).editableTableWidget();</text>
+        }
+    }
+
+    function tabloEkle() {
+        var orderAd = $('#orderNo option:selected').text();
+        $.post("/CogaltmaFormu/HazirTabloModal", { 'orderNo': orderAd }, function (deger) {
+            $('#hazirTablo_Modal').html(deger);
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+        $('#hazirTabloModal').modal('show');
+
+        AlertHata("Lütfen Order Detaylarını değiştirmeyi unutmayın!");
+    }
+
+    function DegerBul(elem) {
+          var id = $(elem).attr('id');
+        //Hücre konumunu almak için indexleri alıyorum.
+        var tabloIndex = $(elem).data('tabloindex');
+        var rowIndex = Number($(elem).data('rowindex'));
+        var columnIndex = Number($(elem).data('columnindex'));
+        //Kullanıcı , kullandıysa . ya çeviriyorum.
+        $(elem).html($(elem).html().replace(',', '.'));
+        var tabloCount = @Html.Raw(Json.Encode(Model.Item2.Count));
+
+        var cellValue = parseFloat($(elem).html());
+        var nextCellValue = parseFloat($('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex + 2)).html());
+        var previousCellValue = parseFloat($('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 2)).html());
+
+
+        if (columnIndex == 1) {
+            var ysDeger = parseFloat($('#cell_' + tabloIndex + '_' + rowIndex + '_9').html())
+            var oran = ((cellValue - ysDeger) / ysDeger) * 100;
+            console.log(oran);
+            for (var i = 0; i < tabloCount; i++) {
+                var value = ((oran + 100) / 100 * parseFloat($('#cell_' + i + '_' + rowIndex + '_9').html())).toFixed(1);
+                $('#cell_' +  tabloIndex  + '_' + rowIndex + '_' + Number(columnIndex)).html(value);
+            }
+        }
+        else if (columnIndex == 3) {
+            var ysDeger = parseFloat($('#cell_' + tabloIndex + '_' + rowIndex + '_9').html())
+            var oran = ((cellValue - ysDeger) / ysDeger) * 100;
+            console.log(oran);
+            for (var i = 0; i < tabloCount; i++) {
+                var value = ((oran + 100) / 100 * parseFloat($('#cell_' + i + '_' + rowIndex + '_9').html())).toFixed(1);
+                $('#cell_' +  tabloIndex  + '_' + rowIndex + '_' + Number(columnIndex)).html(value);
+            }
+        }
+        else if (columnIndex == 5) {
+
+            if ($('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex + 2)).html() != "0" && $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex + 2)).html() != "") {
+                var value = ((cellValue - nextCellValue) / cellValue * 100).toFixed(1);
+
+                $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex + 1)).html(value);
+
+            }
+
+            if ($('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 2)).html() != "0" && $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 2)).html() != "") {
+                var value = (cellValue - previousCellValue).toFixed(1);
+                $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 1)).html(value);
+            }
+
+            if ($('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 4)).html() != "0" && $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 4)).html() != "") {
+                var previousCellValue2 = parseFloat($('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 4)).html());
+                var value = (previousCellValue2 - cellValue).toFixed(1);
+                $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 3)).html(value);
+            }
+        }
+        else if (columnIndex == 7) {
+            if ($('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex + 2)).html() != "0" && $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex + 2)).html() != "") {
+                var value = (cellValue - nextCellValue).toFixed(1);
+
+                $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex + 1)).html(value);
+
+            }
+
+            if ($('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 2)).html() != "0" && $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 2)).html() != "") {
+                var value = ((previousCellValue - cellValue) / previousCellValue * 100).toFixed(1);
+                $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 1)).html(value);
+            }
+        }
+        else if (columnIndex == 9) {
+            if ($('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 2)).html() != "0" && $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 2)).html() != "") {
+                var value = ((previousCellValue - cellValue)).toFixed(1);
+                $('#cell_' + tabloIndex + '_' + rowIndex + '_' + Number(columnIndex - 1)).html(value);
+            }
+        }
+    }
+
+    function TabloGuncelle() {
+        var activeTabIndex = $('#myTab3 > li > a.active').data('index');
+        var tabloList = [];
+        var tabLength = $('#myTab_' + activeTabIndex + ' >li').length;
+
+        for (var i = 0; i < tabLength; i++) {
+            var olcuList = [];
+            var rowCount = $('#numuneTableBody_' + activeTabIndex + '_' + i.toString() + ' > tr').length;
+
+            for (var j = 0; j < rowCount; j++) {
+                var id = $('#cell_' + activeTabIndex + '_' + i + '_' + j + '_0').data('araid');
+                var olcuNoktasi = $('#cell_' + activeTabIndex + '_' + i + '_' + j + '_0').data('olcunoktasi');
+                var beden = $('#numuneTab_' + activeTabIndex + '_' + i).html();
+                var degerList = [];
+                for (var k = 1; k < 12; k++) {
+                    var deger = $('#cell_' + activeTabIndex + '_' + i + '_' + j + '_' + k).html();
+                    degerList.push(deger);
+                }
+
+            olcuList.push({'id':id, 'olcuNoktasi': olcuNoktasi, 'beden': beden, 'deger': degerList });
+            }
+
+            tabloList.push(olcuList);
+
+        }
+
+        var detayObject = {
+            id: $('#myTab3 > li > a.active').data('detayid'),
+            orderNo:  document.getElementById('orderNo').value,
+            atolye: document.getElementById('atolyeAd').value,
+            giysiTuru:  document.getElementById('giysiTuruAd').value,
+            olcuTuru:  document.getElementById('olcuTuruAd').value,
+            kesimeGidis: $('#kesimeGidis').val(),
+            dikimeGidis: $('#dikimeGidis').val(),
+            yikamayaGidis: $('#yikamayaGidis').val(),
+            yikamadanGelis: $('#yikamadanGelis').val(),
+            kalipAdi: $('#kalipAdi').val(),
+            topNo: $('#topNo').val(),
+            receteKod: $('#receteKod_' + activeTabIndex).val()
+        };
+
+
+        $.post("/CogaltmaFormu/TabloGuncelle", { 'detay': detayObject, 'tablo': tabloList }, function (gelenCagri) {
+            if (gelenCagri == 1) {
+                swal({
+                title: "Başarılı",
+                text: "Tablonuz başarıyla güncellendi.",
+                icon: "success",
+                button: "Tamam",
+                });
+            }
+            else {
+               swal({
+                title: "Başarısız",
+                text: "Tablo güncellenirken bir hatayla karşılaşıldı!",
+                icon: "error",
+                button: "Tamam",
+                });
+            }
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+        tabloList.length = 0;
+        olcuList.length = 0;
+    }
+
+    function TabChange(elem) {
+        var detayid = $(elem).data('detayid');
+
+        $.getJSON("/CogaltmaFormu/ChangeTab", { 'detayID': detayid },
+                function (data) {
+                        document.getElementById('topNo').value = data.topNo;
+                        $('#atolyeAd').val(data.atolyeID);
+                        document.getElementById('kalipAdi').value = data.kalipAdi;
+                        var yikamayaGidisDate = new Date(parseInt(data.yikamayaGidis.substr(6)));
+                        document.getElementById('yikamayaGidis').value = $.datepicker.formatDate('dd-mm-yy', yikamayaGidisDate);
+
+                        var yikamadanGelisDate = new Date(parseInt(data.yikamadanGelis.substr(6)));
+                        document.getElementById('yikamadanGelis').value = $.datepicker.formatDate('dd-mm-yy', yikamadanGelisDate);
+
+                        var kesimeGidisDate = new Date(parseInt(data.kesimeGidis.substr(6)));
+                        document.getElementById('kesimeGidis').value = $.datepicker.formatDate('dd-mm-yy', kesimeGidisDate);
+
+                        var dikimeGidisDate = new Date(parseInt(data.dikimeGidis.substr(6)));
+                        document.getElementById('dikimeGidis').value = $.datepicker.formatDate('dd-mm-yy', dikimeGidisDate);
+                });
+    }
+</script>

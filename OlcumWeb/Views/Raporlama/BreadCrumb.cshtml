@@ -1,0 +1,38 @@
+﻿@model Int32
+
+
+@if (Model == 0)
+{
+    <ul id="breadcrumb">
+        <li><a href="@Url.Action("Index", "AnaSayfa")"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+        <li><a href="@Url.Action("Index", "Raporlama")"><span class="icon icon-double-angle-right"></span> Raporlama</a></li>
+    </ul>
+}
+else if (Model == 1)
+{
+    <ul id="breadcrumb">
+        <li><a href="@Url.Action("Index", "AnaSayfa")"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+        <li><a href="@Url.Action("Index", "Raporlama")"><span class="icon icon-double-angle-right"></span> Raporlama</a></li>
+        <li><a href="" onclick="breadCrumbFunction(1)"><span class="icon icon-double-angle-right"></span> Order Bazlı Raporlama</a></li>
+    </ul>
+}
+else if (Model == 2)
+{
+    <ul id="breadcrumb">
+        <li><a href="@Url.Action("Index", "AnaSayfa")"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+        <li><a href="@Url.Action("Index", "Raporlama")"><span class="icon icon-double-angle-right"></span> Raporlama</a></li>
+        <li><a href="" onclick="breadCrumbFunction(2)"><span class="icon icon-double-angle-right"></span> NOOS Bazlı Raporlama</a></li>
+    </ul>
+}
+
+<script>
+    function breadCrumbFunction(id) {
+        if (id == 1) {
+
+        }
+        else if(id == 2) {
+
+        }
+
+    }
+</script>

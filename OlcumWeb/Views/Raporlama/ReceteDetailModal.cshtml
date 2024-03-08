@@ -1,0 +1,156 @@
+﻿<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<style>
+    .separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+    }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #000;
+        }
+
+        .separator:not(:empty)::before {
+            margin-right: .25em;
+        }
+
+        .separator:not(:empty)::after {
+            margin-left: .25em;
+        }
+</style>
+
+<div class="form-row">
+    <div class="form-group col-md-12">
+        <label>Reçete Kod Listesi:</label>
+        @Html.DropDownList("yikamaKodListDropDown", new SelectList(ViewBag.yikamaKodList, "Konstrüksiyon"), "Seçiniz...", new { @class = "form-control select2", @id = "yikamaKodListDropDown" })
+        <small id="recipeDescription" style="color:red;display:none">Yıkama koduyla eşleşen reçete bulunamadı *</small>
+
+    </div>
+</div>
+<div class="separator">veya</div>
+<div class="form-row">
+    <div class="form-group col-md-10">
+        <label>Reçete Adımları:</label>
+        @Html.DropDownList("recipeSteps", new SelectList(ViewBag.recipeSteps, "WASHING_TYPE_NAME"), "Seçiniz...", new { @class = "form-control select2", @id = "recipeSteps" })
+    </div>
+    <div class="form-group col-md-2" style="margin-top:7%">
+        <a href="#" class="btn btn-icon btn-info" onclick="AddStep()"><i class="fas fa-plus" style="color:white"></i></a>
+    </div>
+</div>
+
+<ul id="recipeStepsInputs" style="list-style-type: none;">
+    @if (ViewBag.recipeStepsFromNumunePage != null)
+    {
+        var recipeStepsFromNumunePage = ViewBag.recipeStepsFromNumunePage;
+        foreach (var item in recipeStepsFromNumunePage)
+        {
+            <li>
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <label>@(item.WASHING_TYPE_NAME) Süre Min.</label>
+                        <input type="number" class="form-control" id="@(item.WASHING_TYPE_NAME)InputMin" data-recipestep="@(item.WASHING_TYPE_NAME)" value="@((item.TIME == null) ? 0 : Convert.ToDouble(item.TIME) - 5)">
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label>@(item.WASHING_TYPE_NAME) Süre Maks.</label>
+                        <input type="number" class="form-control" id="@(item.WASHING_TYPE_NAME)InputMax" data-recipestep="@(item.WASHING_TYPE_NAME)" value="@((item.TIME == null) ? 0 : Convert.ToDouble(item.TIME) + 5)">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <a href="#" class="btn btn-icon btn-danger" style="margin-top:61%" data-recipestep="@(item.WASHING_TYPE_NAME)" onclick="RemoveStep(this)"><i class="fas fa-trash" style="color:white"></i></a>
+                    </div>
+                </div>
+            </li>
+        }
+    }
+</ul>
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+
+<script>
+
+    if (jQuery().select2) {
+        $(".select2").select2({
+            width: '100%',
+            theme: 'classic',
+        });
+    };
+
+    function AddStep() {
+        var seciliDeger = $('#recipeSteps').val();
+
+        var recipeStepHtml = '<li>' +
+            '<div class="form-row">' +
+            ' <div class="form-group col-md-5">' +
+            '<label>' + seciliDeger + ' Süre Min.</label>' +
+            '<input type="number" class="form-control" id="' + seciliDeger + 'InputMin" data-recipestep= "' + seciliDeger + '" value="0">' +
+            '</div>' +
+            '<div class="form-group col-md-5">' +
+            ' <label>' + seciliDeger + ' Süre Maks.</label>' +
+            ' <input type="number" class="form-control" id="' + seciliDeger + 'InputMax" data-recipestep= "' + seciliDeger + '" value="0">' +
+            '</div>' +
+            '<div class="form-group col-md-2">' +
+            '<a href="#" class="btn btn-icon btn-danger" style="margin-top:61%" data-recipestep="' + seciliDeger + '" onclick="RemoveStep(this)"><i class="fas fa-trash" style="color:white"></i></a>' +
+            ' </div>' +
+            '</div>' +
+            '</li>';
+
+        $('#recipeStepsInputs').append(recipeStepHtml);
+    }
+
+    function RemoveStep(elem) {
+        $(elem).parent().parent().parent().remove();
+    }
+
+    $('#yikamaKodListDropDown').on('change', function () {
+        var yikamaKodu = $(this).val();
+
+        $.post("/Raporlama/GetReceteDetail", { yikamaKodu: yikamaKodu }, function (data) {
+            $('#recipeStepsInputs').empty();
+
+            if (data.length > 0) {
+                if (!$('#recipeDescription').is(':hidden')) {
+                    $('#recipeDescription').css('display', 'none');
+                }
+
+                for (var i = 0; i < data.length; i++) {
+                    var valueMin = (parseFloat(data[i].TIME) > 5 ? (parseFloat(data[i].TIME) - 5) : (parseFloat(data[i].TIME) - 1));
+
+                    var valueMax = (parseFloat(data[i].TIME) > 5 ? (parseFloat(data[i].TIME) + 5) : (parseFloat(data[i].TIME) + 1));
+
+
+                    var recipeStepHtmlFromPost = '<li>' +
+                        '<div class="form-row">' +
+                        ' <div class="form-group col-md-5">' +
+                        '<label>' + data[i].WASHING_TYPE_NAME + ' Süre Min.</label>' +
+                        '<input type="number" class="form-control" id="' + data[i].WASHING_TYPE_NAME + 'InputMin" data-recipestep= "' + data[i].WASHING_TYPE_NAME + '" value="' + valueMin + '">' +
+                        '</div>' +
+                        '<div class="form-group col-md-5">' +
+                        ' <label>' + data[i].WASHING_TYPE_NAME + ' Süre Maks.</label>' +
+                        ' <input type="number" class="form-control" id="' + data[i].WASHING_TYPE_NAME + 'InputMax" data-recipestep= "' + data[i].WASHING_TYPE_NAME + '" value="' + valueMax + '">' +
+                        '</div>' +
+                        '<div class="form-group col-md-2">' +
+                        '<a href="#" class="btn btn-icon btn-danger" style="margin-top:61%" data-recipestep="' + data[i].WASHING_TYPE_NAME + '" onclick="RemoveStep(this)"><i class="fas fa-trash" style="color:white"></i></a>' +
+                        ' </div>' +
+                        '</div>' +
+                        '</li>';
+
+
+                    $('#recipeStepsInputs').append(recipeStepHtmlFromPost);
+
+                }
+            }
+            else {
+                if ($('#recipeDescription').is(':hidden')) {
+                    $('#recipeDescription').css('display', 'initial');
+                }
+            }
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    });
+
+</script>

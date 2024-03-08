@@ -1,0 +1,188 @@
+﻿@model List<OlcumWeb.Models.DTO.DTORaporOrderList>
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/datatables.min.css">
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
+
+<style>
+
+    select[name="1_length"] {
+        height: 30px !important;
+    }
+
+    select[name="2_length"] {
+        height: 30px !important;
+    }
+
+    select[name="save-stage"] {
+        height: 30px !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+
+    .dataTables_filter label {
+        margin: 0 !important;
+    }
+
+        .dataTables_filter label input {
+            height: 30px !important;
+        }
+
+    .dataTables_paginate {
+        float: right !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+</style>
+
+<div class="card card-success" id="orderListCard">
+    <div class="card-header">
+        <h4>Order Listesi</h4>
+
+        <div class="row">
+
+        </div>
+        <div class="row">
+
+        </div>
+    </div>
+    <div class="card-body">
+        <section id="table">
+            <div class="table-responsive">
+                <div id="table-1_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+                    <div class="col-sm-12">
+                        <table class="table table-striped dataTable no-footer" id="save-stage" role="grid" aria-describedby="table-1_info">
+                            <thead>
+                                <tr role="row">
+                                    <th class="text-center sorting_asc" tabindex="0" aria-controls="table-1" rowspan="1" colspan="1" aria-label="
+                              #
+                            : activate to sort column descending" style="width: 24px;" aria-sort="ascending">
+                                        #
+                                    </th>
+                                    <th class="sorting" tabindex="0" aria-controls="table-1" rowspan="1" colspan="1" aria-label="Task Name: activate to sort column ascending" style="width: 148px;">Order No</th>
+                                    <th class="sorting" tabindex="0" aria-controls="table-1" rowspan="1" colspan="1" aria-label="Due Date: activate to sort column ascending" style="width: 89px;">Model Ad</th>
+                                    <th class="sorting" tabindex="0" aria-controls="table-1" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending" style="width: 108px;">Kullanıcı Adı</th>
+                                    <th class="sorting" tabindex="0" aria-controls="table-1" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending" style="width: 75px;">Eklenme Tarihi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Count; i++)
+                                {
+                                    if (i % 2 == 0)
+                                    {
+                                        <tr role="row" class="odd">
+                                            <td class="sorting_1">
+                                                @(i + 1)
+                                            </td>
+                                            <td>
+                                                <a href="#" class="btn btn-info" onclick="OrderTabloGetir(@Model[i].id)"><span style="color:white">@Model[i].orderNo</span> </a>
+
+                                            </td>
+                                            <td>
+                                                @Model[i].modelAd
+                                            </td>
+                                            <td>
+                                                @Model[i].kullanıcıAdı
+                                            </td>
+                                            <td>
+                                                @Model[i].tarih.ToShortDateString()
+                                            </td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr role="row" class="even">
+                                            <td class="sorting_1">
+                                                @(i + 1)
+                                            </td>
+                                            <td>
+                                                <a href="#" class="btn btn-info" onclick="OrderTabloGetir(@Model[i].id)"><span style="color:white">@Model[i].orderNo</span> </a>
+                                            </td>
+                                            <td>
+                                                @Model[i].modelAd
+                                            </td>
+                                            <td>
+                                                @Model[i].kullanıcıAdı
+                                            </td>
+                                            <td>
+                                                @Model[i].tarih.ToShortDateString()
+                                            </td>
+
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+</div>
+
+<div class="card card-success" style="visibility:hidden" id="tabloCard">
+    <div class="card-header">
+        <div id="baglantiliOrderlar">
+
+        </div>
+
+    </div>
+    <div class="card-body">
+        <div id="orderTablosu">
+        </div>
+    </div>
+</div>
+
+
+<script src="~/Tema/assets/bundles/datatables/datatables.min.js"></script>
+<script src="~/Tema/assets/bundles/sweetalert/sweetalert.min.js"></script>
+<script src="~/Tema/assets/js/page/sweetalert.js"></script>
+
+<script>
+    $('#save-stage').DataTable({
+        "dom": '<"top"<"row mr-0 ml-0 mt-1 mb-1"<"col-6 m-auto"f><"col-6 m-auto"l>>>rt<"row mt-2 mr-0 mb-0 ml-0"<"col - 6 m- auto"i><"col - 6 m - auto"p>><"clear">',
+        "pageLength": 10,
+        "lengthMenu": [10, 20, 50, 100],
+        "language": {
+            "searchPlaceholder": "Arama",
+            "search": "",
+            //"info": "TOTAL Kayıt içerisinde START - END gösteriliyor",
+            "loadingRecords": "Yükleniyor...",
+            "zeroRecords": "Kayıt Bulunamadı",
+            "lengthMenu": "",
+            "infoEmpty": "",
+            "infoFiltered": "",
+            "paginate": {
+                "first": "İlk Sayfa",
+                "last": "Son Sayfa",
+                "next": "Sonraki Sayfa",
+                "previous": "Önceki Sayfa",
+            },
+        }
+    }).columns(-1).order('desc').draw();
+
+    function OrderTabloGetir(id) {
+        var modelTuru = @Html.Raw(Json.Encode(Model[0].raporTuru));
+
+         $.post("/Raporlama/BaglantiliOrderlar", { 'id': id, 'raporTuru': modelTuru },
+            function (data) {
+
+                $('#orderListCard').hide();
+                $('#tabloCard').css('visibility','visible');
+                $('#baglantiliOrderlar').html(data);
+            });
+
+        $.post("/Raporlama/Tablo", { 'id': id, 'raporTuru': modelTuru },
+            function (data) {
+
+                $('#orderTablosu').html(data);
+            });
+    }
+</script>

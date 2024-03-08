@@ -1,0 +1,178 @@
+﻿@model List<OlcumWeb.Controllers.ArsivDataModel>
+
+
+<style>
+
+    select[name="1_length"] {
+        height: 30px !important;
+    }
+
+    select[name="2_length"] {
+        height: 30px !important;
+    }
+
+    select[name="save-stage"] {
+        height: 30px !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+
+    .dataTables_filter label {
+        margin: 0 !important;
+    }
+
+        .dataTables_filter label input {
+            height: 30px !important;
+        }
+
+    .dataTables_paginate {
+        float: right !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+</style>
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/datatables.min.css">
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
+
+
+<div style="width:100%">
+
+    <div class="table-responsive" id="orderListesi">
+        <div id="table-1_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+            <div class="col-sm-12">
+                <table class="table table-striped dataTable no-footer" id="save-stage2ArsivEkle" role="grid" aria-describedby="table-1_info">
+                    <thead>
+                        <tr role="row">
+
+                            <th>
+                                Rapor Adı
+                            </th>
+
+                            <th>Raporun İçeriğini Görüntüle</th>
+
+                            <th>
+                                Tarih
+                            </th>
+
+                            <th>
+                                Rapor Türü
+                            </th>
+
+                            <th>
+                                Kullanıcı
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a class="btn btn-icon btn-info" id="btn_@item.raporID" data-raporid="@item.raporID" onclick="GetAnaCekme(this)"><span style="color:white">@item.raporAdi</span></a>
+                                </td>
+
+                                <td align="center">
+                                    <a class="btn btn-icon btn-info" data-reportid="@item.raporID" onclick="ReportDetail(this)"><i class="fas fa-eye" style="color:white;"></i></a>
+                                </td>
+                                <td>
+                                    @item.tarih.ToShortDateString()
+                                </td>
+                                <td>
+                                    @if (item.tabloTuru == 0)
+                                    {
+                                        <span>Tölerans</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Çekme</span>
+                                    }
+                                </td>
+
+                                <td>@(item.personelAd + " " + item.personelSoyad)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Tema/assets/bundles/datatables/datatables.min.js"></script>
+<script src="~/Tema/assets/bundles/sweetalert/sweetalert.min.js"></script>
+<script src="~/Tema/assets/js/page/sweetalert.js"></script>
+
+<script>
+    var list = [];
+    $('#save-stage2ArsivEkle').DataTable({
+        "dom": '<"top"<"row mr-0 ml-0 mt-1 mb-1"<"col-6 m-auto"f><"col-6 m-auto"l>>>rt<"row mt-2 mr-0 mb-0 ml-0"<"col - 6 m- auto"i><"col - 6 m - auto"p>><"clear">',
+        "pageLength": 10,
+        "searching": false,
+        "ordering": false,
+        "lengthMenu": [10, 20, 50, 100],
+        "language": {
+            "searchPlaceholder": "Arama",
+            "search": "",
+            //"info": "TOTAL Kayıt içerisinde START - END gösteriliyor",
+            "loadingRecords": "Yükleniyor...",
+            "zeroRecords": "Kayıt Bulunamadı",
+            "lengthMenu": "",
+            "infoEmpty": "",
+            "infoFiltered": "",
+            "paginate": {
+                "first": "İlk Sayfa",
+                "last": "Son Sayfa",
+                "next": "Sonraki Sayfa",
+                "previous": "Önceki Sayfa",
+            },
+        }
+    }).columns(-1).draw();
+
+    function GetAnaCekme(elem) {
+        var raporID = $(elem).data('raporid');
+        $.post("/Raporlama/SetAnaCekme", { 'raporId': raporID }, function (data) {
+            var addColumnString = "<th style='font-weight:bold'>" +
+                "Ana Çekme " +
+                "  <div class='row' style='margin-bottom:-5%;margin-left:25%'>" +
+                "<a class='btn btn-icon btn-sm btn-info' style='width:50%;' data-raporid = '" + data.detay.raporID + "' onclick='GoToArsiv(this)'><i class='fas fa-eye' style='color:white;'></i></a>" +
+                "</div>" +
+                "</th> ";
+            $('#save-stage48 th').eq('-3').after(addColumnString);
+            console.log(data);
+            var anaCekmeOrtalamaList = data.ortalamaList;
+
+            for (var i = 0; i < anaCekmeOrtalamaList.length; i++) {
+                var anaCekmeKararVerilenCekmeHtml = "<td style='min-width:25px;color:red;'>" + data.ortalamaList[i].kararVerilenCekmetolerans + "</td>";
+                $('#save-stage48 tbody tr').eq((3 * i)).find('td:eq(-2)').after("<td style='min-width:25px;'></td>");
+                $('#save-stage48 tbody tr').eq((3 * i) + 2).find('td:eq(-2)').after("<td style='min-width:25px;'></td>");
+
+                $('#save-stage48 tbody tr').eq((3 * i) + 1).find('td:eq(-2)').after(anaCekmeKararVerilenCekmeHtml);
+            }
+
+            anaCekmeEklendiMi = 1;
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+
+        $('#anaCekmeModal').modal('toggle');
+
+    }
+
+    function ReportDetail(elem) {
+        var raporID = $(elem).data('reportid');
+        window.open(window.location.origin + '/Raporlama/ArsivRapor?id=' + raporID);
+    }
+
+
+</script>
+
+
+

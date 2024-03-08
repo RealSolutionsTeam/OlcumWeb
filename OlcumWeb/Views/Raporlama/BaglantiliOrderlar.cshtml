@@ -1,0 +1,73 @@
+﻿@model List<OlcumWeb.Models.DTO.DTORaporBagliOrderlar>
+
+
+<div class="btn-group mr-2" role="group" aria-label="First group">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        <button type="button" class="btn btn-info" style=" border-radius: 0px;" onclick="TabloyaGit(@Model[i].tabloID,@Model[i].tabloRaporTuru)">@(Model[i].tabloOrderNo + " / " + @Model[i].tabloOlcuTuru)</button>
+
+    }
+</div>
+
+@*<div class="btn-group" role="group" style="overflow-x:scroll; width:auto;">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            if (Model[i].tabloRaporTuru == 0)
+            {
+                <button type="button" class="btn btn-info" onclick="TabloyaGit(@Model[i].tabloID,@Model[i].tabloRaporTuru)">@(Model[i].tabloOrderNo + " / " + @Model[i].tabloOlcuTuru)</button>
+
+            }
+            else if (Model[i].tabloRaporTuru == 1)
+            {
+                <button type="button" class="btn btn-info" onclick="TabloyaGit(@Model[i].tabloID,@Model[i].tabloRaporTuru)">@(Model[i].tabloOrderNo + " / " + @Model[i].tabloOlcuTuru)</button>
+
+            }
+            else if (Model[i].tabloRaporTuru == 2)
+            {
+                <button type="button" class="btn btn-info" onclick="TabloyaGit(@Model[i].tabloID,@Model[i].tabloRaporTuru)">@(Model[i].tabloOrderNo + " / " + @Model[i].tabloOlcuTuru)</button>
+            }
+        }
+    </div>*@
+
+<div class="btn-group mr-2" role="group" aria-label="First group" style="left:60%">
+    <button type="button" class="btn btn-info" onclick="ToleransModal(871,0)">Töleranslar</button>
+    <button type="button" class="btn btn-info" onclick="CekmeModal(871,0)">Çekmeler</button>
+</div>
+
+
+
+<script>
+    function ToleransModal(id, raporTuru) {
+        $.post("/Raporlama/ToleransModal", { 'id': id, 'raporTuru': raporTuru },
+            function (data) {
+
+                $('#tolerans_Modal').html(data);
+
+                $('#toleransModal').modal('show');
+            });
+    }
+
+    function CekmeModal(id, raporTuru) {
+        $.post("/Raporlama/CekmeModal", { 'id': id, 'raporTuru': raporTuru },
+            function (data) {
+
+                $('#cekme_Modal').html(data);
+
+                $('#cekmeModal').modal('show');
+            });
+    }
+
+
+    function TabloyaGit(id, raporTuru) {
+        if (id == 0) {
+            AlertHata("Böyle bir order bulunamadı");
+        }
+        else {
+            $.post("/Raporlama/Tablo", { 'id': id, 'raporTuru': raporTuru },
+                function (data) {
+
+                    $('#orderTablosu').html(data);
+                });
+        }
+    }
+</script>

@@ -1,0 +1,46 @@
+﻿@model Tuple<List<OlcumWeb.Models.DTO.DtoOlcuNokDeger>>
+
+    <style>
+
+        .olcuYeriTableFontsizetd {
+            font-size: 12px !important;
+        }
+
+        .olcuYeriTableFontsizeth {
+            font-size: 15px !important;
+        }
+    </style>
+
+<div class="row">
+    <div style="width: 100%; overflow-x: auto;">
+        <table class="istenilenTable">
+            <thead>
+                <tr>
+                    <th class="istenlenTh">Ölçü Noktası</th>
+                    @if (Model.Item1.FirstOrDefault().cekme != null)
+                    {
+                        <th class="istenlenTh olcuYeriTableFontsizeth"> @Model.Item1.FirstOrDefault().cekme - @Model.Item1.FirstOrDefault().bedenAd </th>
+
+                    }
+                    else
+                    {
+                        <th class="istenlenTh olcuYeriTableFontsizeth"> @Model.Item1.FirstOrDefault().bedenAd </th>
+
+                    }
+                </tr>
+            </thead>
+
+            <tbody style="width: 100%; ">
+
+                @foreach (var item in Model.Item1)
+                {
+                    <tr>
+                        <td class="istenlenTd olcuYeriTableFontsizetd " data-olcuNokId="@item.olcuNokId" id="tdYAd-@item.olcuNokId">@item.olcuNokAd</td>
+                        <td class="istenlenTd olcuYeriTableFontsizetd " data-olcuNokId="@item.olcuNokId" id="tdYAd-@item.olcuNokId">@item.deger</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+</div>

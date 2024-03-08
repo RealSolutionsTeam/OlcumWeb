@@ -1,0 +1,288 @@
+﻿@model Tuple<List<List<OlcumWeb.Models.DTO.DTONumuneTabloGetir>>, int>
+
+
+<style>
+    #tableForm table {
+        border-collapse: collapse;
+    }
+
+    #tableForm table, .table-responsive table td, .table-responsive table tr {
+        border: 1px solid #aaaaaa;
+    }
+</style>
+
+@if (Model.Item2 == 2)
+{
+    <div class="row">
+        <div class="col-1">
+            <ul class="nav nav-pills flex-column" id="myTab" role="tablist">
+                @for (int j = 0; j < Model.Item1.Count; j++)
+                {
+                    string deger2 = "";
+                    if (j == 0)
+                    {
+                        deger2 = "active";
+                    }
+                    else
+                    {
+                        deger2 = "";
+                    }
+
+                    <li class="nav-item">
+                        <a class="nav-link @deger2" id="numuneTab_@(j)" data-toggle="tab" href="#numuneTablo_@(j)" role="tab" aria-controls="home" aria-selected="true">@Model.Item1[j][0].beden</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-11">
+            <div class="tab-content no-padding" id="myTab2Content">
+                @for (int j = 0; j < Model.Item1.Count; j++)
+                {
+                    string deger2 = "";
+                    if (j == 0)
+                    {
+                        deger2 = "show active";
+                    }
+                    else
+                    {
+                        deger2 = "";
+                    }
+
+                    <div class="tab-pane fade @deger2" id="numuneTablo_@(j)" role="tabpanel" aria-labelledby="home-tab4">
+                        <div class="table-responsive" id="numuneTableForm_@(j)">
+                            <table id="numuneTable_@(j)" class="table table-striped" style="cursor: pointer;">
+                                <thead>
+                                    <tr id="numuneTableHead_@(j)">
+                                        <th id="column_@(j)_0">Ölçü Noktası</th>
+                                        <th id="column_@(j)_1">Kalıp Ölçüsü</th>
+                                        <th id="column_@(j)_2">Tölerans</th>
+                                        <th id="column_@(j)_3">Y.Ö Tablo</th>
+                                        <th id="column_@(j)_4">Y.Ö Fark</th>
+                                        <th id="column_@(j)_5">Y.Ö Ölçülen</th>
+                                        <th id="column_@(j)_6">Çekme</th>
+                                        <th id="column_@(j)_7">Y.S Ölçülen</th>
+                                        <th id="column_@(j)_8">Y.S Fark</th>
+                                        <th id="column_@(j)_9">Y.S Tablo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="numuneTableBody_@(j)">
+                                    @{ int rowIndex = 0;}
+                                    @for (int k = 0; k < Model.Item1[j].Count; k++)
+                                    {
+                                        if (k == 0)
+                                        {
+                                            <tr id="satir_@(j + "_" + rowIndex)">
+                                                <td data-editable="false" id="cell_@(j + "_" + rowIndex)_0" data-olcunoktasi="@Model.Item1[j][k].olcuNoktasi" data-araid="@Model.Item1[j][k].id">
+                                                    @Model.Item1[j][k].olcuNoktasi
+                                                </td>
+
+                                                @for (int z = 1; z <= 9; z++)
+                                                {
+                                                    <td tabindex="1" id="cell_@(j + "_" + rowIndex + "_" + z)" data-tabloIndex="@(j)" data-rowIndex="@rowIndex" data-columnIndex="@z" onchange="DegerBul(this)">@Model.Item1[j][k].deger[z - 1]</td>
+                                                }
+
+                                            </tr>
+                                            rowIndex++;
+
+                                        }
+                                        else
+                                        {
+                                            if (@Model.Item1[j][k].olcuNoktasi != @Model.Item1[j][k - 1].olcuNoktasi)
+                                            {
+
+                                                <tr id="satir_@(j + "_" + rowIndex)">
+                                                    <td data-editable="false" id="cell_@(j + "_" + rowIndex)_0" data-olcunoktasi="@Model.Item1[j][k].olcuNoktasi" data-araid="@Model.Item1[j][k].id">
+                                                        @Model.Item1[j][k].olcuNoktasi
+                                                    </td>
+
+                                                    @for (int z = 1; z <= 9; z++)
+                                                    {
+                                                        <td tabindex="1" id="cell_@(j + "_" + rowIndex + "_" + z)" data-tabloIndex="@(j)" data-rowIndex="@rowIndex" data-columnIndex="@z" onchange="DegerBul(this)">@Model.Item1[j][k].deger[z - 1]</td>
+                                                    }
+
+                                                </tr>
+                                                rowIndex++;
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <input style="position: absolute; display: none;">
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+else if (Model.Item2 == 1)
+{
+    <div class="row">
+        <div class="col-1">
+            <ul class="nav nav-pills flex-column" id="myTab" role="tablist">
+                @for (int j = 0; j < Model.Item1.Count; j++)
+                {
+                    string deger2 = "";
+                    if (j == 0)
+                    {
+                        deger2 = "active";
+                    }
+                    else
+                    {
+                        deger2 = "";
+                    }
+
+                    <li class="nav-item">
+                        <a class="nav-link @deger2" id="numuneTab_@(j)" data-toggle="tab" href="#numuneTablo_@(j)" role="tab" aria-controls="home" aria-selected="true">@Model.Item1[j][0].beden</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-11">
+            <div class="tab-content no-padding" id="myTab2Content">
+                @for (int j = 0; j < Model.Item1.Count; j++)
+                {
+                    string deger2 = "";
+                    if (j == 0)
+                    {
+                        deger2 = "show active";
+                    }
+                    else
+                    {
+                        deger2 = "";
+                    }
+
+                    <div class="tab-pane fade @deger2" id="numuneTablo_@(j)" role="tabpanel" aria-labelledby="home-tab4">
+                        <div class="table-responsive" id="numuneTableForm_@(j)">
+                            <table id="numuneTable_@(j)" class="table table-striped" style="cursor: pointer;">
+                                <thead>
+                                    <tr id="numuneTableHead_@(j)">
+                                        <th id="column_@(j)_0">Ölçü Noktası</th>
+                                        <th id="column_@(j)_1">Imalat Kalıp</th>
+                                        <th id="column_@(j)_2">Imalat Tölerans</th>
+                                        <th id="column_@(j))_3">Imalat Y.Ö</th>
+                                        <th id="column_@(j))_4">Imalat Çekme</th>
+                                        <th id="column_@(j)_5">Kalıp Ölçüsü</th>
+                                        <th id="column_@(j)_6">Tölerans</th>
+                                        <th id="column_@(j)_7">Yıkama Öncesi</th>
+                                        <th id="column_@(j)_8">Çekme</th>
+                                        <th id="column_@(j))_9">Yıkama Sonrası</th>
+                                        <th id="column_@(j)_10">Fark</th>
+                                        <th id="column_@(j))_11">Y.S Tablo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="numuneTableBody_@(j)">
+                                    @{ int rowIndex = 0;}
+                                    @for (int k = 0; k < Model.Item1[j].Count; k++)
+                                    {
+                                        if (k == 0)
+                                        {
+                                            <tr id="satir_@(j + "_" + rowIndex)">
+                                                <td data-editable="false" id="cell_@(j + "_" + rowIndex)_0" data-olcunoktasi="@Model.Item1[j][k].olcuNoktasi" data-araid="@Model.Item1[j][k].id">
+                                                    @Model.Item1[j][k].olcuNoktasi
+                                                </td>
+
+                                                @for (int z = 1; z <= 11; z++)
+                                                {
+                                                    <td tabindex="1" id="cell_@(j + "_" + rowIndex + "_" + z)" data-tabloIndex="@(j)" data-rowIndex="@rowIndex" data-columnIndex="@z" onchange="DegerBul(this)">@Model.Item1[j][k].deger[z - 1]</td>
+                                                }
+
+                                            </tr>
+                                            rowIndex++;
+
+                                        }
+                                        else
+                                        {
+                                            if (@Model.Item1[j][k].olcuNoktasi != @Model.Item1[j][k - 1].olcuNoktasi)
+                                            {
+
+                                                <tr id="satir_@(j + "_" + rowIndex)">
+                                                    <td data-editable="false" id="cell_@(j + "_" + rowIndex)_0" data-olcunoktasi="@Model.Item1[j][k].olcuNoktasi" data-araid="@Model.Item1[j][k].id">
+                                                        @Model.Item1[j][k].olcuNoktasi
+                                                    </td>
+
+                                                    @for (int z = 1; z <= 11; z++)
+                                                    {
+                                                        <td tabindex="1" id="cell_@(j + "_" + rowIndex + "_" + z)" data-tabloIndex="@(j)" data-rowIndex="@rowIndex" data-columnIndex="@z" onchange="DegerBul(this)">@Model.Item1[j][k].deger[z - 1]</td>
+                                                    }
+
+                                                </tr>
+                                                rowIndex++;
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <input style="position: absolute; display: none;">
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+else if (Model.Item2 == 0)
+{
+    <div class="tab-content no-padding" id="myTab2Content">
+        <div class="table-responsive" id="numuneTableForm_@(0)">
+            <table id="numuneTable_@(0)" class="table table-striped" style="cursor: pointer;">
+                <thead>
+                    <tr id="numuneTableHead_@(0)">
+                        <th id="column_0">Ölçü Noktası</th>
+                        @for (int i = 0; i < Model.Item1[0].Count; i++)
+                        {
+                            <th id="column_@(i + 1)">@Model.Item1[0][i].beden</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody id="numuneTableBody_@(0)">
+                    @for (int j = 0; j < Model.Item1.Count; j++)
+                    {
+                        int rowIndex = 0;
+                        if (j == 0)
+                        {
+                            <tr id="satir_@(j + "_" + rowIndex)">
+                                <td data-editable="false" id="cell_@(j + "_" + rowIndex)_0" data-olcunoktasi="@Model.Item1[j][0].olcuNoktasi">
+                                    @Model.Item1[j][0].olcuNoktasi
+                                </td>
+
+                                @for (int z = 1; z <= Model.Item1[j][0].deger.Count; z++)
+                                {
+                                    <td tabindex="1" id="cell_@(j + "_" + rowIndex + "_" + z)" data-tabloIndex="@(j)" data-rowIndex="@rowIndex" data-columnIndex="@z" onchange="DegerBul(this)">@Model.Item1[j][0].deger[z - 1]</td>
+                                }
+
+                            </tr>
+                            rowIndex++;
+
+                        }
+                        else
+                        {
+                            if (@Model.Item1[j][0].olcuNoktasi != @Model.Item1[j - 1][0].olcuNoktasi)
+                            {
+
+                                <tr id="satir_@(j + "_" + rowIndex)">
+                                    <td data-editable="false" id="cell_@(j + "_" + rowIndex)_0" data-olcunoktasi="@Model.Item1[j][0].olcuNoktasi">
+                                        @Model.Item1[j][0].olcuNoktasi
+                                    </td>
+
+                                    @for (int z = 1; z <= Model.Item1[j][0].deger.Count; z++)
+                                    {
+                                        <td tabindex="1" id="cell_@(j + "_" + rowIndex + "_" + z)" data-tabloIndex="@(j)" data-rowIndex="@rowIndex" data-columnIndex="@z" onchange="DegerBul(this)">@Model.Item1[j][0].deger[z - 1]</td>
+                                    }
+
+                                </tr>
+                                rowIndex++;
+                            }
+                        }
+                    }
+
+                </tbody>
+            </table>
+            <input style="position: absolute; display: none;">
+        </div>
+    </div>
+}
+
+
+
+<script src="~/editable-table-master/mindmup-editabletable.js"></script>

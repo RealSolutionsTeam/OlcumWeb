@@ -1,0 +1,204 @@
+﻿<style>
+    @@media print {
+
+        th, td {
+            font-family: Verdana, Arial, Helvetica, sans-serif;
+            font-size: 18px;
+            color: #000000;
+        }
+
+        tr {
+            border: 1px solid gray;
+        }
+
+        td {
+            width: 200px;
+            padding: 3px;
+        }
+
+        th {
+            background-color: #D2E0E8;
+            color: #003366
+        }
+
+        table {
+            border: 1pt solid gray;
+            text-align: center;
+        }
+    }
+</style>
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<div class="card card-success">
+    <div class="card-header">
+        <h4>İmalat Tablosu Formu</h4>
+        <div class=" card-header-action">
+            <div id="buttonEklemek">
+                <button class="btn btn-success" style="visibility:hidden" id="yazdirButton" onclick="Print()"><i class="fas fa-print" style="color:white"></i> <span style="color:white">Yazdır</span></button>
+            </div>
+        </div>
+    </div>
+    <div class="collapse show" id="mycard-collapse" style="">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Ölçü Türleri:</label>
+                        <div class="input-group">
+                            @Html.DropDownList("olcuTuru", new SelectList(ViewBag.olcuTurleri, "id", "olcuTuruAd"), "Seçiniz...", new { @class = "form-control select2", @id = "olcuTuruAd" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Order No:</label>
+                        <div class="input-group">
+                            @Html.DropDownList("orderNo", new SelectList(ViewBag.order, "id", "orderNo"), "Seçiniz...", new { @class = "form-control select2", @id = "orderNo" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Müsteri:</label>
+                        <div class="input-group">
+                            @Html.TextBox("musteri", null, new { @class = "form-control", @id = "musteri" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group" style="margin-right: 20px">
+                        <label>Artikel:</label>
+                        <div class="input-group">
+                            @Html.TextBox("artikel", null, new { @class = "form-control", @id = "artikel" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Kumaş:</label>
+                        <div class="input-group">
+                            @Html.TextBox("kumas", null, new { @class = "form-control", @id = "kumas" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Modelist:</label>
+                        <div class="input-group">
+                            @Html.TextBox("modelist", (string)(ViewBag.ad + " " + ViewBag.soyAd), new { @class = "form-control", @id = "modelist", @readonly = "true" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group" style="margin-right: 20px">
+                        <label>Tarih:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control datepicker" id="tarih">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group" style="width:98%;margin-left:2%">
+                    <label>Açıklama:</label>
+                    <div class="input-group" style="width:98%">
+                        <textarea id="aciklamaTa" rows="6" cols="50"  style="width:98%"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2();
+    };
+    $("#tarih").datepicker({ dateFormat: "dd/mm/yy" }).datepicker("setDate", new Date());
+
+    var existTable = false;
+
+    $(function () {
+        $(".datepicker").datepicker({
+            dateFormat: "dd-mm-yy",
+            altFormat: "yy-mm-dd",
+            altField: "#tarih-db",
+            monthNames: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+            dayNamesMin: ["Pa", "Pt", "Sl", "Ça", "Pe", "Cu", "Ct"],
+        });
+    });
+
+    $("#orderNo").change(function () {
+        var selectedOrder = $("#orderNo").val();
+        var selectedOlcuTuru = $("#olcuTuruAd").val();
+        var orderAd = $('#orderNo option:selected').text();
+
+
+        if (selectedOlcuTuru == '' || selectedOrder == '') {
+            AlertHata("Lütfen \"Ölçü Türleri\", \"Giysi Türleri\" ve \"Order No\" kısımlarını boş bırakmayın!");
+            $("#orderNo").prop('selectedIndex', 0);
+        }
+        else {
+            $.getJSON("/ImalatTablosu/CheckExist", { 'orderID': selectedOrder, 'olcuTuruID': selectedOlcuTuru },
+                function (data) {
+                    if (data.id == 0) {
+
+                        document.getElementById('musteri').value = data.musteri;
+                        document.getElementById('kumas').value = data.kumas;
+                        document.getElementById('artikel').value = data.artikel;
+
+                        $.post("/ImalatTablosu/ImalatAnaSayfa", {'checkExist':0}, function (deger) {
+                            $('#tableContent').html(deger);
+                        }).fail(function (response) {
+                            alert('Error : ' + response.responseText);
+                        });
+                    }
+                    else {
+                        document.getElementById('musteri').value = data.musteri;
+                        document.getElementById('kumas').value = data.kumas;
+                        document.getElementById('artikel').value = data.artikel;
+                        document.getElementById('modelist').value = data.kullanıcıAdı;
+                        $('#aciklamaTa').val(data.aciklama);
+                        $('#tarih').datepicker('setDate', new Date(parseInt(data.tarih.substr(6))));
+                        $('#yazdirButton').css('visibility', 'visible');
+
+                        $.post("/ImalatTablosu/ImalatAnaSayfa", {'checkExist':2}, function (deger) {
+                            $('#tableContent').html(deger);
+                        }).fail(function (response) {
+                            alert('Error : ' + response.responseText);
+                        });
+
+                        existTable = true;
+
+                    }
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+
+            $('#breadcrumb').append('<li><a href="#" class="details" onclick="deneme()"><span class="icon icon-double-angle-right"></span>' + orderAd + '</a></li>');
+            $('#orderContent').hide();
+        }
+
+    });
+
+
+</script>
+
+

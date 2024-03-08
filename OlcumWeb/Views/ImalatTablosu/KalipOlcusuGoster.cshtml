@@ -1,0 +1,111 @@
+﻿@model  Tuple<List<List<OlcumWeb.Models.DTO.DTOImalatTabloGoster>>>
+
+
+@if (ViewBag.checkExist == 0)
+{
+
+}
+else
+{
+    <ul class="nav nav-pills" id="myTab_Kalip" role="tablist">
+        @if (ViewBag.checkExist != 0)
+        {
+            for (int i = 0; i < Model.Item1.Count; i++)
+            {
+                string active = "";
+
+                if (i == 0)
+                {
+                    active = "active";
+                }
+                else
+                {
+                    active = "";
+                }
+                <li class="nav-item" id="cekmeTab_@i">
+                    <a class="nav-link @active" id="myCekmeKalip_@i" data-index="@i" data-toggle="tab" href="#cekmeKalip_@i" role="tab" aria-controls="home" aria-selected="true" data-enboycekme="@ViewBag.cekmeler[i]">@ViewBag.cekmeler[i]</a>
+                </li>
+            }
+        }
+    </ul>
+
+    <div class="tab-content" id="myTabContent2">
+        @for (int i = 0; i < Model.Item1.Count; i++)
+        {
+            string active = "";
+            if (i == 0)
+            {
+                active = "show active";
+
+
+            }
+            else
+            {
+                active = "";
+
+            }
+
+            <div class="tab-pane fade @active" id="cekmeKalip_@i" role="tabpanel" aria-labelledby="home-tab3">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="table-responsive tableFixHead" id="tableForm_@i">
+                            <table id="mainTable_Kalip_@i" class="table table-striped" style="cursor: pointer;">
+                                <thead>
+                                    <tr id="tableHead_Kalip_@i">
+                                        <th style="width:50%">Ölçü Noktası</th>
+                                        @{ int index = 0;}
+                                        @for (int j = 0; j < Model.Item1[0][0].beden.Count; j++)
+                                        {
+                                            if (Model.Item1[0][0].beden[j] == ViewBag.anaBeden)
+                                            {
+                                                <th id="columnKalip_@(i+1)_0_@(1)">@Model.Item1[0][0].beden[j]</th>
+                                                index = j;
+                                            }
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody_Kalip_@i">
+                                    @{ int rowIndex2 = 0;}
+                                    @{ string anaBeden = ViewBag.anaBeden;}
+
+                                    @for (int j = 0; j < Model.Item1[i].Count; j++)
+                                    {
+                                        if (j == 0)
+                                        {
+                                            <tr id="satirKalip_@(i + "_" +rowIndex2)">
+                                                <td data-editable="false" id="cellKalip_@(i + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item1[i][j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(i + "_" +rowIndex2)">@Model.Item1[i][j].olcuNoktasi</td>
+
+                                                <td tabindex="1" id="cellKalip_@(i + "_" + rowIndex2 + "_" + (1))" data-columnIndex="@(i + "_" + (1))" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)" onfocus="ChangeColumnIndex(this)">@Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi && x.beden.Contains(anaBeden)).Select(x => x.deger[index]).FirstOrDefault()</td>
+
+
+
+                                            </tr>
+                                            rowIndex2++;
+                                        }
+                                        else
+                                        {
+                                            if (@Model.Item1[i][j].olcuNoktasi != @Model.Item1[i][j - 1].olcuNoktasi)
+                                            {
+                                                <tr id="satirKalip_@(i + "_" +rowIndex2)">
+                                                    <td data-editable="false" id="cellKalip_@(i + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item1[i][j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(i + "_" +rowIndex2)">@Model.Item1[i][j].olcuNoktasi</td>
+
+                                                    <td tabindex="1" id="cellKalip_@(i + "_" + rowIndex2 + "_" + (1))" data-columnIndex="@(i + "_" + (1))" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)" onfocus="ChangeColumnIndex(this)">@Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi && x.beden.Contains(anaBeden)).Select(x => x.deger[index]).FirstOrDefault()</td>
+
+
+                                                </tr>
+                                                rowIndex2++;
+                                            }
+
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                            <input style="position: absolute; display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

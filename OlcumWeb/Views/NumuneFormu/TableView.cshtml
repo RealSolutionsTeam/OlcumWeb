@@ -1,0 +1,1277 @@
+﻿@model List<OlcumWeb.Models.DTO.DtoNumuneAra>
+
+<style>
+    #numuneSizes > li {
+        min-width: 72px;
+    }
+
+    .mainTable {
+        border-collapse: collapse;
+    }
+
+        .mainTable thead tr th {
+            border-bottom: 1px solid black;
+        }
+
+        .mainTable, .mainTable th, .mainTable td, .mainTable tr {
+            border: 0.5px solid black;
+        }
+
+            .mainTable tbody tr:nth-child(odd) {
+                background-color: #4C8BF5;
+            }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0,0,0, 0.13);
+    }
+
+
+    .tableFixHead {
+        overflow-y: auto;
+        height: 500px;
+        width: 100%;
+    }
+
+        .tableFixHead thead th {
+            position: sticky;
+            top: 0;
+            max-width: 100px;
+            min-width: 100px;
+        }
+
+        /* Borders (if you need them) */
+        .tableFixHead,
+        .tableFixHead td {
+            box-shadow: inset 1px -1px #212529;
+        }
+
+            .tableFixHead th {
+                box-shadow: inset 1px 1px #212529, 1px 1px #212529;
+                background-color: white !important;
+                color: black !important;
+            }
+
+    .bigButtons {
+        margin-right: 4%;
+    }
+
+    .select2-container--open {
+        z-index: 99999999999999;
+    }
+
+    /*.bigButtons a i {
+            width: 25px !important;
+            height: 25px !important;
+        }
+
+            .bigButtons a i:before {
+                width: 25px !important;
+                height: 25px !important;
+            }*/
+</style>
+
+
+<div class="card">
+    <div class="card-header">
+        <h4 style="font-size:24px">Numune Tablosu</h4>
+
+        @{
+            string style = "";
+        }
+
+        @if (ViewBag.isFromModelist != 1)
+        {
+            style = "width:60%;right:0";
+        }
+
+
+        <div class="card-header-action" style="@style">
+            @if (ViewBag.isFromModelist == 1)
+            {
+
+                <div class="btn-group">
+                    <a class="btn btn-success" onclick="PrintTable()"><span style="color:white">Yazdır</span></a>
+
+                    <a class="btn btn-success" onclick="EditTable()" id="editTableBtn"><span style="color:white">Tabloyu Düzenle</span></a>
+                    @if (ViewBag.isReference != 1 && ViewBag.isReference != null)
+                    {
+                        <a class="btn btn-success" onclick="OpenToleransModal()"><span style="color:white">Tölerans Düzenle</span></a>
+                        <a class="btn btn-success" onclick="OpenCekmeModal()"><span style="color:white">Çekme Düzenle</span></a>
+                    }
+
+                </div>
+                <a data-collapse="#olcuList" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus" style="color:white"></i></a>
+            }
+            else
+            {
+
+                List<OlcumWeb.Models.DTO.DTONumuneDetay> receteKods = new List<OlcumWeb.Models.DTO.DTONumuneDetay>();
+                receteKods = ViewBag.receteKods;
+
+                int selectedReceteKod = ViewBag.selectedReceteKod;
+                <span>Reçete Kodu:</span>
+                @Html.DropDownList("receteKodsNumune", new SelectList(ViewBag.receteKods, "id", "receteKod", selectedReceteKod), new { @id = "receteKodsNumune", @style = "height:42px;width:inherit" })
+                <div class="btn-group">
+                    <a class="btn btn-icon btn-info" onclick="AddRecipe()"><i class="fas fa-plus" style="color:white"></i></a>
+                    <a class="btn btn-icon btn-danger" id="btn_sil" onclick="RemoveRecipe()"><i class="fas fa-times" style="color:white"></i></a>
+                </div>
+                <a class="btn btn-success" onclick="PrintTable()"><span style="color:white">Yazdır</span></a>
+
+                <a class="btn btn-success" onclick="EditTable()" id="editTableBtn"><span style="color:white">Tabloyu Düzenle</span></a>
+
+                <a data-collapse="#olcuList" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus" style="color:white"></i></a>
+                <div class="btn-group">
+
+                </div>
+
+            }
+        </div>
+    </div>
+    <div class="collapse show" id="olcuList">
+        <div class="card-body">
+            <ul class="nav nav-pills" id="numuneSizes" role="tablist">
+
+                @{
+                    var bedens = Model.GroupBy(x => new { x.BedenAd, x.MudahaleMi }).Select(x => new { x.Key.BedenAd, x.Key.MudahaleMi }).ToList();
+                }
+
+                @for (int i = 0; i < bedens.Count; i++)
+                {
+                    string active = "";
+
+
+                    if (i == 0)
+                    {
+                        active = "active";
+                    }
+                    string bedenAd = bedens[i].MudahaleMi == true ? bedens[i].BedenAd + "-Müdahale" : bedens[i].BedenAd;
+
+                    <li class="nav-item">
+                        <a class="nav-link @active" id="numune_tabHead@(i)" data-toggle="tab" data-index="@i" data-bedenid="@Model.Where(x=>x.BedenAd == bedenAd.Split('-')[0]).Select(x=>x.BedenId).FirstOrDefault()" data-mudahalemi="@bedens[i].MudahaleMi" data-beden="@bedens[i].BedenAd" href="#numune_tab@(i)" role="tab" aria-controls="home" aria-selected="true" style="white-space:nowrap">@bedenAd</a>
+                    </li>
+
+                }
+                <li class="nav-item">
+                    <a href="#" class="btn btn-icon btn-lg btn-info" style="width:100%" onclick="NumuneAddSize()" id="numuneAddSizeBtn"><i class="fas fa-plus" style="color:white"></i></a>
+                </li>
+            </ul>
+            <div class="tab-content tab-bordered" id="tablesList">
+                @for (int i = 0; i < bedens.Count; i++)
+                {
+                    string bedenAd = bedens[i].MudahaleMi == true ? bedens[i].BedenAd + "-Müdahale" : bedens[i].BedenAd;
+
+                    List<OlcumWeb.Models.DTO.DtoNumuneAra> filteredModel = new List<OlcumWeb.Models.DTO.DtoNumuneAra>();
+                    if (bedens[i].MudahaleMi == true)
+                    {
+                        bedenAd = bedenAd.Split('-')[0];
+
+                        filteredModel = Model.Where(x => x.BedenAd == bedenAd && x.MudahaleMi == true).ToList();
+                    }
+                    else
+                    {
+                        filteredModel = Model.Where(x => x.BedenAd == bedenAd && x.MudahaleMi == false).ToList();
+
+                    }
+
+                    string active = "";
+                    if (i == 0)
+                    {
+                        active = "show active";
+                    }
+
+
+                    <div class="tab-pane fade @active" id="numune_tab@(i)" role="tabpanel" aria-labelledby="home-tab2">
+                        <div class="table-responsive tableFixHead" id="tableForm_@i">
+                            <table id="mainTable_yo_@i" class="table table-striped mainTable" style="cursor: pointer;">
+                                <thead>
+                                    <tr id="tableHead_@i">
+                                        @if (ViewBag.isFromModelist == 1)
+                                        {
+                                            <th>
+                                                Ölçü Noktası
+                                            </th>
+                                            <th>
+                                                Kalıp Ölçüsü
+                                            </th>
+                                            <th>
+                                                Tölerans
+                                            </th>
+                                            <th>
+                                                Yıkama Öncesi
+                                            </th>
+                                            <th>
+                                                Çekme
+                                            </th>
+                                            <th>
+                                                Yıkama Sonrası
+                                            </th>
+                                        }
+                                        else
+                                        {
+                                            <th>
+                                                Ölçü Noktası
+                                            </th>
+                                            <th>
+                                                Kalıp Ölçüsü
+                                            </th>
+                                            <th>
+                                                Gerçekleşen Tölerans
+                                            </th>
+                                            <th>
+                                                Yıkama Öncesi Ölçülen
+                                            </th>
+                                            <th>
+                                                Gerçekleşen Çekme
+                                            </th>
+                                            <th>
+                                                Yıkama Sonrası Ölçülen
+                                            </th>
+                                            <th>
+                                                Yıkama Sonrası Fark
+                                            </th>
+                                            <th>
+                                                Yıkama Sonrası Tablo
+                                            </th>
+                                            <th>
+                                                Uygulanan Tölerans
+                                            </th>
+                                            <th>
+                                                Uygulanan Çekme
+                                            </th>
+                                        }
+
+
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody_@i">
+
+                                    @for (int j = 0; j < filteredModel.Count; j++)
+                                    {
+                                        <tr>
+                                            <td data-editable="false" data-olcunoktaid="@filteredModel[j].OlcuNoktaId" data-olcunoktaad="@filteredModel[j].OlcuNoktaAd">
+
+                                                <div class="btn-group bigButtons" id="btnGroup_@(i)_@(j)" style="display:none;">
+                                                    <a class="btn btn-icon btn-lg btn-danger" id="btn_sil" onclick="RemoveRow(this)"><i class="fas fa-times" style="color:white"></i></a>
+                                                    <a class="btn btn-icon btn-lg btn-primary" id="btn_duzenle" onclick="EditRow(this)"><i class="far fa-edit" style="color:white"></i></a>
+                                                    <a class="btn btn-icon btn-lg btn-info" id="btn_ekle" onclick="AddRow(this)"><i class="fas fa-plus-square" style="color:white;"></i></a>
+                                                </div>
+                                                <span style="font-weight:bold;">
+                                                    @filteredModel[j].OlcuNoktaAd
+
+                                                </span>
+
+                                            </td>
+                                            <td>@filteredModel[j].KalipOlcusu</td>
+
+                                            @if (ViewBag.isFromModelist == 1)
+                                            {
+                                                <td>@filteredModel[j].UygulananTolerans</td>
+                                                <td>@filteredModel[j].YikamaOncesiTablo</td>
+                                                <td>@filteredModel[j].UygulananCekme</td>
+                                                <td>@filteredModel[j].YikamaSonrasiTablo</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@filteredModel[j].GerceklesenTolerans</td>
+                                                <td>@filteredModel[j].YikamaOncesiOlculen</td>
+                                                <td>@filteredModel[j].GerceklesenCekme</td>
+                                                <td>@filteredModel[j].YikamaSonrasiOlculen</td>
+                                                <td>@filteredModel[j].YikamaSonrasiFark</td>
+                                                <td>@filteredModel[j].YikamaSonrasiTablo</td>
+                                                <td>@filteredModel[j].UygulananTolerans</td>
+                                                <td>@filteredModel[j].UygulananCekme</td>
+                                            }
+
+                                        </tr>
+                                    }
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="btn-group">
+                <a class="btn btn-success" onclick="SaveTable()"><span style="color:white">Kaydet</span></a>
+
+                <a class="btn btn-success" onclick="SaveTableDifferentOrder()"><span style="color:white">Farklı Order Kaydet</span></a>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/editable-table-master/mindmup-editabletable.js"></script>
+<script src="~/editable-table-master/numeric-input-example.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+
+    var bedenTableView = @Html.Raw(Json.Encode(ViewBag.bedens));
+    var isFromModelist = @Html.Raw(Json.Encode(ViewBag.isFromModelist));
+
+    var toleransRaporlama = @Html.Raw(Json.Encode(ViewBag.tolerans));
+    var cekmeRaporlama = @Html.Raw(Json.Encode(ViewBag.cekme));
+
+    var dtoNumuneAra = @Html.Raw(Json.Encode(Model));
+
+    var receteKods = @Html.Raw(Json.Encode(ViewBag.receteKods));
+    var selectedReceteKod = @Html.Raw(Json.Encode(ViewBag.selectedReceteKod));
+
+    for (var i = 0; i < bedenTableView.length; i++) {
+        $("#mainTable_yo_" + i).editableTableWidget();
+    }
+
+    if (isFromModelist == 0) {
+        if ($('#receteKodsNumune option:selected').text() != '') {
+            receteKodu = $('#receteKodsNumune option:selected').text();
+        }
+    }
+
+
+    $("[data-collapse]").each(function () {
+        var me = $(this),
+            target = me.data("collapse");
+
+        me.click(function () {
+            $(target).collapse("toggle");
+            $(target).on("shown.bs.collapse", function () {
+                me.html('<i class="fas fa-minus" style="color:white"></i>');
+            });
+            $(target).on("hidden.bs.collapse", function () {
+                me.html('<i class="fas fa-plus" style="color:white"></i>');
+            });
+            return false;
+        });
+    });
+
+    $('.mainTable td').focusin(function (e) {
+        var GelenrowIndex = $(this).parent().index();
+        var GelencolumnIndex = $(this).index();
+
+        if (GelenrowIndex != -1 && GelencolumnIndex != -1) {
+            $(this).css('outline', 'none');
+            $(this).css('border', '3px solid red');
+            $(this).css('border-color', 'rgb(255 6 31)');
+            $(this).css('box-shadow', ' 1px 1px 25px rgb(255 6 31)');
+        }
+    });
+
+    $('.mainTable td').focusout(function (e) {
+        var GelenrowIndex = $(this).parent().index();
+        var GelencolumnIndex = $(this).index();
+
+        if (GelenrowIndex != -1 && GelencolumnIndex != -1) {
+            $(this).css('outline', '');
+            $(this).css('border', '0.5px solid black');
+            $(this).css('border-color', '');
+            $(this).css('box-shadow', '');
+        }
+    });
+
+    $(document).on('change', '.mainTable td', function (e) {
+        var rowIndex = $(this).parent().index();
+        var columnIndex = $(this).index();
+        var table = $(this).parent().parent().parent().prop('id');
+
+        if (isFromModelist == 0) {
+            if (columnIndex != 0) {
+                e.target.innerHTML = e.target.innerHTML.replace(',', '.');
+
+                if ($.isNumeric(e.target.innerHTML)) {
+                    var yikamaSonrasiModelistColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(7);
+
+                    var yikamaSonrasiFarkColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(6);
+
+                    var yikamaSonrasiColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(5);
+                    var cekmeColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(4);
+                    var yikamaOncesiColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(3);
+                    var toleransColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(2);
+                    var kalipColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(1);
+
+                    if (columnIndex == 3) { // Yıkama Öncesi
+                        var kalipOlcusu = parseFloat(kalipColumn.html().trim().replace(',','.'));
+                        var yikamaOncesi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                        var tolerans = (kalipOlcusu - yikamaOncesi).toFixed(1);
+
+                        if (yikamaOncesi != 0) {
+                            toleransColumn.html(tolerans);
+                        }
+                    }
+                    else if (columnIndex == 5) { // Yıkama Sonrası
+                        var yikamaOncesi = parseFloat(yikamaOncesiColumn.html().trim().replace(',', '.'));
+                        var yikamaSonrasi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+
+                        var cekme = (((yikamaOncesi - yikamaSonrasi) / yikamaOncesi) * 100).toFixed(1);
+                        if (yikamaOncesi != 0) {
+                            cekmeColumn.html(cekme);
+
+                            var yikamaSonrasiModelist = parseFloat(yikamaSonrasiModelistColumn.html().trim().replace(',', '.'));
+
+                            var yikamaSonrasiFark = parseFloat(yikamaSonrasiModelist - yikamaSonrasi).toFixed(1);
+
+
+                            if (yikamaSonrasiModelist != 0) {
+                                yikamaSonrasiFarkColumn.html(yikamaSonrasiFark);
+                            }
+                        }
+                    }
+                }
+                else {
+                    e.target.innerHTML = 0;
+                    alert('Lütfen sadece sayı giriniz!');
+                }
+            }
+
+        }
+        else {
+            if (columnIndex != 0) {
+                e.target.innerHTML = e.target.innerHTML.replace(',', '.');
+
+                if ($.isNumeric(e.target.innerHTML)) {
+
+                    var yikamaSonrasiColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(5);
+                    var cekmeColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(4);
+                    var yikamaOncesiColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(3);
+                    var toleransColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(2);
+                    var kalipColumn = $('#' + table + ' tbody tr').eq(rowIndex).find('td').eq(1);
+                    console.log(columnIndex);
+
+                    if (columnIndex == 1) { // Kalıp Ölçüsü değiştirilirse
+                        if (yikamaSonrasiColumn.html().trim() != 0 && yikamaOncesiColumn.html().trim() != 0) { //Yıkama sonrası ve çekmeyi biliyorsam
+                            var kalipOlcusu = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+
+                            var yikamaOncesi = parseFloat(yikamaOncesiColumn.html().trim().replace(',', '.'));
+
+                            var tolerans = (kalipOlcusu - yikamaOncesi).toFixed(1);
+
+                            toleransColumn.html(tolerans);
+                        }
+                        else if (yikamaSonrasiColumn.html().trim() == 0 && yikamaOncesiColumn.html().trim() == 0 && toleransColumn.html().trim() != 0) {
+                            var kalipOlcusu = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                            var tolerans = parseFloat(toleransColumn.html().trim().replace(',', '.'));
+
+                            var yikamaOncesi = (kalipOlcusu - tolerans).toFixed(1);
+
+                            yikamaOncesiColumn.html(yikamaOncesi);
+                        }
+                        else if (yikamaSonrasiColumn.html().trim() != 0 && yikamaOncesiColumn.html().trim() == 0 && toleransColumn.html().trim() != 0) {
+                            var kalipOlcusu = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                            var tolerans = parseFloat(toleransColumn.html().trim().replace(',', '.'));
+
+                            var yikamaOncesi = (kalipOlcusu - tolerans).toFixed(1);
+
+                            yikamaOncesiColumn.html(yikamaOncesi);
+
+                            var yikamaSonrasi = parseFloat(yikamaSonrasiColumn.html().trim().replace(',', '.'));
+
+                            var cekme = (((yikamaOncesi - yikamaSonrasi) / yikamaOncesi) * 100).toFixed(1);
+
+                            cekmeColumn.html(cekme);
+                        }
+                        else if (yikamaOncesiColumn.html().trim() != 0) {
+                            var kalipOlcusu = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                            var yikamaOncesi = parseFloat(yikamaOncesiColumn.html().trim().replace(',', '.'));
+
+                            var tolerans = (kalipOlcusu - yikamaOncesi).toFixed(1);
+
+                            toleransColumn.html(tolerans);
+                        }
+
+                    }
+                    else if (columnIndex == 2) { // Tölerans değiştirilirse
+
+                        if (kalipColumn.html().trim() != 0 && yikamaOncesiColumn.html().trim() == 0) {
+                            var kalipOlcusu = parseFloat(kalipColumn.html().trim().replace(',', '.'));
+                            var tolerans = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+
+                            var yikamaOncesi = (kalipOlcusu - tolerans).toFixed(1);                
+
+                            if (yikamaSonrasiColumn.html().trim() != 0 && yikamaOncesiColumn.html().trim() == 0) {
+                                var yikamaSonrasi = parseFloat(yikamaSonrasiColumn.html().trim().replace(',', '.'));
+                                var cekme = (((yikamaOncesi - yikamaSonrasi) / yikamaOncesi) * 100).toFixed(1);
+
+                                cekmeColumn.html(cekme);
+                            }
+
+                            yikamaOncesiColumn.html(yikamaOncesi);
+                        }
+                        else if (yikamaOncesiColumn.html().trim() != 0) {
+                            var yikamaOncesi = parseFloat(yikamaOncesiColumn.html().trim().replace(',', '.'));
+                            var tolerans = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+
+                            var kalipOlcusu = (yikamaOncesi + tolerans).toFixed(1);
+
+                            kalipColumn.html(kalipOlcusu);
+                        }
+
+                    }
+                    else if (columnIndex == 3) { // Yıkama Öncesi
+                        if (e.target.innerHTML.trim() != 0) {
+
+                            if (cekmeColumn.html().trim() != 0 && toleransColumn.html().trim() != 0 && kalipColumn.html().trim() == 0 && yikamaSonrasiColumn.html().trim() == 0) {
+                                var yikamaOncesi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                                var cekme = parseFloat(cekmeColumn.html().trim().replace(',', '.'));
+                                var yikamaSonrasi = parseFloat(yikamaOncesi - ((yikamaOncesi * cekme) / 100)).toFixed(1);
+
+                                yikamaSonrasiColumn.html(yikamaSonrasi);
+
+
+                                var tolerans = parseFloat(toleransColumn.html().trim().replace(',', '.'));
+                                var kalipOlcusu = tolerans + yikamaOncesi;
+
+                                kalipColumn.html(kalipOlcusu);
+
+                            }
+                            else if (yikamaSonrasiColumn.html().trim() != 0 && kalipColumn.html().trim() == 0) {
+                                var yikamaSonrasi = parseFloat(yikamaSonrasiColumn.html().trim().replace(',', '.'));
+                                var yikamaOncesi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                                var cekme = (((yikamaOncesi - yikamaSonrasi) / yikamaOncesi) * 100).toFixed(1);
+
+                                cekmeColumn.html(cekme);
+                            }
+                            else if (yikamaSonrasiColumn.html().trim() == 0 && kalipColumn.html().trim() != 0) {
+                                var kalipOlcusu = parseFloat(kalipColumn.html().trim().replace(',', '.'));
+                                var yikamaOncesi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                                var tolerans = (kalipOlcusu - yikamaOncesi).toFixed(1);
+
+                                toleransColumn.html(tolerans);
+                            }
+                            else if (yikamaSonrasiColumn.html().trim() != 0 && kalipColumn.html().trim() != 0) {
+
+                                var yikamaSonrasi = parseFloat(yikamaSonrasiColumn.html().trim().replace(',', '.'));
+                                var yikamaOncesi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                                var cekme = (((yikamaOncesi - yikamaSonrasi) / yikamaOncesi) * 100).toFixed(1);
+
+                                cekmeColumn.html(cekme);
+
+                                var kalipOlcusu = parseFloat(kalipColumn.html().trim().replace(',', '.'));
+                                var yikamaOncesi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                                var tolerans = (kalipOlcusu - yikamaOncesi).toFixed(1);
+
+                                toleransColumn.html(tolerans);
+
+                            }
+                            else if (cekmeColumn.html().trim() != 0 && toleransColumn.html().trim() == 0 && yikamaSonrasiColumn.html().trim() == 0) {
+                                var yikamaOncesi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                                var cekme = parseFloat(cekmeColumn.html().trim().replace(',', '.'));
+
+                                var yikamaSonrasi = parseFloat(yikamaOncesi - ((yikamaOncesi * cekme) / 100)).toFixed(1);
+
+                                yikamaSonrasiColumn.html(yikamaSonrasi);
+
+                            }
+                            else if (toleransColumn.html().trim() != 0 && yikamaSonrasiColumn.html().trim() == 0) {
+                                var yikamaOncesi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                                var tolerans = parseFloat(toleransColumn.html().trim().replace(',', '.'));
+
+                                var kalipOlcusu = tolerans + yikamaOncesi;
+
+                                kalipColumn.html(kalipOlcusu);
+
+                            }                        
+                        }
+
+                    }
+                    else if (columnIndex == 4) { // Çekme değiştirilirse
+                        if (yikamaSonrasiColumn.html().trim() != 0) {
+                            var cekme = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+                            var yikamaSonrasi = parseFloat(yikamaSonrasiColumn.html().trim().replace(',', '.'));
+
+                            var yikamaOncesi = ((100 * yikamaSonrasi) / (100 - cekme)).toFixed(1);
+
+                            yikamaOncesiColumn.html(yikamaOncesi);
+
+
+                            if (kalipColumn.html().trim() != 0) {
+                                if (yikamaOncesi != 0) {
+                                    var kalipOlcusu = parseFloat(kalipColumn.html().trim().replace(',', '.'));
+
+                                    var tolerans = (kalipOlcusu - yikamaOncesi).toFixed(1);
+
+                                    toleransColumn.html(tolerans);
+                                }
+                            }
+                        }
+
+                    }
+                    else if (columnIndex == 5) {
+                        if (cekmeColumn.html().trim() != 0) {
+                            var cekme = parseFloat(cekmeColumn.html().trim().replace(',', '.'));
+                            var yikamaSonrasi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+
+                            var yikamaOncesi = ((100 * yikamaSonrasi) / (100 - cekme)).toFixed(1);
+
+                            yikamaOncesiColumn.html(yikamaOncesi);
+
+                            var tolerans = parseFloat(toleransColumn.html().trim().replace(',', '.'));
+                            var yikamaOncesi = parseFloat(yikamaOncesiColumn.html().trim().replace(',', '.'));
+
+                            kalipColumn.html((yikamaOncesi + tolerans).toFixed(1));
+
+                        }
+                        else if (yikamaOncesiColumn.html().trim() != 0) {
+                            var yikamaOncesi = parseFloat(yikamaOncesiColumn.html().trim().replace(',', '.'));
+                            var yikamaSonrasi = parseFloat(e.target.innerHTML.trim().replace(',', '.'));
+
+                            var cekme = (((yikamaOncesi - yikamaSonrasi) / yikamaOncesi) * 100).toFixed(1);
+
+                            cekmeColumn.html(cekme);
+                        }
+                    }
+                }
+                else {
+                    e.target.innerHTML = 0;
+                    alert('Lütfen sadece sayı giriniz!');
+                }
+            }
+        }
+
+
+
+
+    });
+
+
+    function OpenToleransModal() {
+        YukleniyorOnOff();
+        $.post("/NumuneFormu/GetRaporlama", { data: toleransRaporlama, tabloTuru: 0 }, function (data) {
+            $('#karsilastirma_Modal').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+
+        $('#karsilastirmaModal').modal('show');
+    }
+
+    function OpenCekmeModal() {
+        YukleniyorOnOff();
+        $.post("/NumuneFormu/GetRaporlama", { data: cekmeRaporlama, tabloTuru: 1 }, function (data) {
+            $('#karsilastirma_Modal').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+        $('#karsilastirmaModal').modal('show');
+
+    }
+
+    function SaveTableDifferentOrder() {
+        YukleniyorOnOff();
+        $.post("/NumuneFormu/DifferentOrderModal", { }, function (data) {
+            $('#differentOrder_Modal').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+        $('#differentOrderModal').modal('show');
+
+    }
+
+    function SetDifferentOrderId() {
+        var selectedOrderIdModal = $('#orderNoSwal').val();
+
+        var selectedOrderNoModal = $('#orderNoSwal').find(':selected').text();
+
+        var detayDtoSave = {};
+
+        detayDtoSave = CreateDetayDto();
+
+        detayDtoSave.OrderId = selectedOrderIdModal;
+        detayDtoSave.OrderNo = selectedOrderNoModal;
+
+        var araDtoListSave = [];
+
+        araDtoListSave = CreateAraDto();
+
+        YukleniyorOnOff();
+
+        var saveObject = {};
+
+        saveObject = { 'detay': detayDtoSave, 'araList': araDtoListSave, tolerans: belirlenenTolerans, cekme: belirlenenCekme };
+
+        $.post("/NumuneFormu/SaveTable", saveObject, function (data) {
+            if (data != 0) {
+                YukleniyorOnOff();
+                OnSaveSuccess();
+
+                selectedNumuneDetayId = data;
+
+
+            }
+            else {
+                YukleniyorOnOff();
+                swal({
+                    title: "Başarısız",
+                    text: "Tablo kaydı yapılırken bir hatayla karşılaşıldı!",
+                    icon: "error",
+                    button: "Tamam",
+                });
+            }
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+    function SaveTable() {
+        var detayDtoSave = {};
+
+        detayDtoSave = CreateDetayDto();
+
+        var araDtoListSave = [];
+
+        araDtoListSave = CreateAraDto();
+
+
+
+        YukleniyorOnOff();
+
+        var saveObject = {};
+
+        if (selectedNumuneDetayId == 0) {
+            saveObject = { 'detay': detayDtoSave, 'araList': araDtoListSave, tolerans: belirlenenTolerans, cekme: belirlenenCekme };
+        }
+        else {
+            saveObject = { 'detay': detayDtoSave, 'araList': araDtoListSave, tolerans: belirlenenTolerans, cekme: belirlenenCekme, numuneDetayId: selectedNumuneDetayId };
+        }
+
+        $.post("/NumuneFormu/SaveTable", saveObject , function (data) {
+            if (data != 0) {
+                YukleniyorOnOff();
+                OnSaveSuccess();
+
+                selectedNumuneDetayId = data;
+
+
+            }
+            else {
+                YukleniyorOnOff();
+                swal({
+                    title: "Başarısız",
+                    text: "Tablo kaydı yapılırken bir hatayla karşılaşıldı!",
+                    icon: "error",
+                    button: "Tamam",
+                });
+            }
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+    function PrintTable() {
+        var tableCount = $('#tablesList').children().length;
+
+        var bedenList = [];
+
+        for (var i = 0; i < tableCount; i++) {
+            bedenList.push({ BedenAd: $('#numune_tabHead' + i).data('beden'), MüdahaleMi: ($('#numune_tabHead' + i).data('mudahalemi') == "True" ? 1 : 0) });
+        }
+
+        $.post("/NumuneFormu/BedenlerPrint", { bedenler: bedenList }, function (data) {
+            $('#printBeden_Modal').html(data);
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+
+        $('#printBedenModal').modal('show');
+    }
+
+    function OnSaveSuccess() {
+        Swal.fire({
+            title: '<strong>Başarılı</strong> </br> ',
+            text: "Tablo başarıyla kaydedildi.",
+            icon: "success",
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonText: (isFromModelist == 1) ? `Yeni Tablo Oluştur` : 'Yeni Ürün Ölç',
+            denyButtonText: 'Çıktı Al',
+            cancelButtonText: 'Devam Et'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                CreateNewTable();
+            }
+            else if (result.isDismissed) {
+                Swal.close();
+            }
+            else if (result.isDenied) {
+                PrintTable();
+            }
+        });
+    }
+
+    function CreateNewTable() {
+        location.reload();
+    }
+
+    function RedirectToMainPage() {
+        location.href = window.location.origin + "/Anasayfa/Index?id=" + personId;
+        console.log(location.href);
+    }
+
+    function CreateDetayDto() {
+        //Detay Objesi oluşturuyorum.
+        var id = $('#detayId').val();
+        var atolyeId = $('#atolyeAdNumune').val();
+        var tabloTuru = -1;
+
+        var date = new Date().toUTCString();
+
+        var kullaniciId = 0;
+
+        if (isFromModelist != 1) {
+            if (dtoNumuneDetay.tabloTuru != 1) {
+                if (continueOrderClicked != 1) {
+                    tabloTuru = dtoNumuneDetay.tabloTuru + 1;
+                }
+                else {
+                    tabloTuru = dtoNumuneDetay.tabloTuru;
+                }
+
+                if (tabloTuru == 0 && receteKodu != '') {
+                    receteKodu = '';
+                }
+
+            }
+            else {
+                tabloTuru = dtoNumuneDetay.tabloTuru;
+            }
+        }
+
+        if (isFromModelist != 1) {
+            date = new Date(parseInt(dtoNumuneDetay.Tarih.substr(6)));
+            date = date.toUTCString();
+            console.log(date);
+        }
+
+
+        if (isFromModelist != 1) {
+            kullaniciId = dtoNumuneDetay.KullaniciId;
+        }
+        else {
+            kullaniciId = personId;
+        }
+        var secondDate = new Date().toUTCString();
+
+        var enCekme = $('#enNumune').val();
+        var boyCekme = $('#boyNumune').val();
+
+        var enBoyCekme = enCekme + "/" + boyCekme;
+
+        var previousOrderId = 0;
+        var hasPreviousOrder = false;
+        if (isFromModelist != 1) {
+            previousOrderId = dtoNumuneDetay.BagliOrderId;
+        }
+        else {
+            previousOrderId = hasPreviousOrderId;
+        }
+
+        if (previousOrderId != 0) {
+            hasPreviousOrder = true;
+        }
+
+        console.log($('#yikamadanGelisNumune').datepicker('getDate').toUTCString());
+
+        var detayObjectDeneme = {
+            Id: id, OrderId: orderIdAnaSayfa, OrderNo: $('#orderNoNumune').val(), AtolyeId: atolyeId, OlcuTuruId: olcuTuruId, tabloTuru: tabloTuru,
+            YikamayaGidis: ($('#yikamayaGidisNumune').datepicker('getDate').toUTCString()), YikamadanGelis: ($('#yikamadanGelisNumune').datepicker('getDate').toUTCString()),
+            KalipAdi: enBoyCekme, TopNo: $('#topNoNumune').val(), KID: $('#kidNumune').val(), ElliListe: $('#elliListe').val(),
+            ElliNumune: $('#elliNumune').val(), DikimNedeni: $('#dikimNedeniNumune').val(), OlcumNo: dtoNumuneDetay.OlcumNo,
+            Aciklama: $('#aciklamaNumune').val(), Tarih: date, KullaniciId: kullaniciId, ReceteKod: receteKodu, aktarimMi: false,
+            UpdatedUserId: personId, UpdatedDate: secondDate, BagliOrderId: previousOrderId, HasPreviousOrder: hasPreviousOrder, ReferansOrderId: referansOrderId, Kumas: dtoNumuneDetay.Kumas,
+            Musteri: dtoNumuneDetay.Musteri, ModelAd: dtoNumuneDetay.ModelAd,
+        };
+
+        return detayObjectDeneme;
+    }
+
+    function formatUtc(date) {
+        var time = (date.getUTCDate() + 1) + "." + (date.getUTCMonth() + 1) + "." + date.getUTCFullYear();
+
+        return time;
+    }
+
+    function CreateAraDto() {
+        var tableCount = $('#tablesList').children().length;
+
+        var araDtoListDeneme = [];
+
+        for (var i = 0; i < tableCount; i++) {
+
+            var rowCount = $('#tableBody_' + i + ' tr').length;
+
+            for (var j = 0; j < rowCount; j++) {
+                var olcuNoktaAd = $('#tableBody_' + i + ' tr').eq(j).find('td:eq(0)').data('olcunoktaad');
+                var olcuNoktaId = $('#tableBody_' + i + ' tr').eq(j).find('td:eq(0)').data('olcunoktaid');
+                var bedenAd = $('#numune_tabHead' + i).data('beden');
+                var bedenId = $('#numune_tabHead' + i).data('bedenid');
+                var mudahaleMi = $('#numune_tabHead' + i).data('mudahalemi');
+
+                var kalipOlcusu = parseFloat($('#tableBody_' + i + ' tr').eq(j).find('td:eq(1)').html().replace(',', '.'));
+                var column3 = parseFloat($('#tableBody_' + i + ' tr').eq(j).find('td:eq(2)').html().replace(',', '.'));
+                var column4 = parseFloat($('#tableBody_' + i + ' tr').eq(j).find('td:eq(3)').html().replace(',', '.'));
+                var column5 = parseFloat($('#tableBody_' + i + ' tr').eq(j).find('td:eq(4)').html().replace(',', '.'));
+                var column6 = parseFloat($('#tableBody_' + i + ' tr').eq(j).find('td:eq(5)').html().replace(',', '.'));
+
+                var kalipOlcusuString = kalipOlcusu.toString().replace('.', ',');
+                var column3String = column3.toString().replace('.', ',');
+                var column4String = column4.toString().replace('.', ',');
+                var column5String = column5.toString().replace('.', ',');
+                var column6String = column6.toString().replace('.', ',');
+
+                if (isFromModelist == 1) {
+                    var araDto = {
+                        OlcuNoktaId: olcuNoktaId, OlcuNoktaAd: olcuNoktaAd,
+                        BedenId: bedenId, BedenAd: bedenAd, KalipOlcusu: kalipOlcusuString,
+                        UygulananTolerans: column3String, YikamaOncesiTablo: column4String,
+                        UygulananCekme: column5String, YikamaSonrasiTablo: column6String
+                    };
+                    araDtoListDeneme.push(araDto);
+                }
+                else {
+                    var gelenDtoAra = dtoNumuneAra.filter(function (currentElement) {
+                        return currentElement.OlcuNoktaAd == olcuNoktaAd && currentElement.BedenAd == bedenAd;
+                    });
+
+                    var yikamaSonrasiFark = (column6 - gelenDtoAra[0].YikamaSonrasiTablo).toFixed(2);
+
+                    var yikamaOncesiFark = (column4 - gelenDtoAra[0].YikamaOncesiTablo).toFixed(2);
+
+                    var yikamaSonrasiFarkString = yikamaSonrasiFark.toString().replace('.', ',');
+
+                    var yikamaOncesiFarkString = yikamaSonrasiFark.toString().replace('.', ',');
+
+                    var araDto = {
+                        OlcuNoktaId: olcuNoktaId, OlcuNoktaAd: olcuNoktaAd,
+                        BedenId: bedenId, BedenAd: bedenAd, KalipOlcusu: kalipOlcusuString,
+                        UygulananTolerans: gelenDtoAra[0].UygulananTolerans.toString().replace('.', ','), YikamaOncesiTablo: gelenDtoAra[0].YikamaOncesiTablo.toString().replace('.', ','),
+                        UygulananCekme: gelenDtoAra[0].UygulananCekme.toString().replace('.', ','), YikamaSonrasiTablo: gelenDtoAra[0].YikamaSonrasiTablo.toString().replace('.', ','),
+                        GerceklesenTolerans: column3String, YikamaOncesiOlculen: column4String,
+                        GerceklesenCekme: column5String, YikamaSonrasiOlculen: column6String,
+                        YikamaSonrasiFark: yikamaSonrasiFarkString, YikamaOncesiFark: yikamaOncesiFarkString,
+                        MudahaleMi: mudahaleMi
+                    };
+                    araDtoListDeneme.push(araDto);
+
+                }
+            }
+
+
+        }
+
+        return araDtoListDeneme;
+    }
+
+    function EditTable() {
+
+        if ($('#editTableBtn').hasClass('btn-success')) {
+            $('#editTableBtn').removeClass('btn-success');
+            $('#editTableBtn').addClass('btn-warning');
+        }
+        else {
+            $('#editTableBtn').removeClass('btn-warning');
+            $('#editTableBtn').addClass('btn-success');
+        }
+
+        var tableCount = $('#tablesList').children().length;
+
+        for (var i = 0; i < tableCount; i++) {
+            var rowCount = $('#tableBody_' + i + ' tr').length;
+
+            for (var j = 0; j < rowCount; j++) {
+                var btnGroup = $('#tableBody_' + i + ' tr').eq(j).find('td:first').find('div');
+
+                if ($(btnGroup).css('display') == 'none') {
+                    $(btnGroup).removeAttr('style');
+                }
+                else {
+                    $(btnGroup).css('display', 'none');
+                }
+            }
+        }
+    }
+
+    function RemoveRow(elem) {
+        var tableCount = $('#tablesList').children().length;
+
+        var index = $(elem).parent().parent().parent().index();
+
+        for (var i = 0; i < tableCount; i++) {
+            $('#tableBody_' + i + ' tr').eq(index).remove();
+        }
+    }
+
+    function EditRow(elem) {
+        var tableCount = $('#tablesList').children().length;
+
+        var index = $(elem).parent().parent().parent().index();
+
+
+
+        for (var i = 0; i < tableCount; i++) {
+
+            var $clonedTd = $('#hiddenRow').find('td:first').clone();
+
+            $clonedTd.find('span').remove();
+
+            $clonedTd.find('select').select2({
+                'width': '70%'
+            });
+
+            $('#tableBody_' + i + ' tr').eq(index).find('td:first').remove();
+
+            $('#tableBody_' + i + ' tr').eq(index).prepend($clonedTd[0]);
+        }
+    }
+
+    function AddRow(elem) {
+        var tableCount = $('#tablesList').children().length;
+
+        var index = $(elem).parent().parent().parent().index();
+
+
+
+        for (var i = 0; i < tableCount; i++) {
+            var $clonedRow = $('#hiddenRow').clone();
+
+            $clonedRow.removeAttr('id');
+
+            $clonedRow.find('td:first').find('span').remove();
+            $clonedRow.find('td:first').find('select').select2({
+                'width': '70%'
+            });
+
+            $('#tableBody_' + i + ' > tr').eq(index).after($clonedRow);
+        }
+
+    }
+
+    function SetOk(elem) {
+        var tableCount = $('#tablesList').children().length;
+
+        var index = $(elem).parent().parent().parent().index();
+
+
+
+        var selectedOlcuNoktasi = $(elem).parent().parent().find('select').find(':selected').text();
+
+
+        if (selectedOlcuNoktasi != "Seçiniz..." && selectedOlcuNoktasi.indexOf("HATALI") < 0) {
+            var selectedOlcuNoktasiId = $(elem).parent().parent().find('select').find(':selected').val();
+
+
+            for (var i = 0; i < tableCount; i++) {
+
+                var $clonedBtnGroup = $('#btnGroup_0_0').clone();
+
+                $clonedBtnGroup.prop('id', 'btnGroup_' + i + '_' + index);
+
+                console.log($('#tableBody_' + i + ' tr').eq(index).find('td:first'));
+
+
+                $('#tableBody_' + i + ' tr').eq(index).find('td:first').html($clonedBtnGroup);
+
+                $('#tableBody_' + i + ' tr').eq(index).find('td:first').append('<span style="font-weight:bold">' + selectedOlcuNoktasi + '</span>');
+
+                $('#tableBody_' + i + ' tr').eq(index).find('td:first').attr('data-olcunoktaad', selectedOlcuNoktasi);
+                $('#tableBody_' + i + ' tr').eq(index).find('td:first').attr('data-olcunoktaid', selectedOlcuNoktasiId);
+            }
+        }
+        else {
+            AlertHata("Geçerli bir ölçü noktası seçiniz.");
+        }
+
+
+    }
+
+    function AddRecipe() {
+        Swal.fire({
+            title: 'Reçete Kodunu yazınız.',
+            html: '<input type="text" id="receteKodTxtBox" class="swal2-input" placeholder="Ör: RD2543">',
+            confirmButtonText: 'Kaydet',
+            showCancelButton: true,
+            cancelButtonText:'İptal',
+            focusConfirm: false,
+
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var recipeCode = $('#receteKodTxtBox').val();
+
+                SaveRecipe(recipeCode);
+            }
+        })
+    }
+
+    function SaveRecipe(recipeText) {
+        var selectedNumuneId = $('#receteKodsNumune').val();
+        $.post("/NumuneFormu/SaveTableWithRecipeCode", { numuneDetayId: selectedNumuneDetayId, recipeCode: recipeText }, function (orderData) {
+            if (orderData != 0) {
+                var select2Data = { 'id': orderData, 'receteKod': recipeText };
+
+                $('#detayId').val(orderData);
+
+                selectedNumuneDetayId = orderData;
+
+                newNumuneDetayId = orderData;
+
+                var newOption = new Option(select2Data.receteKod, select2Data.id, false, false);
+
+                $('#receteKodsNumune').append(newOption).trigger('change');
+
+                $('#receteKodsNumune').val(orderData);
+                $('#receteKodsNumune').trigger('change');
+            }
+            //$('#stepsModal').modal('toggle');
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+    function RemoveRecipe() {
+        Swal.fire({
+            title: 'Bu reçeteyi silmek istediğinize emin misiniz?',
+            confirmButtonText: 'Evet',
+            showCancelButton: true,
+            cancelButtonText: 'İptal',
+            focusConfirm: false,
+
+        }).then((result) => {
+            if (result.isConfirmed) {
+                DeleteRecipe();
+            }
+        })
+    }
+
+    function DeleteRecipe() {
+        if ($('#receteKodsNumune option:selected').text().length > 0) {
+            var selectedNumuneId = $('#receteKodsNumune').val();
+            console.log(selectedNumuneId);
+
+            $.post("/NumuneFormu/RemoveTable", { numuneDetayId: selectedNumuneId }, function (orderData) {
+                if (orderData != -1) {
+                    $('#receteKodsNumune').children('option[value="' + selectedNumuneId + '"]').remove().change();
+                }
+                //$('#stepsModal').modal('toggle');
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+        }
+        else {
+            alert('Yikama öncesi ölçüyü silemezsiniz');
+        }
+    }
+
+    $('#receteKodsNumune').on('change', function () {
+        var selectedNumuneId = $('#receteKodsNumune').val();
+        receteKodu = $('#receteKodsNumune option:selected').text();
+        YukleniyorOnOff();
+
+        $.post("/NumuneFormu/TableViewWithId", { numuneDetayId: selectedNumuneId }, function (data) {
+            $('#tableContent').html(data);
+
+            $.post("/NumuneFormu/OrderDetayWithId", { numuneDetayId: selectedNumuneId }, function (orderData) {
+                $('#orderContent').html(orderData);
+                YukleniyorOnOff();
+
+                //$('#stepsModal').modal('toggle');
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+
+    });
+
+
+    function NumuneAddSize() {
+        var alreadyHasBedenList = @Html.Raw(Json.Encode(ViewBag.bedens));
+        var firstBeden = $('#numuneSizes li a.active').html();
+
+        if (isFromModelist == 0) {
+
+            var bedenDtosList = [];
+
+            var sizeCount = $('#numuneSizes li').length - 1;
+
+            for (var i = 0; i < sizeCount; i++) {
+                var bedenId = $('#numune_tabHead' + i).data('bedenid');
+                var bedenAd = $('#numune_tabHead' + i).data('beden').toString();
+
+                console.log(bedenAd);
+                var mudahaleMi = $('#numune_tabHead' + i).data('mudahalemi') == "True" ? 1 : 0;
+
+
+                bedenDtosList.push({ 'BedenId': bedenId, 'BedenAd': bedenAd.split('-')[0], 'MüdahaleMi': mudahaleMi });
+            }
+
+            console.log(bedenDtosList);
+
+            $.post("/NumuneFormu/AddSizeModal", { isFromModelist: isFromModelist, bedenler: firstBeden, bedenDtos: bedenDtosList }, function (orderData) {
+                $('#addSize_Modal').html(orderData);
+                $('#addSizeModal').modal('show');
+                //$('#stepsModal').modal('toggle');
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+        }
+        else {
+            $.post("/NumuneFormu/AddSizeModal", { isFromModelist: isFromModelist, bedenler: alreadyHasBedenList }, function (orderData) {
+                $('#addSize_Modal').html(orderData);
+                $('#addSizeModal').modal('show');
+                //$('#stepsModal').modal('toggle');
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+        }
+
+
+    }
+
+    function AddNewSize() {
+        var bedenObjectList = [];
+
+
+        //var sizeCount = $('#numuneSizes li').length - 1;
+
+        //for (var i = 0; i < sizeCount; i++) {
+        //    var bedenId = $('#numune_tabHead' + i).data('bedenid');
+        //    var bedenAd = $('#numune_tabHead' + i).data('beden').toString();
+
+        //    console.log(bedenAd);
+        //    var mudahaleMi = $('#numune_tabHead' + i).data('mudahalemi') == "True" ? 1 : 0;
+
+
+        //    bedenObjectList.push({ 'BedenId': bedenId, 'BedenAd': bedenAd.split('-')[0],'BedenIndex':i, 'MüdahaleMi': mudahaleMi });
+        //}
+
+        $('.checkBoxAddSize:checked').each(function (i) {
+            var bedenObject = { BedenId: $(this).data('bedenid'), BedenAd: $(this).next().text().split('-')[0], BedenIndex: $(this).data('index'), MüdahaleMi: $(this).data('mudahalemi') };
+
+            bedenObjectList.push(bedenObject);
+        });
+
+        console.log(bedenObjectList);
+
+        var existingTable = CreateAraDto();
+
+        $.post("/NumuneFormu/TableViewWithAddedSizes", { bedenDtos: bedenObjectList, dtoNumuneAras: existingTable, isFromModelist: isFromModelist, tolerans: toleransRaporlama, cekme: cekmeRaporlama, receteKods: receteKods, selectedReceteKod: selectedReceteKod }, function (orderData) {
+            $('#tableContent').html(orderData);
+            $('#addSizeModal').modal('toggle');
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+</script>

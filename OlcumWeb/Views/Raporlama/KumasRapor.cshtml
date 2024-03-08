@@ -1,0 +1,167 @@
+﻿
+@{
+    ViewBag.Title = "KumasRapor";
+}
+
+<style>
+    fieldset.group {
+        margin: 0;
+        padding: 0;
+        padding: 1%;
+        border: 1px solid black;
+        background-color: ghostwhite;
+    }
+
+        fieldset.group legend {
+            margin: 0;
+            padding: 0;
+            font-weight: bold;
+            margin-left: 20px;
+            font-size: 100%;
+            color: black;
+        }
+
+
+    ul.checkbox {
+        margin: 0;
+        padding: 0;
+        margin-left: 20px;
+        list-style: none;
+    }
+
+        ul.checkbox li input {
+            margin-right: .25em;
+        }
+
+        ul.checkbox li {
+            border: 1px transparent solid;
+            display: inline-block;
+            width: 12em;
+        }
+
+            ul.checkbox li label {
+                margin-left:;
+            }
+
+            ul.checkbox li:hover,
+            ul.checkbox li.focus {
+                background-color: lightyellow;
+                border: 1px gray solid;
+                width: 12em;
+            }
+</style>
+
+<div class="card card-success">
+    <div class="card-header">
+        <div class="card" style="width:100%">
+            <div class="card-header">
+                <h4>Kumaş Rapor Ekranı</h4>
+                <div class="card-header-action">
+                    <a data-collapse="#mycard-collapse" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus" style="color:white"></i></a>
+                </div>
+            </div>
+            <div class="collapse show" id="mycard-collapse">
+                <div class="card-body" style="width:100%">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Order No:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("orderNo", null, new { @style = " width:100%; " })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Model Ad:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("modelAd", null, new { @style = " width:100%; " })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Model No:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("modelNo", null, new { @style = " width:100%; " })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label>Kumaş:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("kumas", null, new { @style = " width:100%; " })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <fieldset class="group" style="overflow-x:hidden;overflow-y:scroll;max-height:80px">
+                        <legend>
+                            Reçete Adımları
+                            <a data-collapse="#list-collapse" class="btn btn-icon btn-info" style="margin-left:84%"><i class="fas fa-minus" style="color:white;"></i></a>
+                        </legend>
+
+                        <div class="collapse-show" id="list-collapse">
+                            <ul class="checkbox">
+                                <li class="checkboxpopup"><input type="checkbox" id="cb1" value="pepperoni" /><label for="cb1">Taş</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb2" value="sausage" /><label for="cb2">Enzim</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb3" value="mushrooms" /><label for="cb3">Hipo</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb4" value="onions" /><label for="cb4">Adım 1</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb5" value="gpeppers" /><label for="cb5">Adım 2</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb6" value="xcheese" /><label for="cb6>">Adım 3</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb7" value="onions" /><label for="cb4">Adım 4</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb8" value="gpeppers" /><label for="cb5">Adım 5</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb9" value="xcheese" /><label for="cb6>">Adım 6</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb7" value="onions" /><label for="cb4">Adım 7</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb8" value="gpeppers" /><label for="cb5">Adım 8</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb9" value="xcheese" /><label for="cb6>">Adım 9</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb7" value="onions" /><label for="cb4">Adım 10</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb8" value="gpeppers" /><label for="cb5">Adım 11</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb9" value="xcheese" /><label for="cb6>">Adım 12</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb7" value="onions" /><label for="cb4">Adım 10</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb8" value="gpeppers" /><label for="cb5">Adım 11</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb9" value="xcheese" /><label for="cb6>">Adım 12</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb7" value="onions" /><label for="cb4">Adım 10</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb8" value="gpeppers" /><label for="cb5">Adım 11</label></li>
+                                <li class="checkboxpopup"><input type="checkbox" id="cb9" value="xcheese" /><label for="cb6>">Adım 12</label></li>
+                            </ul>
+                        </div>
+                    </fieldset>
+                    <div class="row">
+                        <a href="#" class="btn btn-icon icon-left btn-info" style="margin-left:90%" onclick="FillTable()"><i class="fas fa-search" style="color:white"></i><span style="color:white">Ara</span> </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="card-body">
+        <div id="selectedList">
+
+        </div>
+        <section id="tablePart">
+        </section>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+<script>
+    $('.checkboxpopup').click(function (e) {
+        var elem = $(this);
+
+        var checkbox = $(this).children('input').eq(0);
+
+        if ($(checkbox).is(':checked')) {
+            $(checkbox).prop('checked', false);
+
+        }
+        else {
+            $(checkbox).prop('checked', true);
+        }
+    });
+</script>
+

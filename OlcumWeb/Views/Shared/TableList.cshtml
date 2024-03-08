@@ -1,0 +1,348 @@
+﻿@model OlcumWeb.Models.DTO.DTOImalatOrderDetay
+
+<style>
+    body {
+        min-height: 100vh;
+    }
+    /* SIDEBAR POSITION */
+    .sidebar {
+        background-color: #f6f6f6;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        right: 0;
+        min-width: 300px;
+    }
+
+    .sidebar__content {
+        padding: 8px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+
+    /* SIDEBAR HIDDEN STATE */
+    .sidebar[aria-hidden="true"] {
+        transition: 200ms;
+        transform: translateX(100%);
+    }
+    /* SIDEBAR VISIBLE STATE */
+    .sidebar:not([aria-hidden]),
+    .sidebar[aria-hidden="false"] {
+        transition: 200ms;
+        transform: translateX(0);
+    }
+</style>
+
+@{int bedenCount = 0;}
+
+<hr />
+<div class="col-12">
+    <div class="card">
+        <div class="card-header">
+            <h4>Tablolar</h4>
+            <i class="fa fa-spin fa-cog" data-toggle-sidebar="sidebar1"></i>
+
+        </div>
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                @if (Model.imalatTablolari.Any())
+                {
+                    for (int i = 0; i < Model.imalatTablolari.Count; i++)
+                    {
+                        if (Model.imalatTablolari[i].ottabloTuru == 1)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link active" id="yikamaSonrasi" data-toggle="tab" href="#tableTab_@(i)" role="tab" aria-controls="yikamaSonrasi" aria-selected="true">Yıkama Sonrası</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" id="@i" data-toggle="tab" href="#tableTab_@(i)" role="tab" aria-controls="@i" aria-selected="false">@Model.imalatTablolari[i].enBoyCekme.ToString()</a>
+                            </li>
+                        }
+                    }
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link active" id="yikamaSonrasi" data-toggle="tab" href="#yikamaSonrasi" role="tab" aria-controls="yikamaSonrasi" aria-selected="true">Yıkama Sonrası</a>
+                    </li>
+                }
+
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                @if (Model.imalatTablolari.Any())
+                {
+                    for (int i = 0; i < Model.imalatTablolari.Count; i++)
+                    {
+                        string deger = "";
+
+                        if (i==0)
+                        {
+                            deger = "active";
+                        }
+                        else
+                        {
+                            deger = "";
+                        }
+
+                        <div class="tab-pane fade @deger show" id="tableTab_@(i)" role="tabpanel" aria-labelledby="table_@(i)-tab">
+                            <section class="section">
+                                <div class="section-body">
+                                    <div class="row">
+                                        <div class="table-responsive">
+                                            <table id="table_@(i)" class="table table-striped" style="cursor: pointer;">
+                                                <thead>
+                                                    <tr>
+                                                        @*Ölçü Tablosu başlıkları buraya gelecek*@
+                                                        <th>Ölçü Noktaları</th>
+                                                        @for (int j = 0; j < Model.imalatTablolari[0].bedenler.Count; j++)
+                                                        {
+                                                            if (Model.imalatTablolari[0].bedenler[j] != null)
+                                                            {
+                                                                <th>@Model.imalatTablolari[0].bedenler[j].ToString()</th>
+                                                            }
+                                                        }
+
+                                                        @if (Model.imalatTablolari[i].ottabloTuru == 0)
+                                                        {
+                                                            <th>Tölerans</th>
+                                                            <th>Çekme</th>
+                                                            <th>Oran</th>
+                                                        }
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (int j = 0; j < Model.imalatTablolari[i].olcumNoktasi.Count; j++)
+                                                    {
+                                                        <tr>
+
+                                                            <td tabindex="@j" id="olcuNoktasi_@(i + "_" + j)">@Model.imalatTablolari[i].olcumNoktasi[j].ToString()</td>
+                                                            <td tabindex="@j" id="olcu1_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu1[j]">@Model.imalatTablolari[i].olcu1[j]</td>
+                                                            @{bedenCount = 1;}
+
+                                                            @if (Model.imalatTablolari[i].olcu2[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu2_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu2[j]">@Model.imalatTablolari[i].olcu2[j]</td>
+
+                                                                bedenCount = 2;
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu3[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu3_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu3[j]">@Model.imalatTablolari[i].olcu3[j]</td>
+
+                                                                bedenCount = 3;
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu4[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu4_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu4[j]">@Model.imalatTablolari[i].olcu4[j]</td>
+
+                                                                bedenCount = 4;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu5[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu5_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu5[j]">@Model.imalatTablolari[i].olcu5[j]</td>
+
+                                                                bedenCount = 5;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu6[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu6_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu6[j]">@Model.imalatTablolari[i].olcu6[j]</td>
+
+                                                                bedenCount = 6;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu7[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu7_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu7[j]">@Model.imalatTablolari[i].olcu7[j]</td>
+                                                                bedenCount = 7;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu8[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu8_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu8[j]">@Model.imalatTablolari[i].olcu8[j]</td>
+                                                                bedenCount = 8;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu9[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu9_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu9[j]">@Model.imalatTablolari[i].olcu9[j]</td>
+                                                                bedenCount = 9;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu10[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu10_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu10[j]">@Model.imalatTablolari[i].olcu10[j]</td>
+                                                                bedenCount = 10;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu11[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu11_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu11[j]">@Model.imalatTablolari[i].olcu11[j]</td>
+
+                                                                bedenCount = 11;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu12[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu12_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu12[j]">@Model.imalatTablolari[i].olcu12[j]</td>
+
+                                                                bedenCount = 12;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu13[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu13_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu13[j]">@Model.imalatTablolari[i].olcu13[j]</td>
+
+                                                                bedenCount = 13;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu14[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu14_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu14[j]">@Model.imalatTablolari[i].olcu14[j]</td>
+
+                                                                bedenCount = 14;
+
+                                                            }
+                                                            @if (Model.imalatTablolari[i].olcu15[0] != null)
+                                                            {
+                                                                <td tabindex="@j" id="olcu15_@(i + "_" + j)" data-veri="@Model.imalatTablolari[i].olcu15[j]">@Model.imalatTablolari[i].olcu15[j]</td>
+
+                                                                bedenCount = 15;
+                                                            }
+
+                                                            @if (Model.imalatTablolari[i].ottabloTuru == 0)
+                                                            {
+                                                                <td tabindex="@j" class="tolerans" id="tolerans_@(i + "_" + j)">@Model.imalatTablolari[i].tolerans[j]</td>
+                                                                <td tabindex="@j" class="cekme" id="cekme_@(i + "_" + j)">@Model.imalatTablolari[i].cekme[j]</td>
+                                                                <td tabindex="@j" class="oran" id="oran_@(i + "_" + j)">@Model.imalatTablolari[i].oran[j]</td>
+                                                            }
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-6">
+    <div class="form-group">
+        <div class="input-group">
+            <button type="button" class="btn btn-primary" id="btnKaydet">Kaydet</button>
+        </div>
+    </div>
+</div>
+
+<div id="sidebar1" class="sidebar settingSidebar" aria-hidden="true">
+    <div class="sidebar__content">
+        <div class="settingSidebar-body ps-container ps-theme-default" tabindex="2" style="overflow: hidden; outline: none;">
+            <div class=" fade show active">
+                <div class="setting-panel-header">
+                    Ayarlar Bölümü
+                </div>
+                @if (Model.imalatTablolari.Any())
+                {
+                    <div class="p-15 border-bottom">
+                        <button type="button" class="btn btn-primary" id="btnCekmeSil">Seçili Çekmeyi Sil</button>
+                    </div>
+                    <div class="p-15 border-bottom">
+                        <button type="button" class="btn btn-primary" id="btnAnaBeden">Ana Beden Değiştir</button>
+                    </div>
+                    <div class="p-15 border-bottom">
+                        <button type="button" class="btn btn-primary" id="btnOrtak">Ortak Klasöre Aktar</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="p-15 border-bottom">
+                        <button type="button" class="btn btn-primary" id="btnCekmeSil">Seçili Çekmeyi Sil</button>
+                    </div>
+
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="~/editable-table-master/mindmup-editabletable.js"></script>
+<script src="~/editable-table-master/numeric-input-example.js"></script>
+
+<script>
+    var selectedTabIndex;
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        selectedTabIndex = $(e.target).parent().index();
+    });
+
+    @for(int i = 0; i < Model.imalatTablolari.Count; i++)
+    {
+        <text>
+    var tableName = "#table_" +@i;
+    $(tableName).editableTableWidget();
+
+        </text>
+    }
+
+    // Catch all the `[data-toggle-sidebar]` elements on the document.
+document.querySelectorAll('[data-toggle-sidebar]').forEach(toggle => {
+   // Add an event listener on those elements "click" event
+   toggle.addEventListener('click', e => {
+     // get the sidebar ID from the current element data attribute
+     const sidebarID = toggle.dataset.toggleSidebar;
+     // check if there is an element on the doc with the id
+     const sidebarElement = sidebarID ? document.getElementById(sidebarID) : undefined;
+     // if there is a sidebar with the passed id (data-toggle-sidebar)
+     if (sidebarElement) {
+        // toggle the aria-hidden state of the given sidebar
+        let sidebarState = sidebarElement.getAttribute('aria-hidden');
+        sidebarElement.setAttribute('aria-hidden', sidebarState == 'true' ? false : true);
+     }
+   });
+});
+
+    $(".cekme").change(function () {
+        var bedenSayisi = Number(@bedenCount); // Kaç beden varsa onun sayısı alınıyor.
+        var girilenCekme = Number($(this).html()); // Çekme hücresine girilen değer alınıyor.
+        var anaBeden = Number(@Model.imalatTablolari[0].anaBeden) - 1; //Order'ın ana bedeni alınıyor.
+        var yikamaSonrasiList = []; // Yıkama sonrası değerleri bu listeye aktarılacak.
+        var rowIndex = Number($(this).parent().index()); // girilen değerin row Indexi
+
+        var i;
+        for (i = 1; i <= bedenSayisi; i++) {
+
+            var b = $($("#olcu" + i + "_0_" + rowIndex)).data('veri');
+
+            b = parseFloat(b);
+            
+
+            yikamaSonrasiList.push(b);
+        }
+
+        var j;
+        for (j = 1; j <= bedenSayisi; j++) {
+            //Girilecek değeri belirleyelim
+            var yikamaOncesiDeger = ((yikamaSonrasiList[j - 1] * 100) / (100 - girilenCekme)).toFixed(2);
+
+            var oranDeger = 
+
+            $('#olcu' + j + "_" + selectedTabIndex + "_" + rowIndex).text(yikamaOncesiDeger);
+        }
+    });
+</script>

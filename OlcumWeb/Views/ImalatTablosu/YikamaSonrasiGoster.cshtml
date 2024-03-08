@@ -1,0 +1,1198 @@
+﻿@model  Tuple<List<OlcumWeb.Models.DTO.DTOImalatTabloGoster>>
+
+<style>
+    .modal-backdrop {
+        position: inherit;
+        top: 0;
+        left: 0;
+        z-index: 1040;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+    }
+
+    .modal {
+        position: absolute;
+    }
+
+    .badge {
+        font-family: none;
+    }
+
+    .satir {
+        display: -ms-flexbox;
+        display: -webkit-box;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        /* flex-wrap: wrap; */
+        margin-top: 5px;
+    }
+
+    .pretty {
+        position: relative;
+        display: inline-block;
+        margin-right: 0em !important;
+        white-space: nowrap;
+        line-height: 1;
+    }
+
+    .container {
+        margin: 2%;
+    }
+
+    .divider {
+        width: 5px;
+        height: auto;
+        display: inline-block;
+    }
+
+    .vl {
+        border-left: 2px solid gray;
+        height: auto;
+        left: 50%;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+        table thead tr th {
+            border-bottom: 1px solid black;
+        }
+
+    table, th, td, tr {
+        border: 0.5px solid black;
+    }
+
+        table tbody tr:nth-child(odd) {
+            background-color: #4C8BF5;
+        }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0,0,0, 0.13);
+    }
+
+
+    .tableFixHead {
+        overflow-y: auto;
+        height: 500px;
+        width: 100%;
+    }
+
+        .tableFixHead thead th {
+            position: sticky;
+            top: 0;
+        }
+
+        /* Borders (if you need them) */
+        .tableFixHead,
+        .tableFixHead td {
+            box-shadow: inset 1px -1px #212529;
+        }
+
+            .tableFixHead th {
+                box-shadow: inset 1px 1px #212529, 1px 1px #212529;
+                background-color: white !important;
+                color: black !important;
+            }
+</style>
+
+<hr />
+
+
+<div class="row" style="text-align:center">
+    <div class="row" style="width:100%">
+        <div class="col-4" style="margin:auto">
+            <button type="button" class="btn btn-lg btn-success" id="btnSec" onclick="AnaBedenSec()">Ana Beden Seç</button>
+        </div>
+
+        <div class="vl"></div>
+
+
+        <div class="col-4" style="margin:auto">
+            <a href="#" class="btn btn-lg btn-success" onclick="TabloDuzenle()" id="rptGetir"><span style="color:white">Tabloyu Düzenle</span></a>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="table-responsive tableFixHead" id="tableForm_ys">
+            <table id="mainTable" class="table table-striped" style="cursor: pointer;">
+                <thead>
+                    <tr id="tableHead_0">
+                        <th style="display:none" class="setvisible">Sil</th>
+                        <th style="display:none" class="setvisible">Düzenle</th>
+                        <th style="display:none" class="setvisible">Ekle</th>
+                        @*<a style="display:none" class="btn btn-icon btn-sm btn-danger setvisible" id="btn_sutunsil_-1" data-index="-1" onclick="SutunSil(this)"><i class="fas fa-times" style="color:white"></i></a>*@
+                        <th>Ölçü Noktası <a style="display:none" class="btn btn-icon btn-sm btn-info setvisible" id="btn_sutunekle_-1" data-index="-1" onclick="SutunEkle(this)"><i class="fas fa-plus-square" style="color:white;"></i></a> </th>
+
+                        @for (int j = 0; j < Model.Item1[0].beden.Count; j++)
+                        {
+                            <th id="column_0_@(j + 1)" data-beden="@Model.Item1[0].beden[j]">
+                                @Model.Item1[0].beden[j] <a style="display:none" class="btn btn-icon btn-sm btn-info setvisible" id="btn_sutunekle_@j" data-index="@j" onclick="SutunEkle(this)"><i class="fas fa-plus-square" style="color:white;"></i></a> <a style="display:none" class="btn btn-icon btn-sm btn-danger setvisible" id="btn_sutunsil_@j" data-index="@j" onclick="SutunSil(this)"><i class="fas fa-times" style="color:white"></i></a>
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody id="tableBody_0">
+                    @{ int rowIndex2 = 0;}
+                    @{ string anaBeden = ViewBag.anaBeden;}
+
+                    @for (int j = 0; j < Model.Item1.Count; j++)
+                    {
+                        if (j == 0)
+                        {
+                            <tr id="satir_@rowIndex2">
+                                <td data-editable="false" style="display:none" class="setvisible" id="satir_sil_@rowIndex2">
+                                    <a class="btn btn-icon btn-sm btn-danger" id="btn_sil_@rowIndex2" data-index="@rowIndex2" onclick="SatirSil(this)"><i class="fas fa-times" style="color:white"></i></a>
+                                </td>
+                                <td data-editable="false" style="display:none" class="setvisible" id="satir_duzenle_@rowIndex2">
+                                    <a class="btn btn-icon btn-sm btn-primary" id="btn_duzenle_@rowIndex2" data-index="@rowIndex2" onclick="SatirDuzenle(this)"><i class="far fa-edit" style="color:white"></i></a>
+                                </td>
+                                <td data-editable="false" style="display:none" class="setvisible" id="satir_ekle_@rowIndex2">
+                                    <a class="btn btn-icon btn-sm btn-info" id="btn_ekle_@rowIndex2" data-index="@rowIndex2" onclick="SatirEkle(this)"><i class="fas fa-plus-square" style="color:white;"></i></a>
+                                </td>
+                                <td data-editable="false" id="cell_@(rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item1[j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@rowIndex2">
+                                    @Model.Item1[j].olcuNoktasi
+                                </td>
+
+                                @for (int z = 0; z < Model.Item1[j].beden.Count(); z++)
+                                {
+                                    if (anaBeden == Model.Item1[0].beden[z])
+                                    {
+                                        <td tabindex="1" class="tdCell" id="cell_@(rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(z+1)" data-rowIndex="@rowIndex2" onclick="ChangeColumnIndex(this)" onchange="DegerDegisYS(this)">@Model.Item1.Where(x => x.olcuNoktasi == Model.Item1[j].olcuNoktasi && x.beden == Model.Item1[j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                    }
+                                    else
+                                    {
+                                        <td tabindex="1" class="tdCell" id="cell_@(rowIndex2 + "_" + (z+1))" data-columnIndex="@(z+1)" data-rowIndex="@rowIndex2" onclick="ChangeColumnIndex(this)" onchange="DegerDegisYS(this)">@Model.Item1.Where(x => x.olcuNoktasi == Model.Item1[j].olcuNoktasi && x.beden == Model.Item1[j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                    }
+                                }
+                            </tr>
+                            rowIndex2++;
+                        }
+                        else
+                        {
+                            if (@Model.Item1[j].olcuNoktasi != @Model.Item1[j - 1].olcuNoktasi)
+                            {
+                                <tr id="satir_@rowIndex2">
+                                    <td data-editable="false" style="display:none" class="setvisible" id="satir_sil_@rowIndex2">
+                                        <a class="btn btn-icon btn-sm btn-danger" id="btn_sil_@rowIndex2" data-index="@rowIndex2" onclick="SatirSil(this)"><i class="fas fa-times" style="color:white"></i></a>
+                                    </td>
+                                    <td data-editable="false" style="display:none" class="setvisible" id="satir_duzenle_@rowIndex2">
+                                        <a class="btn btn-icon btn-sm btn-primary" id="btn_duzenle_@rowIndex2" data-index="@rowIndex2" onclick="SatirDuzenle(this)"><i class="far fa-edit" style="color:white"></i></a>
+                                    </td>
+                                    <td data-editable="false" style="display:none" class="setvisible" id="satir_ekle_@rowIndex2">
+                                        <a class="btn btn-icon btn-sm btn-info" id="btn_ekle_@rowIndex2" data-index="@rowIndex2" onclick="SatirEkle(this)"><i class="fas fa-plus-square" style="color:white;"></i></a>
+                                    </td>
+                                    <td data-editable="false" id="cell_@(rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item1[j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@rowIndex2">
+                                        @Model.Item1[j].olcuNoktasi
+                                    </td>
+
+                                    @for (int z = 0; z < Model.Item1[j].deger.Count(); z++)
+                                    {
+                                        if (anaBeden == Model.Item1[0].beden[z])
+                                        {
+                                            <td tabindex="1" class="tdCell" id="cell_@(rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(z+1)" data-rowIndex="@rowIndex2" onclick="ChangeColumnIndex(this)" onchange="DegerDegisYS(this)">@Model.Item1.Where(x => x.olcuNoktasi == Model.Item1[j].olcuNoktasi && x.beden == Model.Item1[j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                        }
+                                        else
+                                        {
+                                            <td tabindex="1" class="tdCell" id="cell_@(rowIndex2 + "_" + (z+1))" data-columnIndex="@(z+1)" data-rowIndex="@rowIndex2" onclick="ChangeColumnIndex(this)" onchange="DegerDegisYS(this)">@Model.Item1.Where(x => x.olcuNoktasi == Model.Item1[j].olcuNoktasi && x.beden == Model.Item1[j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                        }
+                                    }
+                                </tr>
+                                rowIndex2++;
+                            }
+
+                        }
+                    }
+
+                </tbody>
+            </table>
+            <input style="position: absolute; display: none;">
+        </div>
+    </div>
+
+
+</div>
+<script src="~/editable-table-master/mindmup-editabletable.js"></script>
+<script src="~/editable-table-master/numeric-input-example.js"></script>
+
+<script>
+    $('#mainTable').editableTableWidget();
+
+    document.onkeydown = KeyPress;
+
+
+
+    var columnIndex = 0;
+    var rowIndex = 0;
+    var previosColumnIndex = 0;
+    var anaBeden = "";
+
+    @if(ViewBag.anaBeden != "")
+    {
+        <text>anaBeden = @Html.Raw(Json.Encode(ViewBag.anaBeden));</text>
+        <text>previosColumnIndex = @(Model.Item1[0].beden.IndexOf(ViewBag.anaBeden) + 1);</text>
+    }
+
+    var anaBedenClicked = false;
+
+    function ChangeColumnIndex(elem) {
+        columnIndex = $(elem).data('columnindex');
+        rowIndex = $(elem).data('rowindex');
+
+    }
+
+    MainTableFocus();
+
+    function MainTableFocus() {
+        $('#mainTable td').focusin(function (e) {
+            var GelenrowIndex = $(this).data('rowindex');
+            var GelencolumnIndex = $(this).data('columnindex');
+
+            if (GelenrowIndex != -1 && GelencolumnIndex != -1) {
+                $(this).css('outline', 'none');
+                $(this).css('border', '3px solid red');
+                $(this).css('border-color', 'rgb(255 6 31)');
+                $(this).css('box-shadow', ' 1px 1px 25px rgb(255 6 31)');
+            }
+        });
+
+        $('#mainTable td').focusout(function (e) {
+            var GelenrowIndex = $(this).data('rowindex');
+            var GelencolumnIndex = $(this).data('columnindex');
+
+            if (GelenrowIndex != -1 && GelencolumnIndex != -1) {
+                $(this).css('outline', '');
+                $(this).css('border', '0.5px solid black');
+                $(this).css('border-color', '');
+                $(this).css('box-shadow', '');
+            }
+        });
+    }
+
+
+
+    //Focusinde değiştirilmeden önceki değeri alıyorum.
+    var oldDegerList = [];
+    var oldDeger = 0;
+    $('input').focusin(function (e) {
+        oldDeger = $(this).val();
+        
+    }); 
+
+    //Focusoutta kullanıcı değeri değiştirdi mi diye kontrol edip değiştirdiyse yıkama önceleriyle beraber değerleri listeye atıyorum.
+    $('input').focusout(function (e) {
+        if (oldDeger != $(this).val()) {
+            if (oldDegerList.length > 0) {
+                oldDegerList = [];
+            }
+            oldDegerList.push(oldDeger);
+
+            if (window.tableCountYO > 0) {
+                for (var i = 0; i < window.tableCountYO; i++) {
+                    var yoDeger = $('#cell_' + i + '_' + rowIndex + '_' + columnIndex).html();
+                    oldDegerList.push(yoDeger);
+                }
+            }
+
+            window.controlZList.push({geriDeger: oldDegerList,geriIndex :{ rowIndex, columnIndex },geriTur: 0 });
+        }
+    });
+
+    function AnaBedenSec() {
+        var clickedColumnIndex = columnIndex;
+        var rowCount = $('#tableBody_0 tr').length;
+        //Yıkama Sonrasındaki anabedeni düzeltiyorum.
+        for (var i = 0; i < rowCount; i++) {
+            $('#cell_' + i + '_' + clickedColumnIndex).css('border-collapse', 'collapse');
+            $('#cell_' + i + '_' + clickedColumnIndex).css('background-color', 'lightskyblue');
+
+            if (previosColumnIndex != 0) {
+                $('#cell_' + i + '_' + previosColumnIndex).css( 'background-color', '' );
+            }
+        }
+
+        anaBeden = $('#column_0_' + clickedColumnIndex).data('beden');
+        var columnCount = $('#tableHead_' + 0 + ' th').length - 3;
+        var tumtabloList = [];
+
+        //Yıkama öncesindekini düzeltiyorum.
+        if (window.tableCountYO > 0) {
+            for (var k = 0; k < window.tableCountYO; k++) {
+                var tableList = [];
+                for (var i = 0; i < rowCount; i++)
+                {
+                    $('#cell_' +k + "_" + i + '_' + clickedColumnIndex).css('border-collapse', 'collapse');
+                    $('#cell_' + k + "_" + i + '_' + clickedColumnIndex).css('background-color', 'lightskyblue');
+
+                    if (previosColumnIndex != 0) {
+                        $('#cell_' + k + "_"  + i + '_' + previosColumnIndex).css( 'background-color', '');
+                    }
+
+                    var bedenList = [];
+                    var degerList = [];
+                    var olcuNoktasi = $("#cell_0_" + i + "_0").html().trim();
+
+                    for (var j = 0; j < columnCount; j++) {
+                        if ($('#cell_' + k + '_' + i + '_' + j).css("background-color") == 'rgb(135, 206, 250)') {
+
+
+                            degerList.push($("#cell_" + k + "_" + i + "_" + j).html().trim().replace(',', '.'));
+                            bedenList.push($("#column_1_0_" + j).html().trim());
+                        }
+                    }
+
+                    var tolerans = $("#cell_" + k + "_" + i + "_" + Number(columnCount)).html().replace(',', '.');
+
+                    tableList.push({ 'olcuNoktasi': olcuNoktasi, 'beden': bedenList, 'deger': degerList, 'tolerans': tolerans });
+
+                }
+                tumtabloList.push(tableList);
+
+            }
+            $.post("/ImalatTablosu/KalipGuncelle", { 'checkExist': 1, 'anaBeden': anaBeden, 'previousTablo': tumtabloList, 'cekmeler': cekmeler }, function (deger) {
+                $('#kalipOlcusuContent').html(deger);
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+        }
+
+        previosColumnIndex = clickedColumnIndex;
+        anaBedenClicked = true;
+    }
+
+    function OrderdanGetir() {
+        $.post("/ImalatTablosu/OncekiTablodanGetirModal", {}, function (deger) {
+            $('#rptGetir_Modal').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+        $('#rptGetirModal').modal('show');
+    }
+
+    function TabloDuzenle() {
+        $.each($(".setvisible"), function () {
+            if ($(this).is(":hidden")) {
+                $(this).css('display', '');
+            }
+            else {
+                $(this).css('display', 'none');
+
+            }
+        });
+    }
+
+    function SatirSil(elem) {
+        var index = $(elem).data('index');
+
+        if ($('#btn_ekle_' + Number(index-1)).hasClass("btn-warning")) {
+            $('#btn_ekle_' + Number(index-1)).removeClass("btn-warning");
+            $('#btn_ekle_' + Number(index-1)).addClass("btn-info");
+        }
+        var satirListesi = [];
+        satirListesi.push({ ilkTablosu: $('#satir_' + index),kalipOlcusu: null });
+        $('#satir_' + index).remove();
+
+
+
+
+        var rowCount = $('#tableForm_ys tr').length - 1;
+        var columnCount = $('#tableHead_0 th').length - 4;
+
+        //Yıkama öncesinde de siliyorum ve id data düzeltiyorum..
+        if (window.tableCountYO > 0) {
+            for (var k = 0; k < window.tableCountYO; k++) {
+                satirListesi.push({ ilkTablosu: $('#satir_' + k + '_' + index), kalipOlcusu: $('#satirKalip_' + k + '_' + index)});
+                $('#satir_' + k + '_' + index).remove();
+                $('#satirKalip_' + k + '_' + index).remove(); // kalıp satırınıda siliyorum.
+                for (var i = rowCount; i > index; i--) {
+                    for (var j = 0; j < columnCount+4; j++) {
+                        $('#cell_' + (k) + '_' + (i) + '_' + j).attr("data-rowindex", (k) + '_' + (parseInt(i - 1)));
+
+                        $('#cell_' + (k) + '_' + (i) + '_' + j).attr("id", "cell_" + (k) + '_' + (parseInt(i - 1)) + "_" + j);
+
+                        $('#cellKalip_' + (k) + '_' + (i) + '_' + j).attr("data-rowindex", (k) + '_' + (parseInt(i - 1)));
+
+                        $('#cellKalip_' +(k) + '_' + (i) + '_' + j).attr("id", "cellKalip_" + (k) + '_' + (parseInt(i - 1)) + "_" + j);
+                    }
+
+
+
+                    $('#satir_' + (k) + '_' + i).attr("id", "satir_" + (k) + '_' + (parseInt(i - 1)));
+
+                    $('#satirKalip_' + (k) + '_' + i).attr("id", "satirKalip_" + (k) + '_' + (parseInt(i - 1))); // kalıp satırlarının idlerini düzeltiyorum.
+
+                }
+            }
+        }
+
+        //Yıkama sonrasında id ve data düzeltiyorum.
+        for (var i = rowCount; i > index; i--) {
+            for (var j = 0; j < columnCount + 1; j++) {
+                $('#cell_' + (i) + '_' + j).attr("data-rowindex", (parseInt(i - 1)));
+
+                $('#cell_' + (i) + '_' + j).attr("id", "cell_" + (parseInt(i - 1)) + "_" + j);
+            }
+
+              //data kısmını düzeltiyorum.
+                $('#btn_sil_' + i).attr("data-index", (parseInt(i - 1)));
+                $('#btn_duzenle_' + i).attr("data-index", (parseInt(i - 1)));
+                $('#btn_ekle_' + i).attr("data-index", (parseInt(i - 1)));
+
+
+
+                $('#satir_' + i).attr("id", "satir_" + (parseInt(i - 1)));
+                $('#satir_sil_' + i).attr("id", "satir_sil_" + (parseInt(i - 1)));
+                $('#satir_duzenle_' + i).attr("id", "satir_duzenle_" + (parseInt(i - 1)));
+                $('#satir_ekle_' + i).attr("id", "satir_ekle_" + (parseInt(i - 1)));
+                $('#btn_sil_' + i).attr("id", "btn_sil_" + (parseInt(i - 1)));
+                $('#btn_duzenle_' + i).attr("id", "btn_duzenle_" + (parseInt(i - 1)));
+                $('#btn_ekle_' + i).attr("id", "btn_ekle_" + (parseInt(i - 1)));
+        }
+
+        window.controlZList.push({ geriDeger: satirListesi, geriIndex: index, geriTur: 2 });
+
+    }
+
+    function SatirDuzenle(elem) {
+        var index = $(elem).data('index');
+        var oldOlcuNokta = $('#cell_' + index + '_0').html().trim();
+        if ($(elem).hasClass("btn-primary")) {
+            $(elem).removeClass("btn-primary");
+            $(elem).addClass("btn-warning");
+
+            $.post("/ImalatTablosu/OlcuNoktasiEkleme", { 'index': index, 'oldOlcuNokta': oldOlcuNokta }, function (deger) {
+                $('#cell_' + index + '_0').html(deger);
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+        }
+        else if ($(elem).hasClass("btn-warning")) {
+            $(elem).removeClass("btn-warning");
+            $(elem).addClass("btn-primary");
+            var oldOlcuNoktaID = $('#olcuTuruAd_' + index + ' option:selected').text();
+
+            if (oldOlcuNoktaID == "Seçiniz...") {
+
+                oldOlcuNoktaID = $('#oldOlcuNokta_' + index).val();
+            }
+            var elementId = 'cell_' + index + '_0';
+            document.getElementById(elementId).innerHTML=oldOlcuNoktaID;
+
+
+            $('#cell_' + index + '_0').attr('data-olcunoktasi', document.getElementById(elementId).innerHTML);
+
+            if (window.tableCountYO > 0) {
+                for (var i = 0; i < window.tableCountYO; i++) {
+
+                    var id = 'cell_' + i + '_' + index + '_0';
+                    document.getElementById(id).innerHTML = oldOlcuNoktaID;
+                    $('#cell_' + i + '_' + index + '_0').attr('data-olcunoktasi', oldOlcuNoktaID);
+
+                    var idKalip = 'cellKalip_' + i + '_' + index + '_0';
+                    document.getElementById(idKalip).innerHTML = oldOlcuNoktaID;
+                    $('#cellKalip_' + i + '_' + index + '_0').attr('data-olcunoktasi', oldOlcuNoktaID);
+
+                }
+            }
+
+        }
+
+    }
+
+    function SatirEkle(elem) {
+        var index = $(elem).data('index');
+        var rowCount = $('#tableBody_0 tr').length - 1;
+        var columnCount = $('#tableHead_0 th').length - 4;
+
+        if ($(elem).hasClass("btn-info")) {
+            $(elem).removeClass("btn-info");
+            $(elem).addClass("btn-warning");
+
+            //Yıkama Sonrası
+            for (var i = rowCount; i > index; i--) {
+
+                for (var j = 0; j < columnCount+1; j++) {
+                    //Eklediğim yerden sonraki satırların datasını ve idsini düzeltiyorum.
+                    $('#cell_' + (i) + '_' + j).attr("data-rowindex", (parseInt(i + 1)));
+                    $('#cell_' + (i) + '_' + j).attr("id", "cell_" + (parseInt(i + 1)) + "_" + j);
+
+                }
+
+                //data kısmını düzeltiyorum.
+                $('#btn_sil_' + i).attr("data-index", (parseInt(i + 1)));
+                $('#btn_duzenle_' + i).attr("data-index", (parseInt(i + 1)));
+                $('#btn_ekle_' + i).attr("data-index", (parseInt(i + 1)));
+
+                //idleri düzeltiyorum.
+
+                $('#satir_' + i).attr("id", "satir_" + (parseInt(i + 1)));
+                $('#satir_sil_' + i).attr("id", "satir_sil_" + (parseInt(i + 1)));
+                $('#satir_duzenle_' + i).attr("id", "satir_duzenle_" + (parseInt(i + 1)));
+                $('#satir_ekle_' + i).attr("id", "satir_ekle_" + (parseInt(i + 1)));
+                $('#btn_sil_' + i).attr("id", "btn_sil_" + (parseInt(i + 1)));
+                $('#btn_duzenle_' + i).attr("id", "btn_duzenle_" + (parseInt(i + 1)));
+                $('#btn_ekle_' + i).attr("id", "btn_ekle_" + (parseInt(i + 1)));
+
+
+            }
+            if (window.tableCountYO > 0) {
+                            //Yıkama Öncesi
+            for (var k = 0; k < window.tableCountYO; k++) {
+                for (var i = rowCount; i > index ; i--) {
+                    for (var j = 0; j < columnCount + 4; j++) {
+
+                        //Eklediğim yerden sonraki satırların datasını ve idsini düzeltiyorum.
+                        $('#satir_' + (k) + '_' + (i)).attr('id', 'satir_' + (k) + '_' + parseInt(i + 1));
+                        $('#cell_' + (k) +'_' + (i) + '_' + j).attr("data-rowindex", k + '_' + (parseInt(i + 1)));
+                        $('#cell_' + (k) +'_' + (i) + '_' + j).attr("id", "cell_" + (k) +'_'  + (parseInt(i + 1)) + "_" + j);
+
+                        $('#cellKalip_' + (k) + '_' + (i) + '_' + j).attr("data-rowindex", k + '_' + (parseInt(i + 1)));
+                        $('#cellKalip_' + (k) +'_' + (i) + '_' + j).attr("id", "cellKalip_" + (k) +'_'  + (parseInt(i + 1)) + "_" + j);
+                    }
+
+                    $('#satirKalip_' +k + '_' + i).attr("id", "satirKalip_" + k + '_' + (parseInt(i + 1)));
+                }
+            }
+            }
+
+
+
+            $('#satir_' + index).after("<tr id='satir_" + parseInt(index + 1) + "'></tr>");
+
+
+            $.post("/ImalatTablosu/SatirEkleme", { 'columnCount': columnCount, 'index': parseInt(index + 1) }, function (deger) {
+                $('#satir_' + parseInt(index + 1)).html(deger);
+                var anaBedenIndex = $('#tableHead_0').find('th[data-beden=' + anaBeden + ']').eq(0).find('a').data('index') + 4;
+
+                $('#satir_' + parseInt(index + 1)).find('td').eq(anaBedenIndex).css('background-color', 'lightskyblue');
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+
+        }
+        else if ($(elem).hasClass("btn-warning"))
+        {
+            $(elem).removeClass("btn-warning");
+            $(elem).addClass("btn-info");
+            var index = $(elem).data('index');
+
+            var oldOlcuNoktaID = $('#olcuTuruAd_' + Number(index + 1) + ' option:selected').text();
+
+            if (oldOlcuNoktaID == "Seçiniz...") {
+                oldOlcuNoktaID = $('#cell_' + index + '_0').html();
+            }
+
+            $('#cell_' + Number(index + 1) + '_0').html(oldOlcuNoktaID);
+            $('#cell_' + Number(index + 1) + '_0').attr('data-olcunoktasi', oldOlcuNoktaID);
+
+
+            $('#satir_' + Number(index + 1)).children('script').eq(0).remove();
+            $('#satir_' + Number(index + 1)).children('script').eq(0).remove();
+            if (window.tableCountYO > 0) {
+                for (var k = 0; k < window.tableCountYO; k++) {
+                    var $clonedRow = $('#satir_' + Number(index + 1)).clone();
+
+                    $clonedRow.children('td').eq(0).remove();
+                    $clonedRow.children('td').eq(0).remove();
+                    $clonedRow.children('td').eq(0).remove();
+
+                    $clonedRow.children('script').eq(0).remove();
+                    $clonedRow.children('script').eq(0).remove();
+
+                    $clonedRow.attr('id', 'satir_' + k + '_' + Number(index + 1));
+
+                    for (var j = 0; j < columnCount + 1; j++) {
+                        // Eklenecek satırın idlerini ve datalarını değiştiriyorum.
+                        $clonedRow.children('td').eq(j).attr('data-columnindex', k + '_' + j);
+                        $clonedRow.children('td').eq(j).attr('data-rowindex', k + '_' + Number(index + 1));
+                        $clonedRow.children('td').eq(j).attr('id', 'cell_' + k + '_' + Number(index + 1) + '_' + j);
+                        $clonedRow.children('td').eq(j).removeAttr('onchange');
+
+                    }
+
+                    var toleransHtml = '<td id="cell_' + k + '_' + Number(index + 1) + '_' + Number(columnCount + 1) + '" data-columnindex="' + k + '_' + Number(columnCount + 1) + '" data-rowindex="' + k + '_' + Number(index + 1) + '" onchange="DegerDegistir(this)" tabindex="1" style="background-color: lightskyblue; border-width: 0.5px; border-style: solid; border-image: initial;">0</td>';
+
+                    var cekmeHtml = '<td id="cell_' + k + '_' + Number(index + 1) + '_' + Number(columnCount + 2) + '" data-columnindex="' + k + '_' + Number(columnCount + 2) + '" data-rowindex="' + k + '_' + Number(index + 1) + '" onchange="DegerDegistir(this)" tabindex="1" style="background-color: lightskyblue; border-width: 0.5px; border-style: solid; border-image: initial;">0</td>';;
+
+                    var oranHtml = '<td id="cell_' + k + '_' + Number(index + 1) + '_' + Number(columnCount + 3) + '" data-columnindex="' + k + '_' + Number(columnCount + 3) + '" data-rowindex="' + k + '_' + Number(index + 1) + '" onchange="DegerDegistir(this)" tabindex="1" style="background-color: lightskyblue; border-width: 0.5px; border-style: solid; border-image: initial;">0</td>';
+
+                    $clonedRow.append(toleransHtml);
+                    $clonedRow.append(cekmeHtml);
+                    $clonedRow.append(oranHtml);
+                    $('#satir_' + k + '_' + Number(index)).after($clonedRow);
+
+
+                    //Kalıp Ölçüsü için hazırlıyorum.
+                    var $clonedKalipRow = $clonedRow.clone();
+                    $clonedKalipRow.attr('id', 'satirKalip_' + k + '_' + Number(index + 1));
+                    for (var j = columnCount + 4; 1 < j; j--) {
+                        // Eklenecek satırın idlerini ve datalarını değiştiriyorum.
+                        $clonedKalipRow.children('td').eq(j).remove();
+                    }
+
+                    $clonedKalipRow.children('td').eq(0).attr('id', 'cellKalip_' + k + '_' + Number(index + 1) + '_' + 0);
+                    $clonedKalipRow.children('td').eq(1).attr('id', 'cellKalip_' + k + '_' + Number(index + 1) + '_' + 1);
+
+                    $('#satirKalip_' + k + '_' + Number(index)).after($clonedKalipRow);
+
+                }
+
+            }
+
+            var ctrlzObject = { geriDeger: Number(index + 1), geriIndex: Number(index + 1), geriTur: 1 };
+
+            window.controlZList.push(ctrlzObject);
+
+            MainTableFocus();
+        }
+
+
+
+
+    }
+
+    function SutunEkle(elem) {
+        if ($(elem).hasClass("btn-info")) {
+            $(elem).removeClass("btn-info");
+            $(elem).addClass("btn-warning");
+        // eklenecek indexi alıyorum.
+        var eklenecekIndex = Number($(elem).data('index')) + 1;
+        // ilk bedeni alıyorum ki veritabanındaki sayısistemini bulabileyim.
+        var ilkBeden = $('#column_0_1').data('beden');
+
+            var rowCount = $('#tableForm_ys tr').length;
+            var columnCount = $('#tableHead_0 th').length - 4;
+
+            for (var j = columnCount; j > eklenecekIndex; j--) {
+
+                // yana kaydırdığım sütunların id ve datalarını değiştiriyorum
+                $('#btn_sutunekle_' + Number(j - 1)).attr('data-index', j);
+                $('#btn_sutunekle_' + Number(j - 1)).attr('id', 'btn_sutunekle_' + Number(j));
+                $('#btn_sutunsil_' + Number(j - 1)).attr('data-index', j);
+                $('#btn_sutunsil_' + Number(j - 1)).attr('id', 'btn_sutunsil_' + Number(j));
+                $('#column_0_' + j).attr('id', 'column_0_' + Number(j + 1));
+
+                //yana kaydırılan hücrelerin id ve datalarını değiştiriyorum.
+                for (var i = 0; i < rowCount; i++) {
+                    $('#cell_' + i + "_" + j).attr('data-columnindex', Number(j + 1));
+                    $('#cell_' + i + "_" + j).attr('id', 'cell_' + i + '_' + Number(j + 1));
+                }
+            }
+
+            for (var i = 0; i < rowCount; i++) {
+                //yıkama sonrasına 0 olan hücreler ekliyorum.
+                var $clonedRow = $('#cell_' + i + '_' + eklenecekIndex).clone();
+                $clonedRow.attr('data-columnindex', Number(eklenecekIndex + 1));
+                $clonedRow.attr('id', 'cell_' + i + '_' + (eklenecekIndex + 1));
+
+                $clonedRow.html(0);
+
+                $('#cell_' + i + '_' + eklenecekIndex).after($clonedRow);
+            }
+
+
+            $.post("/ImalatTablosu/SutunEkleme", { 'ilkBeden': ilkBeden, 'eklenecekIndex': eklenecekIndex }, function (deger) {
+                if (eklenecekIndex == 0) {
+                    $('#column_0_' + Number(eklenecekIndex + 2)).before(deger);
+                }
+                else {
+                    $('#column_0_' + eklenecekIndex).after(deger);
+                }
+
+
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+        }
+        else if ($(elem).hasClass("btn-warning")) {
+            $(elem).removeClass("btn-warning");
+            $(elem).addClass("btn-info");
+
+
+            var rowCount = $('#tableForm_ys tr').length;
+            var columnCount = $('#tableHead_0 th').length - 4;
+
+            var eklenecekIndex = Number($(elem).data('index')) + 1;
+
+            //dropdown daki en son seçilen değeri kaydediyorum.
+            var oldBeden = $('#bedenList' + Number(eklenecekIndex) + ' option:selected').text();
+
+
+            //eklediğim sütunun gereksiz verilerini siliyorum.
+
+            $('#bedenList' + Number(eklenecekIndex)).replaceWith(oldBeden);
+            $('#column_0_' + Number(eklenecekIndex + 1)).children('span').eq(0).remove();
+            $('#column_0_' + Number(eklenecekIndex + 1)).attr('data-beden', oldBeden);
+            $('#tableHead_0').children('script').eq(0).remove();
+            $('#tableHead_0').children('script').eq(0).remove();
+
+            if (window.tableCountYO > 0) {
+  //Yıkama öncesine eklemek için yazdığım kısım.
+            for (var k = 0; k < window.tableCountYO; k++) {
+                var $clonedTableHead = $('#column_0_' + Number(eklenecekIndex + 1)).clone();
+                $clonedTableHead.attr('id', 'column_' + Number(k + 1) + "_0_" + Number(eklenecekIndex + 1));
+
+                $clonedTableHead.children('a').eq(0).remove();
+                $clonedTableHead.children('a').eq(0).remove();
+
+                //kaydırdığım sütun başlıklarının idsini değiştiriyorum.
+                for (var j = columnCount+2; j > eklenecekIndex; j--) {
+                    $('#column_' + Number(k + 1) + "_0_" + j).attr('id', 'column_' + Number(k + 1) + "_0_" + Number(j + 1));
+
+                     //yana kaydırılan hücrelerin id ve datalarını değiştiriyorum.
+                    for (var i = 0; i < rowCount; i++) {
+                        $('#cell_'+ k + "_" + i + "_" + j).attr('data-columnindex', k+"_"+ Number(j + 1));
+                        $('#cell_' + k + "_"  + i + "_" + j).attr('id', 'cell_' + k + "_" + i + '_' + Number(j + 1));
+                    }
+                }
+
+                if (eklenecekIndex != 0) {
+                    $('#column_' + Number(k + 1) + "_0_" + Number(eklenecekIndex)).after($clonedTableHead);
+
+                }
+                else {
+                    $('#column_' + Number(k + 1) + "_0_" + Number(eklenecekIndex + 2)).before($clonedTableHead);
+                }
+
+                // yıkama öncesine 0 lı hücreler ekliyorum.
+                for (var i = 0; i < rowCount; i++) {
+                    var $clonedRow = $('#cell_' + k + "_" + i + '_' + eklenecekIndex).clone();
+                    $clonedRow.attr('data-columnindex', i+"_"+Number(eklenecekIndex + 1));
+                    $clonedRow.attr('id', 'cell_' + k + "_" + i + '_' + (eklenecekIndex + 1));
+
+                    $clonedRow.html(0);
+
+                    $('#cell_' + k + "_" + i + '_' + eklenecekIndex).after($clonedRow);
+                }
+
+            }
+            }
+
+            var ctrlzObject = { geriDeger: eklenecekIndex, geriIndex: eklenecekIndex, geriTur: 3 };
+            window.controlZList.push(ctrlzObject);
+
+        }
+    }
+
+    function SutunSil(elem) {
+        //Önce yıkama sonrasından seçili sütunu siliyorum.
+        var index = $(elem).data('index');
+        var sutunSilList = [];
+        var object = { columnBasligi: $('#column_0_' + Number(index + 1)), hucreler: null };
+
+        $('#column_0_' + Number(index + 1)).remove();
+
+        var rowCount = $('#tableForm_ys tr').length;
+        var columnCount = $('#tableHead_0 th').length - 4;
+        //Yıkama sonrasındaki kaydırılan sütun başlıklarının idlerini ve datalarını düzeltiyorum.
+        for (var j = columnCount + 1; j > index + 1; j--) {
+            $('#btn_sutunekle_' + j).attr('data-index', Number(j - 1));
+            $('#btn_sutunekle_' + j).attr('id', 'btn_sutunekle_' + Number(j - 1));
+            $('#btn_sutunsil_' + j).attr('data-index', Number(j - 1));
+            $('#btn_sutunsil_' + j).attr('id', 'btn_sutunsil_' + Number(j - 1));
+
+            $('#column_0_' + j).attr('id', 'column_0_' + Number(j - 1));
+
+            //sona geldiği zaman bitiyor o sebeple sondaysa o başlığıda düzeltiyorum.
+            if (j == index+2) {
+                $('#btn_sutunekle_' + Number(j-1)).attr('data-index', Number(j - 2));
+                $('#btn_sutunekle_' + Number(j-1)).attr('id', 'btn_sutunekle_' + Number(j - 2));
+                $('#btn_sutunsil_' + Number(j-1)).attr('data-index', Number(j - 2));
+                $('#btn_sutunsil_' + Number(j - 1)).attr('id', 'btn_sutunsil_' + Number(j - 2));
+
+            }
+        }
+        var hucreList = [];
+        //Yıkama sonrasında seçili indexe ait hücreleri sil
+        for (var i = 0; i < rowCount; i++) {
+            hucreList.push($('#cell_' + i + "_" + Number(index + 1)));
+            $('#cell_' + i + "_" + Number(index + 1)).remove();
+        }
+        object.hucreler = hucreList;
+        sutunSilList.push(object);
+        //Yıkama sonrasındaki hücre data ve idlerini düzeltiyorum.
+        for (var j = columnCount + 1; j > index + 1; j--) {
+            for (var i = 0; i < rowCount; i++) {
+                $('#cell_' + i + "_" + j).attr('data-columnindex', Number(j - 1));
+                $('#cell_' + i + "_" + j).attr('id','cell_' + i + "_" + Number(j - 1));
+            }
+        }
+
+        if (window.tableCountYO > 0) {
+              //Yıkama öncelerinden sütunları siliyorum.
+            for (var k = 0; k < window.tableCountYO; k++) {
+                sutunSilList.push({ columnBasligi: $('#column_' + Number(k + 1) + "_0_" + Number(index + 1)), hucreler: null });
+                $('#column_' + Number(k + 1) + "_0_" + Number(index + 1)).remove();
+
+                for (var j = columnCount + 1; j > index + 1; j--) {
+                    $('#column_' + Number(k+1) + '_0_' + j).attr('id', 'column_' + Number(k+1) + '_0_' + Number(j - 1));
+                }
+            }
+
+            //Yıkama öncelerindeki hücreleri siliyorum
+            for (var k = 0; k < window.tableCountYO; k++) {
+                var hucreList = [];
+                for (var i = 0; i < rowCount; i++) {
+                    hucreList.push($('#cell_' + k + "_" + i + "_" + Number(index + 1)));
+                    $('#cell_' + k + "_" + i + "_" + Number(index + 1)).remove();
+                }
+                sutunSilList[k + 1].hucreler = hucreList;
+            }
+
+            //Yıkama öncesindeki hücre data ve idlerini düzeltiyorum.
+            for (var k = 0; k < window.tableCountYO; k++) {
+                for (var i = 0; i < rowCount; i++) {
+                    for (var j = columnCount + 4; j > index + 1; j--) {
+                         $('#cell_' + k + "_" + i + "_" + j).attr('data-columnindex', k + "_" + Number(j - 1));
+                         $('#cell_' + k + "_" + i + "_" + j).attr('id', 'cell_' + k + "_" + i + "_" + Number(j - 1));
+                     }
+                 }
+            }
+        }
+
+        var ctrlzObject = { geriDeger: sutunSilList, geriIndex: index, geriTur: 4 };
+        window.controlZList.push(ctrlzObject);
+    }
+
+    function DegerDegisYS(elem) {
+
+        var rowIndex = $(elem).data('rowindex');
+        var columnIndex = $(elem).data('columnindex');
+
+        var girilenDeger = parseFloat($(elem).html().replace(',', '.'));
+
+        if (window.tableCountYO > 0) {
+            for (var i = 0; i < window.tableCountYO; i++) {
+                var columnCount = Number($("#tableHead_yo_" + i + " th").length);
+
+                var yoCekmeDeger = parseFloat($('#cell_' + i + '_' + rowIndex + '_' + Number(columnCount - 2)).html().trim());
+
+                var yoYeniDeger = parseFloat(parseFloat(100 * girilenDeger / (100 - yoCekmeDeger)).toFixed(1));
+
+
+                $('#cell_' + i + '_' + rowIndex + '_' + columnIndex).html(yoYeniDeger);
+            }
+        }
+    }
+
+    function KeyPress(e) {
+        var evtobj = window.event ? event : e
+
+        if (evtobj.keyCode == 90 && evtobj.ctrlKey) {
+            if (window.controlZList.length > 0) {
+
+                YukleniyorOnOff();
+
+                var lastItem = window.controlZList[window.controlZList.length - 1];
+                var rowCount = $('#tableForm_ys tr').length - 1;
+                var columnCount = $('#tableHead_0 th').length - 4;
+
+                if (lastItem.geriTur == 0) {
+                    //değer değiştirme
+                    var rowIndex = lastItem.geriIndex.rowIndex;
+                    var columnIndex = lastItem.geriIndex.columnIndex;
+
+                    var count = lastItem.geriDeger.length;
+
+                    for (var i = 0; i < count; i++) {
+                        if (i == 0) {
+                            $('#cell_' + rowIndex + '_' + columnIndex).html(lastItem.geriDeger[i]);
+                        }
+                        else {
+                            $('#cell_' + i + '_' + rowIndex + '_' + columnIndex).html(lastItem.geriDeger[i]);
+                        }
+                    }
+                }
+                else if (lastItem.geriTur == 1) {
+                    //satır ekleme
+
+                    var index = lastItem.geriIndex;
+
+                    //önce yıkama sonrasındaki satırı siliyorum
+                    $('#satir_' + index).remove();
+
+                    //yıkama sonrasındaki indexleri data ve idleri düzeltiyorum
+                    for (var i = rowCount; i > index; i--) {
+
+                        for (var j = 0; j < columnCount + 1; j++) {
+                            //Eklediğim yerden sonraki satırların datasını ve idsini düzeltiyorum.
+                            $('#cell_' + (i) + '_' + j).attr("data-rowindex", (parseInt(i - 1)));
+                            $('#cell_' + (i) + '_' + j).attr("id", "cell_" + (parseInt(i - 1)) + "_" + j);
+
+                        }
+
+                        //data kısmını düzeltiyorum.
+                        $('#btn_sil_' + i).attr("data-index", (parseInt(i - 1)));
+                        $('#btn_duzenle_' + i).attr("data-index", (parseInt(i - 1)));
+                        $('#btn_ekle_' + i).attr("data-index", (parseInt(i - 1)));
+
+                        //idleri düzeltiyorum.
+
+                        $('#satir_' + i).attr("id", "satir_" + (parseInt(i - 1)));
+                        $('#satir_sil_' + i).attr("id", "satir_sil_" + (parseInt(i - 1)));
+                        $('#satir_duzenle_' + i).attr("id", "satir_duzenle_" + (parseInt(i - 1)));
+                        $('#satir_ekle_' + i).attr("id", "satir_ekle_" + (parseInt(i - 1)));
+                        $('#btn_sil_' + i).attr("id", "btn_sil_" + (parseInt(i - 1)));
+                        $('#btn_duzenle_' + i).attr("id", "btn_duzenle_" + (parseInt(i - 1)));
+                        $('#btn_ekle_' + i).attr("id", "btn_ekle_" + (parseInt(i - 1)));
+
+
+                    }
+
+                    //yıkama öncesindeki indexleri data ve idleri düzeltiyorum
+                    if (window.tableCountYO > 0) {
+                        for (var k = 0; k < window.tableCountYO; k++) {
+                            $('#satir_' + k + '_' + index).remove();
+                            $('#satirKalip_' + k + '_' + index).remove(); // kalıp satırınıda siliyorum.
+                            for (var i = rowCount; i > index; i--) {
+                                for (var j = 0; j < columnCount + 4; j++) {
+                                    $('#cell_' + (k) + '_' + (i) + '_' + j).attr("data-rowindex", (k) + '_' + (parseInt(i - 1)));
+
+                                    $('#cell_' + (k) + '_' + (i) + '_' + j).attr("id", "cell_" + (k) + '_' + (parseInt(i - 1)) + "_" + j);
+
+                                    $('#cellKalip_' + (k) + '_' + (i) + '_' + j).attr("data-rowindex", (k) + '_' + (parseInt(i - 1)));
+
+                                    $('#cellKalip_' + (k) + '_' + (i) + '_' + j).attr("id", "cellKalip_" + (k) + '_' + (parseInt(i - 1)) + "_" + j);
+                                }
+
+
+
+                                $('#satir_' + (k) + '_' + i).attr("id", "satir_" + (k) + '_' + (parseInt(i - 1)));
+
+                                $('#satirKalip_' + (k) + '_' + i).attr("id", "satirKalip_" + (k) + '_' + (parseInt(i - 1))); // kalıp satırlarının idlerini düzeltiyorum.
+
+                            }
+                        }
+                    }
+                }
+                else if (lastItem.geriTur == 2) {
+                    //satır silme
+
+                    var satirListesi = lastItem.geriDeger;
+                    var index = lastItem.geriIndex;
+
+
+                    //yıkama sonrasındaki id ve indexleri düzeltiyorum.
+                    for (var i = rowCount; (index - 1) < i; i--) {
+                        $('#satir_sil_' + i).attr('id', 'satir_sil_' + Number(i + 1));
+                        $('#btn_sil_' + i).attr('data-index', Number(i + 1));
+                        $('#btn_sil_' + i).attr('id', 'btn_sil_' + Number(i + 1));
+                        $('#satir_duzenle_' + i).attr('id', 'satir_duzenle_' + Number(i + 1));
+                        $('#btn_duzenle_' + i).attr('data-index', Number(i + 1));
+                        $('#btn_duzenle_' + i).attr('id', 'btn_duzenle_' + Number(i + 1));
+                        $('#satir_ekle_' + i).attr('id', 'satir_ekle_' + Number(i + 1));
+                        $('#btn_ekle_' + i).attr('data-index', Number(i + 1));
+                        $('#btn_ekle_' + i).attr('id', 'btn_ekle_' + Number(i + 1));
+                        $('#satir_' + i).attr('id', 'satir_' + Number(i + 1));
+
+                        for (var j = 0; j < columnCount + 1; j++) {
+                            $('#cell_' + i + '_' + j).attr('data-rowindex', Number(i + 1));
+                            $('#cell_' + i + '_' + j).attr('id', 'cell_' + Number(i + 1) + '_' + j);
+                        }
+                    }
+
+                    //yıkama sonrasında satırı geri ekliyorum.
+                    $('#satir_' + Number(index - 1)).after(satirListesi[0].ilkTablosu);
+
+                    //yıkama öncesindeki id ve indexleri düzeltiyorum
+                    if (window.tableCountYO > 0) {
+                        for (var k = 0; k < window.tableCountYO; k++) {
+                            for (var i = rowCount; (index - 1) < i; i--) {
+                                $('#satir_' + k + '_' + i).attr('id', 'satir_' + k + '_' + Number(i + 1));
+                                $('#satirKalip_' + k + '_' + i).attr('id', 'satirKalip_' + k + '_' + Number(i + 1));
+
+                                for (var j = 0; j < columnCount + 4; j++) {
+
+                                    $('#cell_' + k + '_' + i + '_' + j).attr('data-rowindex', k + '_' + Number(i + 1));
+                                    $('#cell_' + k + '_' + i + '_' + j).attr('id', 'cell_' + k + '_' + Number(i + 1) + '_' + j);
+                                }
+
+                                for (var j = 0; j < 2; j++) {
+                                    $('#cellKalip_' + k + '_' + i + '_' + j).attr('data-rowindex', k + '_' + Number(i + 1));
+                                    $('#cellKalip_' + k + '_' + i + '_' + j).attr('id', 'cellKalip_' + k + '_' + Number(i + 1) + '_' + j);
+                                }
+                            }
+
+                            $('#satir_' + Number(k) + '_' + Number(index - 1)).after(satirListesi[k + 1].ilkTablosu);
+                            $('#satirKalip_' + Number(k) + '_' + Number(index - 1)).after(satirListesi[k + 1].kalipOlcusu);
+                        }
+
+
+                    }
+
+                }
+                else if (lastItem.geriTur == 3) {
+                    //sütun ekleme
+                    var index = lastItem.geriIndex;
+                    //Yıkama sonrasındaki tdleri ve thyi siliyorum.
+                    $('#column_0_' + Number(index + 1)).remove();
+                    for (var i = 0; i < rowCount; i++) {
+                        $('#cell_' + i + '_' + Number(index + 1)).remove();
+                    }
+                    //yıkama sonrasındaki indexleri data ve idleri düzeltiyorum
+                    for (var i = columnCount; (index + 1) < i; i--) {
+
+                        $('#column_0_' + i).attr('id', 'column_0_' + Number(i - 1));
+                        $('#btn_sutunekle_' + (i - 1)).attr('data-index', Number(i - 2));
+                        $('#btn_sutunekle_' + (i - 1)).attr('id', 'btn_sutunekle_' + Number(i - 2));
+                        $('#btn_sutunsil_' + (i - 1)).attr('data-index', Number(i - 2));
+                        $('#btn_sutunsil_' + (i - 1)).attr('id', 'btn_sutunsil_' + Number(i - 2));
+
+                        for (var j = 0; j < rowCount; j++) {
+                            $('#cell_' + j + '_' + (i)).attr('data-columnindex', Number(i - 1));
+                            $('#cell_' + j + '_' + (i)).attr('id', 'cell_' + j + '_' + (i - 1));
+                        }
+                    }
+                    //yıkama öncesindeki tüm tdleri ve thyi siliyorum.
+                    if (window.tableCountYO > 0) {
+                        for (var k = 0; k < window.tableCountYO; k++) {
+
+                            $('#column_' + (k + 1) + '_0_' + Number(index + 1)).remove();
+
+                            for (var i = 0; i < rowCount; i++) {
+                                $('#cell_' + (k) + '_' + i + '_' + Number(index + 1)).remove();
+                            }
+
+                            //yıkama öncesindeki indexleri data ve idleri düzeltiyorum.
+                            for (var i = columnCount + 3; (index + 1) < i; i--) {
+                                $('#column_' + (k + 1) + '_0_' + i).attr('id', 'column_' + (k + 1) + '_0_' + Number(i - 1));
+
+                                for (var j = 0; j < rowCount; j++) {
+                                    $('#cell_' + (k) + '_' + j + '_' + (i)).attr('data-columnindex', k + '_' + Number(i - 1));
+                                    $('#cell_' + (k) + '_' + j + '_' + (i)).attr('id', 'cell_' + k + '_' + j + '_' + (i - 1));
+                                }
+                            }
+                        }
+                    }
+
+                }
+                else if (lastItem.geriTur == 4) {
+                    //sütun silme
+
+                    var sutunSilList = lastItem.geriDeger;
+                    var index = lastItem.geriIndex;
+
+                    //yıkama sonrası id index düzeltiyorum.
+                    //15174950
+                    for (var i = columnCount; index < i; i--) {
+                        $('#btn_sutunekle_' + (i - 1)).attr('data-index', i);
+                        $('#btn_sutunekle_' + (i - 1)).attr('id', 'btn_sutunekle_' + (i));
+
+                        $('#btn_sutunsil_' + (i - 1)).attr('data-index', i);
+                        $('#btn_sutunsil_' + (i - 1)).attr('id', 'btn_sutunsil_' + (i));
+
+                        $('#column_0_' + i).attr('id', 'column_0_' + Number(i + 1));
+
+                        for (var j = 0; j < rowCount; j++) {
+                            $('#cell_' + j + '_' + i).attr('data-columnindex', (i + 1));
+                            $('#cell_' + j + '_' + i).attr('id', 'cell_' + j + '_' + (i + 1));
+                        }
+                    }
+
+                    //yıkama sonrasına silinen sütunu ve hücreleri geri ekliyorum.
+                    $('#column_0_' + index).after(sutunSilList[0].columnBasligi);
+
+                    for (var i = 0; i < rowCount; i++) {
+                        $('#cell_' + i + '_' + index).after(sutunSilList[0].hucreler[i]);
+                    }
+                    if (window.tableCountYO > 0) {
+                        columnCount = columnCount + 3;
+
+                        for (var k = 0; k < window.tableCountYO; k++) {
+                            //yıkama öncesinde id ve index düzeltiyorum.
+
+                            for (var i = columnCount; index < i; i--) {
+                                $('#column_' + (k + 1) + '_0_' + i).attr('id', 'column_' + (k + 1) + '_0_' + Number(i + 1));
+
+                                for (var j = 0; j < rowCount; j++) {
+                                    $('#cell_' + (k) + '_' + j + '_' + i).attr('data-columnindex', k + '_' + (i + 1));
+                                    $('#cell_' + (k) + '_' + j + '_' + i).attr('id', 'cell_' + (k) + '_' + j + '_' + (i + 1));
+                                }
+                            }
+
+                            //yıkama öncesinde silinen sütunu ve hücreleri geri ekliyorum.
+                            $('#column_' + (k + 1) + '_0_' + index).after(sutunSilList[k + 1].columnBasligi);
+
+                            for (var i = 0; i < rowCount; i++) {
+                                $('#cell_' + k + '_' + i + '_' + index).after(sutunSilList[k + 1].hucreler[i]);
+                            }
+                        }
+
+                    }
+
+
+                }
+                else if (lastItem.geriTur == 5) {
+                    //ana beden değiştirme
+                    var rowCount = $('#tableForm_ys tr').length - 1;
+                    var columnCount = $('#tableHead_0 th').length;
+
+                    //anaBeden değiştirme
+                    var tableIndex = lastItem.geriIndex.ctrlZgelenTableIndex;
+                    var rowIndex = lastItem.geriIndex.ctrlZrowIndex;
+                    var columnIndex = lastItem.geriIndex.ctrlZcolumnIndex;
+                    for (var i = 1; i < columnCount; i++) {
+                        $('#cell_' + tableIndex + '_' + rowIndex + '_' + i).html(lastItem.geriDeger[i - 1]);
+
+                        //Kalıp ölçüsünüde yazdır.
+
+                        if (($('#cell_' + tableIndex + '_' + rowIndex + '_' + i).css("background-color") == 'rgb(135, 206, 250)') && (i < (columnCount - 3))) {
+                            var anaBedenDeger = parseFloat($('#cell_' + tableIndex + '_' + rowIndex + '_' + i).html().replace(',', '.'));
+                            var tolerans = parseFloat($('#cell_' + tableIndex + '_' + rowIndex + '_' + (columnCount - 3)).html().replace(',', '.'));
+                            var deger = (anaBedenDeger + tolerans).toFixed(1);
+
+                            $('#cellKalip_' + tableIndex + '_' + rowIndex + '_1').html(Number(deger));
+                        }
+                    }
+                }
+                else if (lastItem.geriTur == 6) {
+                    //çekme değiştirme
+                    var rowCount = $('#tableForm_ys tr').length - 1;
+                    var columnCount = $('#tableHead_0 th').length;
+
+                    var tableIndex = lastItem.geriIndex.ctrlZgelenTableIndex;
+                    var rowIndex = lastItem.geriIndex.ctrlZrowIndex;
+                    var columnIndex = lastItem.geriIndex.ctrlZcolumnIndex;
+                    for (var i = 1; i < columnCount; i++) {
+                        $('#cell_' + tableIndex + '_' + rowIndex + '_' + i).html(lastItem.geriDeger[i - 1]);
+
+                        //Kalıp ölçüsünüde yazdır.
+
+                        if (($('#cell_' + tableIndex + '_' + rowIndex + '_' + i).css("background-color") == 'rgb(135, 206, 250)') && (i < (columnCount - 3))) {
+                            var anaBedenDeger = parseFloat($('#cell_' + tableIndex + '_' + rowIndex + '_' + i).html().replace(',', '.'));
+                            var tolerans = parseFloat($('#cell_' + tableIndex + '_' + rowIndex + '_' + (columnCount - 3)).html().replace(',', '.'));
+                            var deger = (anaBedenDeger + tolerans).toFixed(1);
+
+                            $('#cellKalip_' + tableIndex + '_' + rowIndex + '_1').html(Number(deger));
+                        }
+                    }
+                }
+                else if (lastItem.geriTur == 7) {
+                    //tölerans değiştirme
+                    var rowCount = $('#tableForm_ys tr').length - 1;
+                    var columnCount = $('#tableHead_0 th').length;
+
+                    $('#cell_' + lastItem.geriIndex.ctrlZgelenTableIndex + '_' + lastItem.geriIndex.ctrlZrowIndex + '_' + lastItem.geriIndex.ctrlZcolumnIndex).html(lastItem.geriDeger[0]);
+                    $('#cellKalip_' + lastItem.geriIndex.ctrlZgelenTableIndex + '_' + lastItem.geriIndex.ctrlZrowIndex + '_1').html(lastItem.geriDeger[1]);
+                }
+
+                window.controlZList.pop();
+                YukleniyorOnOff();
+
+            }
+        }
+    }
+
+</script>
+
+

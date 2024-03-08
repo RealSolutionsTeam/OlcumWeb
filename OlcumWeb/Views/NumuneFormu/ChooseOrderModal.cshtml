@@ -1,0 +1,48 @@
+﻿<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+
+<div style="text-align:center">
+    <br />
+    <h2 class="swal2-title">
+
+        Lütfen işlem yapacağınız Orderı seçiniz
+    </h2>
+</div>
+<hr />
+<div>
+    @if (ViewBag.orders.Count > 0)
+    {
+        @Html.DropDownList("orderNosNumune", new SelectList(ViewBag.orders, "ID", "orderNo"), "Seçiniz...", new { @class = "form-control select2", @id = "orderNosNumune" })
+        <br />
+        <br />
+        <div>
+            <a href="#" class="btn btn-success" onclick="GetOrderId()"><span style="color:white;">Seç</span></a>
+        </div>
+    }
+    else
+    {
+        <span style="font-weight:bold;font-size:18px">Aradığınız ölçü türüne ait girilmiş kayıt bulunamadı. Lütfen konuyla ilgili Modeliste başvurunuz.</span>
+        <br />
+        <br />
+        <div>
+            <a href="#" class="btn btn-success" onclick="GoToPreviousStep()"><span style="color:white;">Önceki Adıma Dön</span></a>
+        </div>
+    }
+
+
+</div>
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2({
+            dropdownParent: $("#stepsModal")
+        });
+    };
+
+    function GoToPreviousStep() {
+        SelectOlcuTuru();
+        SetStepBreadCrumb(1);
+    }
+</script>
+

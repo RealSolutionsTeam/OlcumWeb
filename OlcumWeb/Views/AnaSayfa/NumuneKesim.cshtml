@@ -1,0 +1,563 @@
+﻿@model Tuple<OlcumWeb.dbOlcum.NumuneKesimDetay, OlcumWeb.dbOlcum.Order>
+
+
+@{
+    ViewBag.Title = "NumuneKesim";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+<title>Numune Kesim Formu</title>
+
+<ul id="breadcrumb">
+    <li><a href="@Url.Action("Index", "AnaSayfa")"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+    <li><a href="@Url.Action("NumuneKesim", "AnaSayfa")"><span class="icon icon-double-angle-right"></span> Numune Kesim Formu</a></li>
+</ul>
+
+<div class="col-12">
+    <div class="card">
+        <div class="card-header">
+            <h4>Order Bilgisi</h4>
+            <div class="card-header-action">
+                @Html.DropDownList("orderNo", new SelectList(ViewBag.order, "orderNo", "orderNo"), "Seçiniz...", new { @class = "form-control select2", @id = "orderNo" })
+
+                <a data-collapse="#mycard-collapse" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus"></i></a>
+            </div>
+        </div>
+        <div class="collapse show" id="mycard-collapse" style="">
+            <div class="card-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group" style="margin-right: 20px">
+                                <label>Tarih:</label>
+                                <div class="input-group">
+                                    <input type="text" id="datepicker" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group" style="margin-right: 20px">
+                                <label>Müşteri:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("musteri", null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>Form No:</label>
+                                <div class="input-group">
+                                    <div class="col-6">
+                                        @Html.DropDownList("formNo", Enumerable.Empty<SelectListItem>(), "...", new { @class = "form-control", @id = "formNo", @style = "margin-right:10px" })
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="button" value="Yeni Ekle" id="ekleButton" class="form-control" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>Tela:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("tela", null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>Giysi Türü:</label>
+                                <div class="input-group">
+                                    @Html.DropDownList("Cins", new List<SelectListItem> {
+                                    new SelectListItem {
+                                            Text="Pantolon",
+                                            Value="1" },
+                                    new SelectListItem {
+                                            Text="Şort",
+                                            Value="2" },
+                                    new SelectListItem {
+                                            Text="Etek",
+                                            Value="3" },
+                                    new SelectListItem {
+                                        Text="Ceket",
+                                        Value="4",
+                                         },
+                                    new SelectListItem {
+                                            Text="Gömlek",
+                                            Value="5",
+                                         }
+                                     }, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>Modelist:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("modelist", (string)ViewBag.adSoyad, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>Model No:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("modelNo", null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>Model Adı:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("modelAdi", null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+
+                            <div class="form-group">
+                                <label>Kumaş:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("kumas", null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>Garni:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("garni1", null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>Garni:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("garni2", null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label>Garni:</label>
+                                <div class="input-group">
+                                    @Html.TextBox("garni3", null, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12" style="display: none;" id="numuneDetay">
+    <div class="card">
+        <div class="card-header">
+            <h4>Numune Detayı</h4>
+            <div class="card-header-action">
+                <a data-collapse="#mycard-collapse2" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus"></i></a>
+            </div>
+        </div>
+        <div class="collapse show" id="mycard-collapse2" style="">
+            <div class="card-body">
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Dikime Veriliş Nedeni:</label>
+                            <div class="input-group">
+                                @Html.TextBox("verilisNedeni", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Dikilecek Beden / Boy:</label>
+                            <div class="input-group">
+                                @Html.TextBox("bedenboy", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Adet:</label>
+                            <div class="input-group">
+                                @Html.TextBox("adet", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>KID:</label>
+                            <div class="input-group">
+                                @Html.TextBox("kid", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Baskı:</label>
+                            <div class="input-group">
+                                @Html.TextBox("baski", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Nakış:</label>
+                            <div class="input-group">
+                                @Html.TextBox("nakis", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>En/Boy Çekme:</label>
+                            <div class="input-group">
+                                @Html.TextBox("cekme", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Kumaş Eni:</label>
+                            <div class="input-group">
+                                @Html.TextBox("kumasEni", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Top No:</label>
+                            <div class="input-group">
+                                @Html.TextBox("topNo", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <div class="input-group">
+                            @Html.TextBox("olcuNoktasi1", "BEL:", new { @class = "form-control", @style = "margin-right: 10px" })
+                            @Html.TextBox("olcu1", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <div class="input-group">
+                            @Html.TextBox("olcuNoktasi2", "İÇ BOY:", new { @class = "form-control", @style = "margin-right: 10px" })
+                            @Html.TextBox("olcu2", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <div class="input-group">
+                            @Html.TextBox("olcuNoktasi3", "YAN BOY:", new { @class = "form-control", @style = "margin-right: 10px" })
+                            @Html.TextBox("olcu3", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <div class="input-group">
+                            @Html.TextBox("olcuNoktasi4", "ÖN AĞ K.D:", new { @class = "form-control", @style = "margin-right: 10px" })
+                            @Html.TextBox("olcu4", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <div class="input-group">
+                            @Html.TextBox("olcuNoktasi5", "ARKA AĞ K.D:", new { @class = "form-control", @style = "margin-right: 10px" })
+                            @Html.TextBox("olcu5", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <div class="input-group">
+                            @Html.TextBox("olcuNoktasi6", "FERMUAR BOYU:", new { @class = "form-control", @style = "margin-right: 10px" })
+                            @Html.TextBox("olcu6", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <button type="button" class="btn btn-primary" id="btnKaydet">Kaydet</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2();
+    };
+
+    $(function () {
+        $("#datepicker").datepicker({
+            dateFormat: "dd-mm-yy",
+            altFormat: "yy-mm-dd",
+            altField: "#tarih-db",
+            monthNames: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+            dayNamesMin: ["Pa", "Pt", "Sl", "Ça", "Pe", "Cu", "Ct"],
+        });
+
+        $("#datepicker").datepicker('setDate', new Date());
+    });
+
+    $("#orderNo").change(function () {
+
+        var o = $("#orderNo").val();
+        $.getJSON("/NumuneKesim/KeyPress", { 'order': o },
+            function (data) {
+                if (data.hasOwnProperty("orders")) {
+                    document.getElementById('musteri').value = data.orders.musteri;
+                    document.getElementById('modelNo').value = data.orders.modelNo;
+
+                    $('#formNo').empty();
+                    var newOption = "<option value='" + "1" + "'>1</option>";
+                    $('#formNo').append(newOption);
+
+                    document.getElementById('modelAdi').value = data.orders.modelAd;
+                    document.getElementById('kumas').value = data.orders.kumas;
+
+                    if (data.garniList.length == 1) {
+                        document.getElementById('garni1').value = data.garniList[0];
+                    }
+                    else if (data.garniList.length == 2) {
+                        document.getElementById('garni1').value = data.garniList[0];
+                        document.getElementById('garni2').value = data.garniList[1];
+                    }
+                    else {
+                        document.getElementById('garni1').value = data.garniList[0];
+                        document.getElementById('garni2').value = data.garniList[1];
+                        document.getElementById('garni3').value = data.garniList[2];
+                    }
+
+                    if (data.tela) {
+                        document.getElementById('tela').value = data.tela;
+                    }
+
+                }
+                else {
+                    var dateString = data[0].tarih.substr(6);
+                    var currentTime = new Date(parseInt(dateString));
+                    var month = currentTime.getMonth() + 1;
+                    var day = currentTime.getDate();
+                    var year = currentTime.getFullYear();
+                    var date = day + "-" + month + "-" + year;
+                    $('#datepicker').val(date);
+                    document.getElementById('musteri').value = data[0].müsteri;
+                    document.getElementById('modelNo').value = data[0].modelNo;
+                    document.getElementById('modelAdi').value = data[0].modelAdi;
+                    document.getElementById('kumas').value = data[0].kumasTuru;
+                    document.getElementById('garni1').value = data[0].garni;
+                    document.getElementById('garni2').value = data[0].garni2;
+                    document.getElementById('garni3').value = data[0].garni3;
+                    document.getElementById('tela').value = data[0].tela;
+                    document.getElementById('modelist').value = data[0].modelist;
+                    document.getElementById('verilisNedeni').value = data[0].dikimNedeni;
+                    document.getElementById('bedenboy').value = data[0].dikilecekBedenBoy;
+                    document.getElementById('adet').value = data[0].adet;
+                    document.getElementById('olcuNoktasi1').value = data[0].olcuNoktasi1;
+                    document.getElementById('olcuNoktasi2').value = data[0].olcuNoktasi2;
+                    document.getElementById('olcuNoktasi3').value = data[0].olcuNoktasi3;
+                    document.getElementById('olcuNoktasi4').value = data[0].olcuNoktasi4;
+                    document.getElementById('olcuNoktasi5').value = data[0].olcuNoktasi5;
+                    document.getElementById('olcuNoktasi6').value = data[0].olcuNoktasi6;
+                    document.getElementById('olcu1').value = data[0].olcu1;
+                    document.getElementById('olcu2').value = data[0].olcu2;
+                    document.getElementById('olcu3').value = data[0].olcu3;
+                    document.getElementById('olcu4').value = data[0].olcu4;
+                    document.getElementById('olcu5').value = data[0].olcu5;
+                    document.getElementById('olcu6').value = data[0].olcu6;
+                    document.getElementById('cekme').value = data[0].cekme;
+                    document.getElementById('kumasEni').value = data[0].kumasEni;
+                    document.getElementById('topNo').value = data[0].topNo;
+                    document.getElementById('kid').value = data[0].kid;
+                    document.getElementById('baski').value = data[0].baski;
+                    document.getElementById('nakis').value = data[0].nakis;
+
+                    $('#formNo').empty();
+
+                    for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].formNo);
+                        $("#formNo").append(opt);
+                    }
+
+                    $('#Cins').value = data[0].cinsi;
+                }
+                $('#numuneDetay').show();
+            });
+    });
+
+    $('#ekleButton').click(function () {
+        var selectedText = $('#formNo :selected').text();
+
+        if (selectedText != "...") {
+            var lastValue = $('#formNo option:last-child').val();
+
+            var newOption = "<option value='" + (+lastValue + +1) + "'>" + (+lastValue + +1) + "</option>";
+            $('#formNo').append(newOption);
+            $('#formNo').prop('selectedIndex', +lastValue); // select 4th option
+
+        }
+    });
+
+    $('#formNo').change(function () {
+        var selectedIndex = $('#formNo').prop('selectedIndex');
+        var o = $("#orderNo").val();
+
+        $.getJSON("/NumuneKesim/KeyPress", { 'order': o },
+            function (data) {
+                var dateString = data[+selectedIndex].tarih.substr(6);
+                var currentTime = new Date(parseInt(dateString));
+                var month = currentTime.getMonth() + 1;
+                var day = currentTime.getDate();
+                var year = currentTime.getFullYear();
+                var date = day + "-" + month + "-" + year;
+                $('#datepicker').val(date);
+                document.getElementById('musteri').value = data[+selectedIndex].müsteri;
+                document.getElementById('modelNo').value = data[+selectedIndex].modelNo;
+                document.getElementById('modelAdi').value = data[+selectedIndex].modelAdi;
+                document.getElementById('kumas').value = data[+selectedIndex].kumasTuru;
+                document.getElementById('garni1').value = data[+selectedIndex].garni;
+                document.getElementById('garni2').value = data[+selectedIndex].garni2;
+                document.getElementById('garni3').value = data[+selectedIndex].garni3;
+                document.getElementById('tela').value = data[+selectedIndex].tela;
+                document.getElementById('modelist').value = data[+selectedIndex].modelist;
+                document.getElementById('verilisNedeni').value = data[+selectedIndex].dikimNedeni;
+                document.getElementById('bedenboy').value = data[+selectedIndex].dikilecekBedenBoy;
+                document.getElementById('adet').value = data[+selectedIndex].adet;
+                document.getElementById('olcuNoktasi1').value = data[+selectedIndex].olcuNoktasi1;
+                document.getElementById('olcuNoktasi2').value = data[+selectedIndex].olcuNoktasi2;
+                document.getElementById('olcuNoktasi3').value = data[+selectedIndex].olcuNoktasi3;
+                document.getElementById('olcuNoktasi4').value = data[+selectedIndex].olcuNoktasi4;
+                document.getElementById('olcuNoktasi5').value = data[+selectedIndex].olcuNoktasi5;
+                document.getElementById('olcuNoktasi6').value = data[+selectedIndex].olcuNoktasi6;
+                document.getElementById('olcu1').value = data[+selectedIndex].olcu1;
+                document.getElementById('olcu2').value = data[+selectedIndex].olcu2;
+                document.getElementById('olcu3').value = data[+selectedIndex].olcu3;
+                document.getElementById('olcu4').value = data[+selectedIndex].olcu4;
+                document.getElementById('olcu5').value = data[+selectedIndex].olcu5;
+                document.getElementById('olcu6').value = data[+selectedIndex].olcu6;
+                document.getElementById('cekme').value = data[+selectedIndex].cekme;
+                document.getElementById('kumasEni').value = data[+selectedIndex].kumasEni;
+                document.getElementById('topNo').value = data[+selectedIndex].topNo;
+                document.getElementById('kid').value = data[+selectedIndex].kid;
+                document.getElementById('baski').value = data[+selectedIndex].baski;
+                document.getElementById('nakis').value = data[+selectedIndex].nakis;
+                $('#Cins').value = data[+selectedIndex].cinsi;
+            });
+    });
+
+    $('#btnKaydet').click(function () {
+        $(".loader").show();
+
+        $.post("/NumuneKesim/SaveData", {
+            'tarih': $("#datepicker").val(), 'müsteri': $("#musteri").val(), 'orderNo': $('#orderNo').val(),
+            'formNo': $('#formNo').val(), 'modelNo': $("#modelNo").val(), 'modelAdi': $("#modelAdi").val(),
+            'kumas': $("#kumas").val(), 'garni1': $("#garni1").val(), 'garni2': $("#garni2").val(), 'garni3': $("#garni3").val(),
+            'tela': $("#tela").val(), 'cinsi': $("#Cins").val(), 'modelist': $("#modelist").val(),
+            'dikimNedeni': $("#verilisNedeni").val(), 'dikilecekBedenBoy': $("#bedenboy").val(), 'adet': $("#adet").val(),
+            'olcuNoktasi1': $("#olcuNoktasi1").val(), 'olcuNoktasi2': $("#olcuNoktasi2").val(), 'olcuNoktasi3': $("#olcuNoktasi3").val(),
+            'olcuNoktasi4': $("#olcuNoktasi4").val(), 'olcuNoktasi5': $("#olcuNoktasi5").val(), 'olcuNoktasi6': $("#olcuNoktasi6").val(),
+            'olcu1': $("#olcu1").val(), 'olcu2': $("#olcu2").val(), 'olcu3': $("#olcu3").val(), 'olcu4': $("#olcu4").val(), 'olcu5': $("#olcu5").val(), 'olcu6': $("#olcu6").val(),
+            'cekme': $("#cekme").val(), 'kumasEni': $("#kumasEni").val(), 'topNo': $("#topNo").val(), 'kid': $("#kid").val(), 'baski': $("#baski").val(), 'nakis': $("#nakis").val(),
+        }, function () {
+            $(".loader").fadeOut("slow");
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+            $(".loader").fadeOut("slow");
+        });
+
+    });
+
+    $('#Cins').change(function () {
+        var selectedIndex = $('#Cins').prop('selectedIndex');
+        if (+selectedIndex == 0 || +selectedIndex == 1 || +selectedIndex == 2) {
+            $("#olcuNoktasi3").show();
+            $("#olcu3").show();
+            $("#olcuNoktasi4").show();
+            $("#olcu4").show();
+            $("#olcuNoktasi5").show();
+            $("#olcu5").show();
+            $("#olcuNoktasi6").show();
+            $("#olcu6").show();
+
+            $('#olcuNoktasi1').val("BEL:");
+            $('#olcuNoktasi2').val("İÇ BOY:");
+        }
+        else {
+            $("#olcuNoktasi3").hide();
+            $("#olcu3").hide();
+            $("#olcuNoktasi4").hide();
+            $("#olcu4").hide();
+            $("#olcuNoktasi5").hide();
+            $("#olcu5").hide();
+            $("#olcuNoktasi6").hide();
+            $("#olcu6").hide();
+
+            $('#olcuNoktasi1').val("ETEK GENİŞLİĞİ:");
+            $('#olcuNoktasi2').val("FERMUAR BOYU:");
+        }
+    });
+
+</script>
+
+

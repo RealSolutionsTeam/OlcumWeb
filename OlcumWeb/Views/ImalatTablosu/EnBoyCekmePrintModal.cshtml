@@ -1,0 +1,53 @@
+﻿@model Tuple<List<OlcumWeb.Models.DTO.DTOImalatTabloDetay>, List<List<OlcumWeb.Models.DTO.DTOImalatTabloGoster>>, List<string>>
+
+<div class="row">
+    @foreach (var item in Model.Item3)
+    {
+        <div class="col-3">
+            <div class="pretty p-default p-round p-thick">
+                <input type="checkbox" name="cekmeler" data-enboycekme="@item">
+                <div class="state p-success-o">
+                    <label>@item</label>
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+
+
+<a href="#" class="btn btn-primary" onclick="PrintYazdir()"><i class="fa fa-print"></i>Yazdır</a>
+
+
+
+<script>
+
+    function PrintYazdir() {
+        var param1 = @Html.Raw(Json.Encode(Model.Item1));
+
+        var param2 = @Html.Raw(Json.Encode(Model.Item2));
+
+        var listeler = [];
+
+        $('input[name="cekmeler"]:checked').each(function () {
+
+            listeler.push($(this).data('enboycekme'));
+        });
+
+        var kulID = @Html.Raw(Json.Encode(ViewBag.personel));
+
+
+        $.post("/ImalatTablosu/Print", { 'param1': param1, 'param2': param2, 'cekme': listeler, 'personel': kulID }, function (deger) {
+            var popupWin = window.open('', '_blank', 'width=auto,height=auto');
+            popupWin.document.open();
+            popupWin.document.write('<html><head></head><body>');
+            popupWin.document.write(deger);
+            popupWin.document.write('</body></html>');
+            popupWin.print();
+            popupWin.document.close();
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+</script>

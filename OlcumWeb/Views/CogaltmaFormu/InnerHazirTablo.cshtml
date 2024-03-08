@@ -1,0 +1,131 @@
+﻿@model Tuple<List<OlcumWeb.dbOlcum.HazirTabloDetay>, List<List<OlcumWeb.Models.DTO.DTOHazirTablo>>>
+
+
+<div class="card card-success">
+    <div class="card-header">
+        <h4>Hazır Tablo Seçme Ekranı</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-sm-12 col-md-4">
+                <ul class="nav nav-pills flex-column deneme" id="myTab4" role="tablist">
+
+                    @for (int i = 0; i < Model.Item1.Count; i++)
+                    {
+                        if (i == 0)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link active" id="hometab_@i" data-toggle="tab" href="#home_@i" data-modelid="@Model.Item1[i].modelID" data-detayid="@Model.Item1[i].id" data-index="@i" role="tab" aria-controls="home" aria-selected="true">@Model.Item1[i].tarih.Value.ToString("dd/MM/yyyy")</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" id="hometab_@i" data-toggle="tab" href="#home_@i" data-modelid="@Model.Item1[i].modelID" data-detayid="@Model.Item1[i].id" data-index="@i" role="tab" aria-controls="home" aria-selected="true">@Model.Item1[i].tarih.Value.ToString("dd/MM/yyyy")</a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </div>
+            <div class="col-12 col-sm-12 col-md-8">
+                <div class="tab-content no-padding" id="myTab2Content">
+                    @for (int i = 0; i < Model.Item1.Count; i++)
+                    {
+                        string deger = "";
+                        if (i == 0)
+                        {
+                            deger = "show active";
+                        }
+                        else
+                        {
+                            deger = "";
+                        }
+                        <div class="tab-pane fade @deger" id="home_@i" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="table-responsive" id="tableForm">
+                                <table id="modalTable_@i" class="table table-striped" style="cursor: pointer;">
+                                    <thead>
+                                        <tr id="tableHead_@i">
+                                            <th>Ölçü Noktası</th>
+                                            @for (int j = 0; j < Model.Item2[i].Select(x => x.beden).Distinct().Count(); j++)
+                                            {
+                                                <th id="column_@i@j">@Model.Item2[i][j].beden</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody_@i">
+                                        @for (int j = 0; j < Model.Item2[i].Count; j++)
+                                        {
+                                            if (j == 0)
+                                            {
+                                                <tr id="satir_@j">
+                                                    <td data-editable="false">
+                                                        @Model.Item2[i][j].olcuNoktasi
+                                                    </td>
+
+                                                    @for (int z = 0; z < Model.Item2[i][j].deger.Count(); z++)
+                                                    {
+                                                        <td tabindex="1" data-olcuNoktasi="@Model.Item2[i][j].olcuNoktasi" data-beden="@Model.Item2[i][j].beden">
+                                                            @Model.Item2[i].Where(x => x.olcuNoktasi == Model.Item2[i][j].olcuNoktasi && x.beden == Model.Item2[i][j].beden && x.id == Model.Item2[i][j].id).Select(x => x.deger[z]).FirstOrDefault()
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                if (@Model.Item2[i][j].olcuNoktasi != @Model.Item2[i][j - 1].olcuNoktasi)
+                                                {
+                                                    <tr id="satir_@j">
+                                                        <td data-editable="false">
+                                                            @Model.Item2[i][j].olcuNoktasi
+                                                        </td>
+
+                                                        @for (int z = 0; z < Model.Item2[i][j].deger.Count(); z++)
+                                                        {
+                                                            <td tabindex="1" data-olcuNoktasi="@Model.Item2[i][j].olcuNoktasi" data-beden="@Model.Item2[i][j].beden">
+                                                                @Model.Item2[i].Where(x => x.olcuNoktasi == Model.Item2[i][j].olcuNoktasi && x.beden == Model.Item2[i][j].beden && x.id == Model.Item2[i][j].id).Select(x => x.deger[z]).FirstOrDefault()
+                                                            </td>
+                                                        }
+                                                    </tr>
+                                                }
+
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <input style="position: absolute; display: none;">
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="row" style="margin-left:1%"><button type="button" class="btn btn-primary" id="btnSec" onclick="TabloSec()">Seç</button></div>
+    </div>
+</div>
+
+<script>
+    function TabloSec() {
+        var detayID = $('ul.deneme > li > a.active').data("detayid");
+        var index = $('ul.deneme > li > a.active').data("index");
+        var columnCount = $("#tableHead_" + index).find("th").length - 1;
+        var bedenList = [];
+        for (var i = 0; i < columnCount; i++) {
+            bedenList.push($("#column_" + index + i).html());
+        }
+
+
+        $.post("/CogaltmaFormu/Bedenler", { 'detayID': detayID, 'bedenList': bedenList }, function (deger) {
+            $('#beden_Modal').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+        $('#bedenModal').modal('show');
+
+        $('#hazirTabloModal').modal('toggle');
+    }
+</script>
+

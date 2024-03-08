@@ -1,0 +1,80 @@
+﻿<div class="card card-success">
+    <div class="card-header">
+        <div class="card-header-action">
+            <div class="row">
+                <input type="text" name="search" class="form-control" placeholder="Order Ara" style="width:300px; border:2px solid;">
+                <a href="#" class="btn btn-info block2"><span style="color:white" onclick="HucreGorunumu()">Hücre Görünümü</span></a>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-md">
+                <tbody>
+                    <tr>
+                        <th>Tablo</th>
+                        <th>Order No.</th>
+                        <th>Tarih</th>
+                        <th>Ölçü Türü</th>
+                        <th>Modelist</th>
+                    </tr>
+                    <tr>
+                        <td><a href="#" class="btn btn-icon btn-info"><i class="fas fa-search" style="color:white"></i></a></td>
+                        <td>Irwansyah Saputra</td>
+                        <td>2017-01-09</td>
+                        <td>
+                            <div class="badge badge-success">Active</div>
+                        </td>
+                        <td><a href="#" class="btn btn-primary">Detail</a></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Hasan Basri</td>
+                        <td>2017-01-09</td>
+                        <td>
+                            <div class="badge badge-success">Active</div>
+                        </td>
+                        <td><a href="#" class="btn btn-primary">Detail</a></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Kusnadi</td>
+                        <td>2017-01-11</td>
+                        <td>
+                            <div class="badge badge-danger">Not Active</div>
+                        </td>
+                        <td><a href="#" class="btn btn-primary">Detail</a></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Rizal Fakhri</td>
+                        <td>2017-01-11</td>
+                        <td>
+                            <div class="badge badge-success">Active</div>
+                        </td>
+                        <td><a href="#" class="btn btn-primary">Detail</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function HucreGorunumu() {
+        $.ajax({
+            url: '/OlcuFormu/HucreGorunumu',
+            type: 'GET',
+            dataType: 'html',
+            success: function (result) {
+                $('#hucreGorunumu').html(result);
+                $('#listeGorunumu').hide();
+                $('#hucreGorunumu').show();
+
+            },
+            error: function (xhr, status) {
+                alert(status);
+            }
+        });
+    }
+</script>

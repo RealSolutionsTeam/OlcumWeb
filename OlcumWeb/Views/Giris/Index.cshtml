@@ -1,0 +1,161 @@
+﻿
+@{
+    Layout = null;
+}
+
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+    <title>Giriş - Ölçüm Yazılımı</title>
+    <!-- General CSS Files -->
+    <link rel="stylesheet" href="~/Tema/assets/css/app.min.css">
+    <link rel="stylesheet" href="~/Tema/assets/bundles/bootstrap-social/bootstrap-social.css">
+    <link rel="stylesheet" href="~/Tema/assets/bundles/izitoast/css/iziToast.min.css">
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="~/Tema/assets/css/style.css">
+    <link rel="stylesheet" href="~/Tema/assets/css/components.css">
+    <!-- Custom style CSS -->
+    <link rel="stylesheet" href="~/Tema/assets/css/custom.css">
+    <link rel="shortcut icon" type="image/x-icon" href="~/Tema/assets/img/favicon.ico">
+
+</head>
+
+<body class="light light-sidebar theme-white">
+    <div class="loader" style="display: none;"></div>
+    <div id="app">
+        <section class="section">
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+                        <div class="card card-primary">
+                            <div style="text-align:center; margin-top:5px; text-align: center; padding: 10px 25px; margin-top: 5px;">
+                                <img alt="image" src="~/Tema/assets/img/logoR.png" class="header-logo" />
+                            </div>
+                            <div class="card-header text-uppercase" style="text-align:center; margin-top: 3%;">
+                                <h4 style="margin: auto; padding-right: 0;">Ölçüm</h4>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="#" class="needs-validation" novalidate="">
+                                    <div class="form-group">
+                                        <label for="personelkAdi">Kullanıcı Adı</label>
+                                        <input id="personelkAdi" class="form-control" name="personelkAdi" tabindex="1" required="" autofocus="">
+                                        <div class="invalid-feedback">
+                                            Lütfen kullanıcı adı bilgisini giriniz.
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="d-block">
+                                            <label for="personelSifre" class="control-label">Şifre</label>
+                                        </div>
+                                        <input id="personelSifre" type="password" class="form-control" name="personelSifre" tabindex="2" required="">
+                                        <div class="invalid-feedback">
+                                            Lütfen şifre bilgisini giriniz.
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-primary btn-lg btn-block" onclick="Store()" tabindex="4">
+                                            GİRİŞ
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- General JS Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="~/Tema/assets/js/app.min.js"></script>
+    <script src="~/Tema/assets/bundles/izitoast/js/iziToast.min.js"></script>
+    <script src="~/Tema/assets/js/page/toastr.js"></script>
+    <!-- JS Libraies -->
+    <!-- Page Specific JS File -->
+    <!-- Template JS File -->
+    <script src="~/Tema/assets/js/scripts.js"></script>
+
+    <script>
+        function AlertMesaj(m) {
+            iziToast.info({
+                title: 'Mesaj!',
+                message: m,
+                position: 'topRight'
+            });
+        };
+
+        function AlertBasari(b) {
+            iziToast.success({
+                title: 'Başarılı!',
+                message: b,
+                position: 'topRight'
+            });
+        };
+
+        function AlertUyari(u) {
+            iziToast.warning({
+                title: 'Uyarı!',
+                message: u,
+                position: 'topRight'
+            });
+        };
+
+        function AlertHata(h) {
+            iziToast.error({
+                title: 'Hata!',
+                message: h,
+                position: 'topCenter'
+            });
+        };
+
+        function Store() {
+            var kAdi = $('#personelkAdi').val();
+            var sifre = $('#personelSifre').val();
+            console.log(kAdi + " " + sifre);
+
+             $.post("/Giris/GirisLocal", { 'username': $('#personelkAdi').val(), 'password': $('#personelSifre').val() }, function (deger) {
+
+                   
+                 localStorage.setItem('personel', JSON.stringify(deger));
+                 var id = deger.id;
+                 window.location.href = "/Anasayfa/Index?id=" + id;
+
+                 console.log(localStorage.getItem('personel'));
+
+
+              }).fail(function (response) {
+              alert('Error : ' + response.responseText);
+        });
+        }
+
+        $(document).ready(function () {
+
+            var m = @Html.Raw(Json.Encode(TempData["mesaj"]));
+            var u = @Html.Raw(Json.Encode(TempData["uyari"]));
+            var h = @Html.Raw(Json.Encode(TempData["hata"]));
+            var b = @Html.Raw(Json.Encode(TempData["basari"]));
+
+
+
+            if (m != null) {
+                AlertMesaj(m);
+            }
+
+            if (b != null) {
+                AlertBasari(b);
+            }
+
+            if (h != null) {
+                AlertHata(h);
+            }
+
+            if (u != null) {
+                AlertUyari(u);
+            }
+
+        });
+
+    </script>
+</body>
+</html>

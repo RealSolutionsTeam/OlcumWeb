@@ -1,0 +1,401 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+<link rel="stylesheet" href="~/CSS/buttonHover.css">
+
+
+<style>
+    @@import url('https://fonts.googleapis.com/css?family=Heebo:400,700|Open+Sans:400,700');
+
+    :root {
+        --color: #3c3163;
+        --transition-time: 0.5s;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: 'Open Sans';
+        background: #fafafa;
+    }
+
+    a {
+        color: inherit;
+    }
+
+    .cards-wrapper {
+        display: block;
+        justify-content: center;
+        align-items: center;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 4rem;
+        padding: 4rem;
+        margin: 0 auto;
+        width: max-content;
+    }
+
+    .card {
+        font-family: 'Heebo';
+        --bg-filter-opacity: 0.3;
+        background-image: linear-gradient(rgba(0,0,0,var(--bg-filter-opacity)),rgba(0,0,0,var(--bg-filter-opacity))), var(--bg-img);
+        height: 15em;
+        width: 20em;
+        font-size: 1.5em;
+        color: white;
+        border-radius: 1em;
+        padding: 1em;
+        /*margin: 2em;*/
+        display: flex;
+        align-items: flex-end;
+        background-size: cover;
+        background-position: center;
+        box-shadow: 0 0 5em -1em black;
+        transition: all, var(--transition-time);
+        position: relative;
+        overflow: hidden;
+        /*border: 10px solid #ccc;*/
+        text-decoration: none;
+    }
+        /*
+    .card-grid-space{
+        margin-right:100px
+    }*/
+
+
+        .card:hover {
+            transform: rotate(0);
+        }
+
+        .card h1 {
+            margin: 0;
+            font-size: 3.5em;
+            line-height: 1.2em;
+            color: white;
+        }
+
+        .card:hover h1 {
+            color: black;
+        }
+
+        .card p {
+            font-size: 0.75em;
+            font-family: 'Open Sans';
+            margin-top: 0.5em;
+            line-height: 2em;
+            color: white;
+        }
+
+        .card:hover p {
+            color: black;
+        }
+
+        .card .tags {
+            display: flex;
+        }
+
+            .card .tags .tag {
+                font-size: 0.75em;
+                background: rgba(255,255,255,0.5);
+                border-radius: 0.3rem;
+                padding: 0 0.5em;
+                margin-right: 0.5em;
+                line-height: 1.5em;
+                transition: all, var(--transition-time);
+            }
+
+        .card:hover .tags .tag {
+            background: var(--color);
+            color: white;
+        }
+
+        .card .date {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 0.75em;
+            padding: 1em;
+            line-height: 1em;
+            opacity: .8;
+        }
+
+        .card:before, .card:after {
+            content: '';
+            transform: scale(0);
+            transform-origin: top left;
+            border-radius: 50%;
+            position: absolute;
+            left: -50%;
+            top: -50%;
+            z-index: -5;
+            transition: all, var(--transition-time);
+            transition-timing-function: ease-in-out;
+        }
+
+        .card:before {
+            background: #ddd;
+            width: 250%;
+            height: 250%;
+        }
+
+        .card:after {
+            background: white;
+            width: 200%;
+            height: 200%;
+        }
+
+        .card:hover {
+            color: var(--color);
+        }
+
+            .card:hover:before, .card:hover:after {
+                transform: scale(1);
+            }
+
+    .card-grid-space .num {
+        font-size: 3em;
+        margin-bottom: 1.2rem;
+        margin-left: 1rem;
+    }
+
+    .info {
+        font-size: 1.2em;
+        display: flex;
+        padding: 1em 3em;
+        height: 3em;
+    }
+
+        .info img {
+            height: 3em;
+            margin-right: 0.5em;
+        }
+
+        .info h1 {
+            font-size: 1em;
+            font-weight: normal;
+        }
+
+    /* MEDIA QUERIES */
+    @@media screen and (max-width: 1285px) {
+        .cards-wrapper {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media screen and (max-width: 900px) {
+        .cards-wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        .info {
+            justify-content: center;
+        }
+
+        .card-grid-space .num {
+            margin-left: 0;
+            text-align: center;
+        }
+    }
+
+    @@media screen and (max-width: 500px) {
+        .cards-wrapper {
+            padding: 4rem 2rem;
+        }
+
+        .card {
+            max-width: calc(100vw - 4rem);
+        }
+    }
+
+    @@media screen and (max-width: 450px) {
+        .info {
+            display: block;
+            text-align: center;
+        }
+
+            .info h1 {
+                margin: 0;
+            }
+    }
+</style>
+
+
+<div style="margin-top:2%">
+
+    <section class="cards-wrapper" style="margin-top:-3%;width:100%;">
+        <div class="row">
+            <div class="col-4">
+                <div class="card-grid-space">
+                    <a class="card" href="@Url.Action("Index", "NumuneKesim",new { ad = ViewBag.personelAd,soyad = ViewBag.personelSoyad })" style="        --bg-img: url('../../Images/4707333498d12154cf8ac3923e039e3a.jpg');">
+                        <div>
+                            <h1>Kesim Formu</h1>
+                            <p>Sipariş adına Kesim Fişi oluşturma ekranı.</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card-grid-space">
+                    <a class="card"  href="@Url.Action("Index", "TanimlamaEkrani",new { id = ViewBag.id})" style="--bg-img:url('../../Images/9ee8cbf148097cdce6a18ce9e52695a7.jpg');" >
+                        <div>
+                            <h1>Hazır Tablo Oluşturma</h1>
+                            <p>İmalat Tablosu oluşturulurken kullanılabilecek Hazır Tabloların oluşturulma ekranı.</p>
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="card-grid-space">
+                    <a class="card" href="@Url.Action("Index", "Raporlama")" style="--bg-img: url('../../Images/a191286b8a1350521721a7475f034731.jpg');">
+                        <div>
+                            <h1>Analiz Raporlama</h1>
+                            <p>Siparişleri Analiz etme ve Raporlama ekranı.</p>
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row" style="margin-left:15%;margin-top:1%">
+            <div class="col-5">
+                <div class="card-grid-space">
+                    <a class="card" href="@Url.Action("Index", "CreateTable",new { id = ViewBag.id})" style=" --bg-img: url('../../Images/7617c2add2aeae02db842a9bf4d15510.jpg');" >
+                        <div>
+                            <h1>Tablo Oluşturma</h1>
+                            <p>Numune veya İmalat siparişleri için Tablo Oluşturma ekranı.</p>
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-5">
+                <div class="card-grid-space">
+                    <a class="card" href="@Url.Action("Index", "OlcuFormu",new { id = ViewBag.id})" style="--bg-img:url('../../Images/04e7c6de746de23b681c4f2ee4e88c17.jpg');">
+                        <div>
+                            <h1>Veri Girişi</h1>
+                            <p>Oluşturulan Tablolar üzerinden Veri Girişi yapma ekranı.</p>
+
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+
+        </div>
+
+
+        <!-- https://images.unsplash.com/photo-1520839090488-4a6c211e2f94?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=38951b8650067840307cba514b554ba5&auto=format&fit=crop&w=1350&q=80 -->
+    </section>
+
+    @*<div class="row">
+            <div class="col-md-4" style="width:100%;height:100%">
+                <div class="container2">
+                    <div class="card">
+                        <figure class="front">
+                            <img src="~/Images/BG1.png" alt="front">
+                            <div class="caption">
+                                <h2 style="color:white">NUMUNE KESIM <span>Formu</span></h2>
+                                <a href="@Url.Action("Index", "NumuneKesim",new { ad = ViewBag.personelAd,soyad = ViewBag.personelSoyad })">View more</a>
+                            </div>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-4" style="width:100%;height:100%">
+                <div class="container2">
+                    <div class="card">
+                        <figure class="front">
+                            <img src="~/Images/BG4.png" alt="front">
+                            <div class="caption">
+                                <h2 style="color:white">Hazır Ölçü Tablosu <span>Oluşturma</span></h2>
+                                <a href="@Url.Action("Index", "TanimlamaEkrani",new { id = ViewBag.id})">View more</a>
+                            </div>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4" style="width:100%;height:100%">
+                <div class="container2">
+                    <div class="card">
+                        <figure class="front">
+                            <img src="~/Images/BG3.png" alt="front">
+                            <div class="caption">
+                                <h2 style="color:white"><span>Analiz Raporlama</span></h2>
+                                <a href="@Url.Action("Index", "Raporlama")">View more</a>
+                            </div>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:5%; margin-left:15%">
+            <div class="col-md-5" style="width:100%;height:100%">
+                <div class="container2">
+                    <div class="card">
+                        <figure class="front">
+                            <img src="~/Images/BG2.png" alt="front">
+                            <div class="caption">
+                                <h2 style="color:white">Imalat Ölçü Tablosu <span>Oluşturma</span></h2>
+                                <a href="@Url.Action("Index", "ImalatTablosu",new { id = ViewBag.id})">View more</a>
+                            </div>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5" style="width:100%;height:100%">
+                <div class="container2">
+                    <div class="card">
+                        <figure class="front">
+                            <img src="~/Images/BG5.png" alt="front" />
+                            <div class="caption">
+                                <h2 style="color:white">Ölçü Giriş <br /><span>Sayfası</span></h2>
+                                <a href="@Url.Action("Index", "OlcuFormu",new { id = ViewBag.id})">View more</a>
+                            </div>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+        var personel = localStorage.getItem('personel');
+        console.log(personel);
+
+        if (personel == null) {
+            window.location = window.location.origin;
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

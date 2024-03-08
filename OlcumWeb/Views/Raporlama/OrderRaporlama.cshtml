@@ -1,0 +1,56 @@
+﻿@model  Tuple<List<OlcumWeb.dbOlcum.Musteriler>, List<int>>
+
+
+<div class="card card-success" id="musteriCard">
+    <div class="card-header">
+        <h4>Müşteriler</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            @for (int i = 0; i < Model.Item1.Count; i++)
+            {
+                if (Model.Item2[i] != 0)
+                {
+                    <div class="col-3 musteriler" cursor:pointer;" data-musteriid="@Model.Item1[i].id">
+                        <div class="card card-primary" style="border-top: 7px solid #54ca68;">
+                            <div class="card-header">
+                                <p style="font-weight:bold;">@Model.Item1[i].musteriAd.ToString()</p>
+                            </div>
+                            <div class="card-body">
+                                <span style="font-weight:bold;">Rapor Sayisi: @Model.Item2[i]</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<section id="olcuTurleri">
+</section>
+
+<script>
+     $('.musteriler').on("click", function () {
+        var buttonClicked = $(this);
+        var id = buttonClicked.attr('data-musteriid');
+        var text = buttonClicked.find('p').text();
+        $.post("/Raporlama/OlcuTurleri", { 'musteriID': id },
+            function (data) {
+                $('#breadcrumb').append('<li><a href="#" class="details2" onclick ="breadCrumbLink2(' + id + ')"><span class="icon icon-double-angle-right"></span>' + text + '</a></li>');
+
+                $('#musteriCard').hide();
+                $('#olcuTurleri').html(data);
+            });
+    });
+
+    function breadCrumbLink2(id) {
+        $.post("/TanimlamaEkrani/Modeller", { 'musteriID': id },
+            function (data) {
+                $('#musteriCard').hide();
+                $('#tabloContent').hide();
+                $('#')
+                $('#modelContent').html(data);
+            });
+    }
+</script>

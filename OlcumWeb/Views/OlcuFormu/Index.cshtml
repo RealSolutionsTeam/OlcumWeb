@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "NumuneFormu";
+}
+
+<div style="margin-top:2%">
+    <ul id="breadcrumb">
+        <li><a href="@Url.Action("Index", "AnaSayfa",new { id=ViewBag.id})"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+        <li><a href="@Url.Action("Index", "OlcuFormu",new { id=ViewBag.id})"><span class="icon icon-double-angle-right"></span>Veri Girişi</a></li>
+    </ul>
+
+
+    <section class="section" id="hucreGorunumu">
+    </section>
+
+    <section class="section" id="listeGorunumu">
+    </section>
+</div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+<script>
+    var id = @ViewBag.id;
+    $.ajax({
+        url: '/OlcuFormu/HucreGorunumu',
+        type: 'GET',
+        data: {id: id },
+        dataType: 'html',
+        success: function (result) {
+            $('#hucreGorunumu').html(result);
+        },
+        error: function (xhr, status) {
+            alert(status);
+        }
+    });
+</script>

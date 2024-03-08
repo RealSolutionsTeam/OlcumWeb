@@ -1,0 +1,24 @@
+﻿<section class="section" id="musteriContent">
+</section>
+
+<section class="section" id="modelContent">
+</section>
+
+<section class="section" id="hazirtabloContent">
+</section>
+
+<script>
+    $.ajax({
+        url: '/TanimlamaEkrani/Musteriler',
+        type: 'GET',
+        dataType: 'html',
+        success: function (result) {
+            $('#musteriContent').html(result);
+        },
+        error: function (xhr, status) {
+            alert(status);
+        }
+    });
+</script>
+
+

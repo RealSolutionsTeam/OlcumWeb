@@ -1,0 +1,922 @@
+﻿@model  Tuple<List<List<OlcumWeb.Models.DTO.DTOImalatTabloGoster>>>
+
+<style>
+    .modal-backdrop {
+        position: inherit;
+        top: 0;
+        left: 0;
+        z-index: 1040;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+    }
+
+    .modal {
+        position: absolute;
+    }
+
+    .badge {
+        font-family: none;
+    }
+
+    .satir {
+        display: -ms-flexbox;
+        display: -webkit-box;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        /* flex-wrap: wrap; */
+        margin-top: 5px;
+    }
+
+    .pretty {
+        position: relative;
+        display: inline-block;
+        margin-right: 0em !important;
+        white-space: nowrap;
+        line-height: 1;
+    }
+
+    .container {
+        margin: 2%;
+    }
+
+    .divider {
+        width: 5px;
+        height: auto;
+        display: inline-block;
+    }
+
+    .vl {
+        border-left: 2px solid gray;
+        height: auto;
+        left: 50%;
+    }
+</style>
+
+@if (ViewBag.checkExist == 0)
+{
+    <p style="text-align:center">Bu Order'a ait Yıkama Öncesi tablosu eklenmemiş. Eklemek için lütfen tıklayın.</p>
+    <a href="#" class="btn btn-icon btn-lg btn-info" style="width:100%;text-align:center" onclick="FirstCekme()" id="tabloEkleBtn"><i class="fas fa-plus" style="color:white"></i></a>
+
+}
+else
+{
+    <div class="row" style="text-align:center">
+        <div class="col-4" style="margin:auto">
+            <button type="button" class="btn btn-lg btn-success" id="btnSec" onclick="CekmeSilSwal()">Çekme Sil</button>
+        </div>
+        <div class="col-4" style="margin:auto">
+            <button type="button" class="btn btn-lg btn-success" id="btnSec" onclick="CekmeAdDuzenle()">Çekme İsmi Değiştir</button>
+        </div>
+    </div>
+
+    <hr />
+
+    <ul class="nav nav-pills" id="myTab_Yo" role="tablist">
+        @if (ViewBag.checkExist != 0)
+        {
+            for (int i = 0; i < Model.Item1.Count; i++)
+            {
+                string active = "";
+
+                if (i == 0)
+                {
+                    active = "active";
+                }
+                else
+                {
+                    active = "";
+                }
+                <li class="nav-item" id="cekmeTab_@i">
+                    <a class="nav-link @active" id="myCekme_@i" data-index="@i" data-toggle="tab" href="#cekme_@i" role="tab" aria-controls="home" aria-selected="true" data-enboycekme="@ViewBag.cekmeler[i]" onclick="HideSaveButton(this)" data-showbutton ="@(i == 0 ? "1" : "0")">@ViewBag.cekmeler[i]</a>
+                </li>
+            }
+        }
+        <li class="nav-item" id="yikamaOncesiEkle">
+            <a href="#" class="btn btn-icon btn-lg btn-info" style="width:100%" onclick="CekmeEkle()" id="tabloEkleBtn"><i class="fas fa-plus" style="color:white"></i></a>
+        </li>
+    </ul>
+    <div class="tab-content" id="myTabContent2">
+        @for (int i = 0; i < Model.Item1.Count; i++)
+        {
+            string active = "";
+            if (i == 0)
+            {
+                active = "show active";
+
+                <div class="tab-pane fade @active" id="cekme_@i" role="tabpanel" aria-labelledby="home-tab3">
+
+                    <div class="row">
+
+                        <div class="col-12">
+                            <div class="table-responsive tableFixHead" id="tableForm_@i">
+                                <table id="mainTable_yo_@i" class="table table-striped" style="cursor: pointer;">
+                                    <thead>
+                                        <tr id="tableHead_yo_@i">
+                                            <th>Ölçü Noktası</th>
+
+                                            @for (int j = 0; j < Model.Item1[0][0].beden.Count; j++)
+                                            {
+                                                <th id="column_@(i+1)_0_@(j + 1)">@Model.Item1[0][0].beden[j]</th>
+                                            }
+
+                                            <th> Tölerans</th>
+
+                                            <th>
+                                                Çekme
+                                            </th>
+
+                                            <th>
+                                                Oran
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody_yo_@i">
+                                        @{ int rowIndex2 = 0;}
+                                        @{ string anaBeden = ViewBag.anaBeden;}
+
+                                        @for (int j = 0; j < Model.Item1[i].Count; j++)
+                                        {
+                                            if (j == 0)
+                                            {
+                                                <tr id="satir_@(i + "_" +rowIndex2)">
+                                                    <td data-editable="false" id="cell_@(i + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item1[i][j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(i + "_" +rowIndex2)">@Model.Item1[i][j].olcuNoktasi</td>
+
+                                                    @for (int z = 0; z < Model.Item1[i][j].deger.Count(); z++)
+                                                    {
+                                                        if (anaBeden == Model.Item1[i][j].beden[z])
+                                                        {
+                                                            <td tabindex="1" id="cell_@(i + "_" + rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(i + "_" + (z+1))" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)" onfocus="ChangeColumnIndex(this)">@Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi && x.beden == Model.Item1[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td tabindex="1" id="cell_@(i + "_" + rowIndex2 + "_" + (z+1))" data-columnIndex="@(i + "_" + (z+1))" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)" onfocus="ChangeColumnIndex(this)">@Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi && x.beden == Model.Item1[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                                        }
+                                                    }
+
+                                                    <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+1))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+1))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.tolerans).FirstOrDefault() ?? "0")</td>
+
+                                                    <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+2))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+2))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.cekme).FirstOrDefault() ?? "0")</td>
+                                                    <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+3))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+3))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.oran).FirstOrDefault() ?? "0")</td>
+
+                                                </tr>
+                                                rowIndex2++;
+                                            }
+                                            else
+                                            {
+                                                if (@Model.Item1[i][j].olcuNoktasi != @Model.Item1[i][j - 1].olcuNoktasi)
+                                                {
+                                                    <tr id="satir_@(i + "_" +rowIndex2)">
+                                                        <td data-editable="false" id="cell_@(i + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item1[i][j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(i + "_" +rowIndex2)">@Model.Item1[i][j].olcuNoktasi</td>
+
+                                                        @for (int z = 0; z < Model.Item1[i][j].deger.Count(); z++)
+                                                        {
+                                                            if (anaBeden == Model.Item1[i][j].beden[z])
+                                                            {
+                                                                <td tabindex="1" id="cell_@(i + "_" + rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(i + "_" + (z+1))" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)" onfocus="ChangeColumnIndex(this)"> @Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi && x.beden == Model.Item1[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td tabindex="1" id="cell_@(i + "_" + rowIndex2 + "_" + (z+1))" data-columnIndex="@(i + "_" + (z+1))" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)" onfocus="ChangeColumnIndex(this)">@Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi && x.beden == Model.Item1[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                                            }
+                                                        }
+
+                                                        @if (ViewBag.checkExist == 0)
+                                                        {
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+1))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+1))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">0</td>
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+2))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+2))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">0</td>
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+3))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+3))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">0</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+1))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+1))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.tolerans).FirstOrDefault() ?? "0")</td>
+
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+2))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+2))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.cekme).FirstOrDefault() ?? "0")</td>
+
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+3))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+3))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.oran).FirstOrDefault() ?? "0")</td>
+                                                        }
+                                                    </tr>
+                                                    rowIndex2++;
+                                                }
+
+                                            }
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            }
+            else
+            {
+                active = "";
+
+
+                <div class="tab-pane fade @active" id="cekme_@i" role="tabpanel" aria-labelledby="home-tab3">
+
+                    <div class="row">
+
+                        <div class="col-12">
+                            <div class="table-responsive tableFixHead" id="tableForm_@i">
+                                <table id="mainTable_yo_@i" class="table table-striped" style="cursor: pointer;">
+                                    <thead>
+                                        <tr id="tableHead_yo_@i">
+                                            <th>Ölçü Noktası</th>
+
+                                            @for (int j = 0; j < Model.Item1[0][0].beden.Count; j++)
+                                            {
+                                                <th id="column_@(i+1)_0_@(j + 1)">@Model.Item1[0][0].beden[j]</th>
+                                            }
+
+                                            <th> Tölerans</th>
+
+                                            <th>
+                                                Çekme
+                                            </th>
+
+                                            <th>
+                                                Oran
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody_yo_@i">
+                                        @{ int rowIndex2 = 0;}
+                                        @{ string anaBeden = ViewBag.anaBeden;}
+
+                                        @for (int j = 0; j < Model.Item1[i].Count; j++)
+                                        {
+                                            if (j == 0)
+                                            {
+                                                <tr id="satir_@(i + "_" +rowIndex2)">
+                                                    <td data-editable="false" id="cell_@(i + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item1[i][j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(i + "_" +rowIndex2)">@Model.Item1[i][j].olcuNoktasi</td>
+
+                                                    @for (int z = 0; z < Model.Item1[i][j].deger.Count(); z++)
+                                                    {
+                                                        if (anaBeden == Model.Item1[i][j].beden[z])
+                                                        {
+                                                            <td tabindex="1" id="cell_@(i + "_" + rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(i + "_" + (z+1))" data-rowIndex="@(i + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)" onchange="DegerDegistir(this)">@Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi && x.beden == Model.Item1[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td tabindex="1" id="cell_@(i + "_" + rowIndex2 + "_" + (z+1))" data-columnIndex="@(i + "_" + (z+1))" data-rowIndex="@(i + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)" onchange="DegerDegistir(this)">@Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi && x.beden == Model.Item1[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                                        }
+                                                    }
+
+                                                    @if (ViewBag.checkExist == 0)
+                                                    {
+                                                        <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+1))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+1))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">0</td>
+                                                        <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+2))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+2))" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">0</td>
+                                                        <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+3))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+3))" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">0</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+1))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+1))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.tolerans).FirstOrDefault() ?? "0")</td>
+
+                                                        <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+2))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+2))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.cekme).FirstOrDefault() ?? "0")</td>
+                                                        <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+3))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+3))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.oran).FirstOrDefault() ?? "0")</td>
+                                                    }
+
+                                                </tr>
+                                                rowIndex2++;
+                                            }
+                                            else
+                                            {
+                                                if (@Model.Item1[i][j].olcuNoktasi != @Model.Item1[i][j - 1].olcuNoktasi)
+                                                {
+                                                    <tr id="satir_@(i + "_" +rowIndex2)">
+                                                        <td data-editable="false" id="cell_@(i + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item1[i][j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(i + "_" +rowIndex2)">@Model.Item1[i][j].olcuNoktasi</td>
+
+                                                        @for (int z = 0; z < Model.Item1[i][j].deger.Count(); z++)
+                                                        {
+                                                            if (anaBeden == Model.Item1[i][j].beden[z])
+                                                            {
+                                                                <td tabindex="1" id="cell_@(i + "_" + rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(i + "_" + (z+1))" data-rowIndex="@(i + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)" onchange="DegerDegistir(this)"> @Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi && x.beden == Model.Item1[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td tabindex="1" id="cell_@(i + "_" + rowIndex2 + "_" + (z+1))" data-columnIndex="@(i + "_" + (z+1))" data-rowIndex="@(i + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)" onchange="DegerDegistir(this)">@Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi && x.beden == Model.Item1[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()</td>
+                                                            }
+                                                        }
+
+                                                        @if (ViewBag.checkExist == 0)
+                                                        {
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+1))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+1))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">0</td>
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+2))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+2))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">0</td>
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+3))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+3))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">0</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+1))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+1))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.tolerans).FirstOrDefault() ?? "0")</td>
+
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+2))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+2))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.cekme).FirstOrDefault() ?? "0")</td>
+
+                                                            <td id="cell_@(i + "_" + rowIndex2 + "_" + (Model.Item1[i][j].beden.Count+3))" data-columnIndex="@(i + "_" + (Model.Item1[i][j].beden.Count+3))" style="background-color:lightskyblue" data-rowIndex="@(i + "_" +rowIndex2)" onchange="DegerDegistir(this)">@(Model.Item1[i].Where(x => x.olcuNoktasi == Model.Item1[i][j].olcuNoktasi).Select(x => x.oran).FirstOrDefault() ?? "0")</td>
+                                                        }
+                                                    </tr>
+                                                    rowIndex2++;
+                                                }
+
+                                            }
+                                        }
+
+                                    </tbody>
+                                </table>
+                                <input style="position: absolute; display: none;">
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            }
+
+        }
+    </div>
+
+}
+
+<script src="~/editable-table-master/mindmup-editabletable.js"></script>
+<script src="~/editable-table-master/numeric-input-example.js"></script>
+
+<script>
+
+
+    document.onkeydown = KeyPress;
+
+    var checkExist = @Html.Raw(Json.Encode(ViewBag.checkExist));
+    var yOlist2_0 = [];
+    var cekmeler = [];
+
+
+
+    @if (ViewBag.checkExist == 0) {
+                <text> var anaBeden = @Html.Raw(Json.Encode(ViewBag.anaBeden)); </text>
+
+    }
+    else {
+
+        <text>
+        window.tableCountYO = @Html.Raw(Json.Encode(Model.Item1.Count));
+        window.cekme = [];
+        for (var i = 0; i < window.tableCountYO; i++) {
+            $('#mainTable_yo_' + i).editableTableWidget();
+            window.cekme.push($('#myCekme_' + i).html().trim());
+        }
+        </text>
+
+        <text>yOlist2_0 = @Html.Raw(Json.Encode(Model.Item1));</text>
+
+        <text>cekmeler = @Html.Raw(Json.Encode(ViewBag.cekmeler));</text>
+
+        <text> var anaBeden = @Html.Raw(Json.Encode(ViewBag.anaBeden)); </text>
+    }
+
+    function CekmeEkle() {
+        var tablelarList = [];
+        var columnCount = Number($("#tableHead_yo_0 th").length);
+         var rowCount = Number($("#tableBody_yo_0 tr").length);
+        for (var k = 0; k < window.tableCountYO; k++) {
+
+            var tableList = [];
+
+             for (var i = 0; i < rowCount; i++) {
+
+                var olcuNoktasi = $("#cell_0_" + i + "_0").html().trim();
+
+                var degerList = [];
+
+                var bedenList = [];
+
+                for (var j = 1; j < columnCount - 3; j++) {
+                    degerList.push($("#cell_"+k+"_" + i + "_" + j).html().replace(',', '.'));
+                    bedenList.push($("#column_1_0_" + j).html());
+                }
+
+
+
+                var tolerans = $("#cell_" + k + "_" + i + "_" + Number(columnCount - 3)).html().replace(',', '.');
+
+                var cekme = $("#cell_" + k + "_" + i + "_" + Number(columnCount - 2)).html().replace(',', '.');
+
+                var oran = $("#cell_" + k + "_" + i + "_" + Number(columnCount - 1)).html().replace(',', '.');
+
+
+                tableList.push({ 'olcuNoktasi': olcuNoktasi, 'beden': bedenList, 'deger': degerList, 'tolerans': tolerans, 'cekme': cekme, 'oran': oran });
+
+             }
+
+             tablelarList.push(tableList);
+        }
+
+
+         //var cekmeCount = $('#myTab_Yo li').length - 1;
+
+        //$("<li class='nav-item' id='cekmeTab_" + Number(cekmeCount) + "'><a class='nav-link' data-toggle='tab' href='#cekme_" + cekmeCount + "' id = 'cekme_0" + Number(Number(cekmeCount) + 1) + "' role='tab' aria-controls='home' aria-selected='true'>0/0</a></li>").insertBefore('#yikamaOncesiEkle');
+
+        //var html = "<div class='tab-pane fade' id='cekme_" + Number(cekmeCount) + "' role='tabpanel' aria-labelledby='home-tab4'><section class='section' id='yikamaOncesiTab_" + Number(cekmeCount) + "'></section></div>";
+        //$('#cekme_' + Number(cekmeCount - 1)).after(html);
+
+        tablelarList.push(tablelarList[0]);
+
+
+
+
+        $.post("/ImalatTablosu/EnBoyCekmeModal2", { 'anaBeden': anaBeden, 'cekmeler': tablelarList,'cekmeisimleri':cekmeler }, function (deger) {
+            $('#enBoyCekme_Modal2').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+        $("#enBoyCekmeModal2").modal('show');
+
+    }
+
+    function FirstCekme() {
+        var columnCount = $('#tableHead_0 th').length - 4;
+        var anaBeden = 0;
+        for (var i = 1; i < columnCount; i++) {
+            if ($('#cell_0_' + i).css("background-color") == 'rgb(135, 206, 250)') {
+                var columnIndex = $('#cell_0_' + i).data('columnindex');
+
+                anaBeden = $('#column_0_' + columnIndex).data('beden');
+            }
+        }
+
+        if (anaBeden == 0) {
+            AlertHata("Lütfen yıkama sonrasında ana beden seçiniz!");
+        }
+        else {
+            var tabloList = [];
+
+            var rowCount = $('#tableBody_' + 0 + ' tr').length;
+            var columnCount = $('#tableHead_' + 0 + ' th').filter(function() {
+                return $(this).css('display') !== 'none';
+            }).length;
+
+                for (var i = 0; i < rowCount; i++) {
+                    var olcuNoktasi = $('#cell_' + i + '_0').data('olcunoktasi');
+                    var bedenList = [];
+                    var degerList = []
+
+                    for (var j = 1; j < columnCount; j++) {
+                        var beden = $('#column_0_' + j).data('beden');
+                        var deger = parseFloat($('#cell_' + i + '_' + j).html().trim().replace(',', '.'));
+
+                        bedenList.push(beden);
+                        degerList.push(deger);
+                    }
+
+                    tabloList.push({ 'olcuNoktasi': olcuNoktasi, 'beden': bedenList, 'deger': degerList });
+
+            }
+            yOlist2_0.push(tabloList);
+
+            $.post("/ImalatTablosu/EnBoyCekmeModal", { 'anaBeden': anaBeden, 'previousTablo': yOlist2_0 }, function (deger) {
+                $('#enBoyCekme_Modal').html(deger);
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+            $('#enBoyCekmeModal').modal('show');
+        }
+
+
+    }
+
+    function DegerDegistir(elem) {
+        var columnIndex = $(elem).data('columnindex');
+        var rowIndex = $(elem).data('rowindex');
+        var activeyoTabIndex = $('#myTab_Yo > li > a.active').data('index');
+
+        var columnCount = Number($("#tableHead_yo_" + activeyoTabIndex + " th").length);
+        var girilenDeger = parseFloat($(elem).html().replace(',', '.'));
+        $(elem).html(girilenDeger);
+
+        var numberColumnIndex = Number(columnIndex.split('_')[1]);
+
+        var numberRowIndex = Number(rowIndex.split('_')[1]);
+
+
+        var columnBeden = $('#column_0_' + columnIndex).data('beden');
+        if ($('#cell_0_' + numberColumnIndex).css("background-color") == 'rgb(135, 206, 250)') {
+            var ysAnaBedenDeger = parseFloat($('#cell_' + numberRowIndex + '_' + numberColumnIndex).html().replace(',','.'));
+
+            var degerFark = parseFloat(girilenDeger - ysAnaBedenDeger);
+            var oran = parseFloat(parseFloat(degerFark * 100 / ysAnaBedenDeger).toFixed(1));
+            var cekme = parseFloat(parseFloat(degerFark * 100 / girilenDeger).toFixed(1));
+
+            if (isNaN(oran)) {
+                oran = 0;
+            }
+
+            if (isNaN(cekme)) {
+                cekme = 0;
+            }
+
+            $('#cell_' + rowIndex + '_' + Number(columnCount - 1)).html(oran);
+            $('#cell_' + rowIndex + '_' + Number(columnCount - 2)).html(cekme);
+
+            for (var i = 1; i < columnCount-3; i++) {
+                var yoDeger = parseFloat($('#cell_' + rowIndex + "_" + i).html().replace(',','.').trim());
+                var ysDeger = parseFloat($('#cell_' + numberRowIndex + '_' + i).html().replace(',', '.'));
+
+                if ($('#cell_' + rowIndex + "_" + i).css("background-color") != 'rgb(135, 206, 250)') {
+                    if (oran != 0) {
+                        var yeniDeger = parseFloat(parseFloat((ysDeger * 100) / (100 - cekme)).toFixed(1));
+
+                        if (isNaN(yeniDeger)) {
+                            yeniDeger = 0;
+                        }
+
+                        $('#cell_' + rowIndex + "_" + i).html(yeniDeger);
+                    }
+                    else {
+                         $('#cell_' + rowIndex + "_" + i).html(ysDeger);
+                    }
+
+                }
+            }
+
+            var tolerans = parseFloat($('#cell_' + rowIndex + "_" + Number(columnCount - 3)).html().replace(',', '.'));
+            var yeniKalip = parseFloat(parseFloat(girilenDeger + tolerans).toFixed(1));
+
+            $('#cellKalip_' + rowIndex + '_' + 1).html(yeniKalip);
+        }
+        else {
+            if (numberColumnIndex == columnCount - 2) {
+                var tolerans = parseFloat($('#cell_' + rowIndex + '_' + Number(columnCount-3)).html().replace(',', '.'));
+                var anaBedenIndex = 0;
+                var yoAnaBedenDeger = 0;
+                var ysAnaBedenDeger = 0;
+                for (var i = 1; i < columnCount - 3; i++) {
+                     if ($('#cell_' + rowIndex + "_" + i).css("background-color") == 'rgb(135, 206, 250)') {
+                        anaBedenIndex = Number(i);
+                    }
+                    var ysDeger = parseFloat($('#cell_' + Number(rowIndex.split('_')[1]) + '_' + i).html().replace(',','.'));
+                    var yoYeniDeger = parseFloat((ysDeger * 100) / (100 - girilenDeger)).toFixed(1);
+                    $('#cell_' + rowIndex + '_' + i).html(yoYeniDeger);
+                }
+
+
+
+                if (anaBedenIndex != 0) {
+                    var anaBedenDeger = parseFloat($('#cell_' + rowIndex + "_" + anaBedenIndex).html().replace(',', '.'));
+                    var yeniKalip = parseFloat(parseFloat(tolerans + anaBedenDeger).toFixed(1));
+
+                    yoAnaBedenDeger = parseFloat($('#cell_' + rowIndex + '_' + anaBedenIndex).html().replace(',', '.'));
+                    ysAnaBedenDeger = parseFloat($('#cell_' + numberRowIndex + '_' + anaBedenIndex).html().replace(',', '.'));
+
+                    var oran = parseFloat(100 * (yoAnaBedenDeger - ysAnaBedenDeger) / ysAnaBedenDeger).toFixed(1);
+
+                    if (isNaN(oran)) {
+                        oran = 0;
+                    }
+
+                 
+                    $('#cell_' + rowIndex + '_' + Number(columnCount - 1)).html(oran);
+                    $('#cellKalip_' + rowIndex + "_" + 1).html(yeniKalip);
+                }
+            }
+            else if (numberColumnIndex == columnCount - 3) {
+                var tolerans = parseFloat($(elem).html().replace(',', '.'));
+                var anaBedenIndex = 0;
+
+                for (var i = 1; i < columnCount - 3; i++) {
+                    if ($('#cell_' + rowIndex + "_" + i).css("background-color") == 'rgb(135, 206, 250)') {
+                        anaBedenIndex = Number(i);
+                    }
+                }
+
+                if (anaBedenIndex != 0) {
+                    var anaBedenDeger = parseFloat($('#cell_' + rowIndex + "_" + anaBedenIndex).html().replace(',', '.'));
+                    var yeniKalip = parseFloat(parseFloat(tolerans + anaBedenDeger).toFixed(1));
+
+                    $('#cellKalip_' + rowIndex + "_" + 1).html(yeniKalip);
+                }
+            }
+        }
+
+
+    }
+
+    function CekmeSilSwal() {
+                swal({
+                                title: "Bu çekme silinecek ve bu işlem geri alınamaz. Bu işleme devam etmek istediğinizden emin misiniz?",
+                                dangerMode: true,
+                                icon: "error",
+                                closeOnClickOutside: false,
+                                buttons: {
+                                    confirm: {
+                                        text: "Evet",
+                                        value: "evet",
+                                        visible: true,
+                                        className: "blueBackground",
+                                        closeModal: true
+                                    },
+                                    iptal: {
+                                        text: "Hayır",
+                                        value: "hayır",
+                                        visible: true,
+                                        className: "blueBackground",
+                                        closeModal: true
+                                    }
+                                }
+                            }).then((response) => {
+                                if (response == "evet") {
+                                    CekmeSil();
+
+                                    swal({
+                                        title: "Başarılı",
+                                        text: "Çekme başarıyla silindi..",
+                                        icon: "success",
+                                        button: "Tamam",
+                                    });
+                                } else {
+                                    swal.close();
+                                }
+                            });
+    }
+
+    function CekmeSil() {
+        var columnCount = Number($("#tableHead_yo_0 th").length);
+        var rowCount = Number($("#tableBody_yo_0 tr").length);
+        var tablelarList = [];
+        var tablelarListKalip = [];
+
+        var cekmeList = window.cekme;
+        var anaBeden = anaBeden;
+
+        var anaBeden = 0;
+        for (var i = 1; i < columnCount-3; i++) {
+            if ($('#cell_0_' + i).css("background-color") == 'rgb(135, 206, 250)') {
+                var columnIndex = $('#cell_0_' + i).data('columnindex');
+
+                anaBeden = $('#column_0_' + columnIndex).data('beden');
+            }
+        }
+
+
+        //Yıkama öncesindeki seçilen indexi alıyorum.
+        var activeYoCekmeIndex = $('#myTab_Yo > li > a.active').data('index');
+
+        var activeYoCekme = window.cekme[activeYoCekmeIndex];
+
+        //Tüm tablo değerlerini yolluyorum
+        for (var k = 0; k < window.tableCountYO; k++) {
+
+            var tableList = [];
+
+             for (var i = 0; i < rowCount; i++) {
+
+                var olcuNoktasi = $("#cell_0_" + i + "_0").html().trim();
+
+                var degerList = [];
+
+                var bedenList = [];
+
+                for (var j = 1; j < columnCount - 3; j++) {
+                    degerList.push($("#cell_"+k+"_" + i + "_" + j).html().replace(',', '.'));
+                    bedenList.push($("#column_1_0_" + j).html());
+                }
+
+
+                var tolerans = $("#cell_" + k + "_" + i + "_" + Number(columnCount - 3)).html().replace(',', '.');
+
+                var cekme = $("#cell_" + k + "_" + i + "_" + Number(columnCount - 2)).html().replace(',', '.');
+
+                var oran = $("#cell_" + k + "_" + i + "_" + Number(columnCount - 1)).html().replace(',', '.');
+
+
+                tableList.push({ 'olcuNoktasi': olcuNoktasi, 'beden': bedenList, 'deger': degerList, 'tolerans': tolerans, 'cekme': cekme, 'oran': oran });
+
+             }
+
+             tablelarList.push(tableList);
+        }
+        //Tüm kalıp değerlerini yolluyorum.
+        for (var k = 0; k < window.tableCountYO; k++) {
+
+            var tableListKalip = [];
+
+             for (var i = 0; i < rowCount; i++) {
+
+                var olcuNoktasi = $("#cellKalip_0_" + i + "_0").html().trim();
+
+                var degerList = [];
+
+                var bedenList = [];
+
+                degerList.push($("#cellKalip_"+k+"_" + i + "_" + 1).html().replace(',', '.'));
+                bedenList.push($("#columnKalip_1_0_" + 1).html());
+
+
+
+
+                tableListKalip.push({ 'olcuNoktasi': olcuNoktasi, 'beden': bedenList, 'deger': degerList});
+
+             }
+
+             tablelarListKalip.push(tableListKalip);
+        }
+
+
+        var detayObjectYo =  {
+            'orderID': $("#orderNo").val(),
+            'olcuTuruID': $("#olcuTuruAd").val(),
+            'anaBeden': anaBeden,
+            'tabloTuru': 0,
+            'aciklama': $('#aciklamaTa').val(),
+            'enBoyCekme': window.cekme[activeYoCekmeIndex],
+            'kullaniciID': JSON.parse(localStorage.getItem('personel')).id
+        };
+
+        YukleniyorOnOff();
+        $.post("/ImalatTablosu/CekmeSil", { 'anaBeden': anaBeden, 'tablolar': tablelarList, 'cekmeler': window.cekme, 'seciliCekme': activeYoCekme,imalatTabloDetay :detayObjectYo }, function (deger) {
+
+            $.post("/ImalatTablosu/KalipSil", { 'anaBeden': anaBeden, 'tablolar': tablelarListKalip, 'cekmeler': window.cekme, 'seciliCekme': activeYoCekme }, function (deger2) {
+                 $('#yikamaOncesiContent').html(deger);
+                $('#kalipOlcusuContent').html(deger2);
+                YukleniyorOnOff();
+
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+        window.tableCountYO = window.tableCountYO - 1;
+    }
+
+    function CekmeAdDuzenle() {
+        var activeYoCekme = $('#myTab_Yo > li > a.active').data('index');
+        var activeYoCekmeAd = $('#myTab_Yo > li > a.active').data('enboycekme');
+
+
+        $.post("/ImalatTablosu/CekmeAdDuzenle", { 'activeTabIndex': activeYoCekme,'enBoyCekme': activeYoCekmeAd }, function (deger) {
+            $('#cekme_Degistir').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+        $("#cekmeDegistir").modal('show');
+    }
+
+    var oldDegerList = [];
+    var oldDeger = 0;
+    var ctrlZcolumnIndex = 0;
+    var ctrlZrowIndex = 0;
+    var ctrlZgelenTableIndex = 0;
+    if (window.tableCountYO > 0) {
+        for (var i = 0; i < window.tableCountYO; i++) {
+            var columnCount = $('#tableHead_yo_' + i + ' th').length;
+
+            $('#mainTable_yo_'+i+' td').focusin(function (e) {
+                var GelenrowIndex = $(this).data('rowindex');
+                var GelencolumnIndex = $(this).data('columnindex');
+                GelencolumnIndex = Number(GelencolumnIndex.split('_')[1]);
+                GelenrowIndex = Number(GelenrowIndex.split('_')[1]);
+                var tableIndex = Number($(this).data('columnindex').split('_')[0]);
+                
+                ctrlZrowIndex = GelenrowIndex;
+                ctrlZcolumnIndex = GelencolumnIndex;
+                ctrlZgelenTableIndex = tableIndex;
+                if (GelencolumnIndex == (columnCount - 2) || GelencolumnIndex == (columnCount - 3)) {
+                    $('#satir_' + tableIndex + '_' + GelenrowIndex).css('outline', 'none');
+                    $('#satir_' + tableIndex + '_' + GelenrowIndex).css('border', '3px solid rgb(56 39 210)');
+                    $('#satir_' + tableIndex + '_' + GelenrowIndex).css('border-color', 'rgb(56 39 210)');
+                    $('#satir_' + tableIndex + '_' + GelenrowIndex).css('box-shadow', ' 1px 1px 25px rgb(56 39 210)');
+                }
+
+                if (GelenrowIndex != -1 && GelencolumnIndex != -1) {
+                    $(this).css('outline', 'none');
+                    $(this).css('border', '3px solid red');
+                    $(this).css('border-color', 'rgb(255 6 31)');
+                    $(this).css('box-shadow', ' 1px 1px 25px rgb(255 6 31)');
+                }
+            });
+
+            $('#mainTable_yo_'+i+' td').focusout(function (e) {
+                if (GelenrowIndex != -1 && GelencolumnIndex != -1) {
+                    var GelenrowIndex = $(this).data('rowindex');
+                    var GelencolumnIndex = $(this).data('columnindex');
+                    GelencolumnIndex = Number(GelencolumnIndex.split('_')[1]);
+                    GelenrowIndex = Number(GelenrowIndex.split('_')[1]);
+                    var tableIndex = Number($(this).data('columnindex').split('_')[0]);
+
+                    if (GelencolumnIndex == (columnCount - 2) || GelencolumnIndex == (columnCount - 3)) {
+                        $('#satir_' + tableIndex + '_' + GelenrowIndex).css('outline', '');
+                        $('#satir_' + tableIndex + '_' + GelenrowIndex).css('border', '0.5px solid black');
+                        $('#satir_' + tableIndex + '_' + GelenrowIndex).css('border-color', '');
+                        $('#satir_' + tableIndex + '_' + GelenrowIndex).css('box-shadow', '');
+                    }
+
+                    $(this).css('outline', '');
+                    $(this).css('border', '0.5px solid black');
+                    $(this).css('border-color', '');
+                    $(this).css('box-shadow', '');
+                }
+            });
+        
+        }
+
+          $('input').focusin(function (e) {
+                oldDeger = $(this).val();
+          });
+
+          $('input').focusout(function (e) {
+              if (oldDeger != $(this).val()) {
+                  if (oldDegerList.length > 0) {
+                      oldDegerList = [];
+                  }
+
+                  var columnCount = $('#tableHead_yo_' + ctrlZgelenTableIndex + ' th').length;
+
+                  if (($('#cell_' + ctrlZgelenTableIndex + '_' + ctrlZrowIndex + '_' + ctrlZcolumnIndex).css("background-color") == 'rgb(135, 206, 250)') && (ctrlZcolumnIndex < (columnCount-3))) {
+                      for (var j = 1; j < columnCount; j++) {
+                           var deger = $('#cell_' + ctrlZgelenTableIndex + '_' + ctrlZrowIndex + '_' + j).html();
+                           oldDegerList.push(deger);
+                      }
+                      window.controlZList.push({geriDeger: oldDegerList,geriIndex :{ ctrlZgelenTableIndex,ctrlZrowIndex, ctrlZcolumnIndex },geriTur: 5 });
+                  }
+
+                  if ((ctrlZcolumnIndex == (columnCount - 3))) {
+
+                      var deger = $('#cell_' + ctrlZgelenTableIndex + '_' + ctrlZrowIndex + '_' + ctrlZcolumnIndex).html();
+                      var degerKalip = $('#cellKalip_' + ctrlZgelenTableIndex + '_' + ctrlZrowIndex + '_1').html();
+
+                      oldDegerList.push(deger);
+                      oldDegerList.push(degerKalip);
+
+                      window.controlZList.push({geriDeger: oldDegerList,geriIndex :{ ctrlZgelenTableIndex,ctrlZrowIndex, ctrlZcolumnIndex },geriTur: 7 });
+
+                  }
+
+                  if ((ctrlZcolumnIndex == (columnCount - 2))) {
+
+                       for (var j = 1; j < columnCount; j++) {
+                           var deger = $('#cell_' + ctrlZgelenTableIndex + '_' + ctrlZrowIndex + '_' + j).html();
+                           oldDegerList.push(deger);
+                      }
+                      window.controlZList.push({geriDeger: oldDegerList,geriIndex :{ ctrlZgelenTableIndex,ctrlZrowIndex, ctrlZcolumnIndex },geriTur: 6 });
+
+                  }
+              }
+          });
+    }
+
+    //function KeyPress(e) {
+    //    var evtobj = window.event ? event : e
+
+    //    if (evtobj.keyCode == 90 && evtobj.ctrlKey) {
+    //        YukleniyorOnOff();
+
+    //        var lastItem = window.controlZListYO[window.controlZListYO.length - 1];
+    //        console.log(lastItem);
+    //        var rowCount = $('#tableForm_ys tr').length - 1;
+    //        var columnCount = $('#tableHead_0 th').length;
+
+    //        if (lastItem.geriTur == 0) {
+    //            //değer değiştirme
+    //        }
+    //        else if (lastItem.geriTur == 1) {
+    //            //çekme değiştirme
+    //        }
+    //        else if (lastItem.geriTur == 2) {
+    //            //anaBeden değiştirme
+    //            var tableIndex = lastItem.geriIndex.ctrlZgelenTableIndex;
+    //            var rowIndex = lastItem.geriIndex.ctrlZrowIndex;
+    //            var columnIndex = lastItem.geriIndex.ctrlZcolumnIndex;
+    //            for (var i = 1; i < columnCount; i++) {
+    //                $('#cell_' + tableIndex + '_' + rowIndex + '_' + i).html(lastItem.geriDeger[i]);
+    //            }
+    //            //Kalıp ölçüsünüde yazdır.
+    //        }
+
+    //        YukleniyorOnOff();
+    //    }
+    //}
+
+
+    function HideSaveButton(elem) {
+
+        //var showButton = $(elem).data('showbutton');
+
+
+        //if (showButton == 0) {
+        //    $('#btnSecKaydet').hide();
+        //}
+        //else {
+        //    $('#btnSecKaydet').show();
+        //}
+    }
+</script>
+
+
+

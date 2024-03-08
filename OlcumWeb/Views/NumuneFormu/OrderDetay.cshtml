@@ -1,0 +1,232 @@
+﻿@model OlcumWeb.Models.DTO.DTONumuneDetay
+
+
+<style>
+    .datepicker {
+        z-index: 1600 !important; /* has to be larger than 1050 */
+    }
+
+    .select2-container--open {
+        z-index: 99999999999999;
+    }
+
+    #orderDetayTable td{
+        margin-bottom:20px;
+    }
+</style>
+
+
+@Html.Hidden("detayId", Model.Id)
+
+
+<div class="card card-success">
+    <div class="card-header">
+        <h4 style="font-size:24px;">Numune Bilgisi </h4>
+        <div class="card-header-action">
+            <a data-collapse="#numuneOrderDetayCard" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus" style="color:white"></i></a>
+        </div>
+    </div>
+    <div class="collapse show" id="numuneOrderDetayCard" style="">
+        <div class="card-body" style="padding-bottom:0">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Order No:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="orderNoNumune" value="@Model.OrderNo" disabled="disabled" />
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Kumaş:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="kumasNumune" value="@Model.Kumas" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Müşteri:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="musteriNumune" value="@Model.Musteri" disabled="disabled" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+        </div>
+
+
+        
+
+        <div class="card-footer">
+
+            <table style="width:100%;" class="table" id="orderDetayTable">
+                <tbody>
+                    <tr class="d-flex">
+                        <td class="col-4">
+                            <div class="form-group">
+                                <label>Model Adı:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="modelAdNumune" value="@Model.ModelAd" disabled="disabled" />
+                                </div>
+                            </div>      
+                        </td>
+                        <td class="col-4">             
+                            <div class="form-group">
+                                <label>Top Numarası:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="topNoNumune" value="@Model.TopNo" />
+
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-4">
+                            <div class="form-group">
+                                <label>50*50 (LISTEDE):</label>
+                                <div class="input-group">
+
+                                    <input type="text" class="form-control" id="elliListe" value="@Model.ElliListe" />
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="d-flex">
+                        <td class="col-4">
+                            <div class="form-group">
+                                <label>Atölye:</label>
+                                <div class="input-group">
+                                    @Html.DropDownList("atolyeAdNumune", new SelectList(ViewBag.atolyeler, "Id", "AtolyeAd", Model.AtolyeId), "Seçiniz...", new { @class = "form-control select2", @id = "atolyeAdNumune" })
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-4">
+                            <div class="form-group">
+                                <label>50*50 (NUMUNE):</label>
+                                <div class="input-group">
+
+                                    <input type="text" class="form-control" id="elliNumune" value="@Model.ElliNumune" />
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-4">
+                            <div class="form-group">
+                                <label>Kumaş ID:</label>
+                                <div class="input-group">
+
+                                    <input type="text" class="form-control" id="kidNumune" value="@Model.KID" />
+
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="d-flex">
+                        <td class="col-4">
+                            <div class="form-group">
+                                <label>Dikim Nedeni:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="dikimNedeniNumune" value="@(Model.DikimNedeni == null ? Model.OlcuTuruAd : Model.DikimNedeni)" />
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="col-4">
+                            <div class="form-group">
+                                <label>En/Boy Çekme:</label>
+                                <div class="input-group">
+                                    @{
+                                        string enBoy = Model.KalipAdi;
+
+                                        string en = "";
+                                        string boy = "";
+
+                                        if (enBoy != "")
+                                        {
+                                            en = enBoy.Split('/')[0];
+                                            boy = enBoy.Split('/')[1];
+
+                                        }
+                                    }
+                                    <input type="text" class="form-control" id="enNumune" value="@en" style="margin-right:2%" /> <span style="font-size:25px"> / </span><input type="text" class="form-control" id="boyNumune" value="@boy" style="margin-left:2%" />
+
+                                </div>
+                            </div>
+                        </td>
+
+                        <td rowspan="2" class="col-4">
+                            <div class="form-group">
+                                <label>Açıklama:</label>
+                                <div class="input-group">
+                                    <textarea id="aciklamaNumune" name="w3review" style="width:100%" rows="6">@Model.Aciklama</textarea>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="d-flex">
+                        <td class="col-4">
+                            <div class="form-group" >
+                                <label>Yıkamaya Gidiş:</label>
+                                <div class="input-group">
+                                    @{
+                                        var yikamayaGidis = (DateTime)Model.YikamayaGidis;
+                                        var yikamayaGidisDate = yikamayaGidis.ToString("dd/MM/yyyy").Replace('.','/');
+                                    }
+                                    <input type="text" class="form-control datepicker" id="yikamayaGidisNumune" value="@yikamayaGidisDate">
+                                </div>
+                            </div>
+                        </td>
+                        <td class="col-4">
+                            <div class="form-group">
+                                <label>Yıkamadan Geliş:</label>
+                                <div class="input-group">
+                                    @{
+                                        var yikamadanGelis = (DateTime)Model.YikamadanGelis;
+                                        var yikamadanGelisDate = yikamadanGelis.ToString("dd/MM/yyyy").Replace('.','/');
+                                    }
+                                    <input type="text" class="form-control datepicker" id="yikamadanGelisNumune"  value="@yikamadanGelisDate">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2({
+            width:'100%'
+        });
+    };
+
+    $(".form-control.datepicker").datepicker({ dateFormat: "dd/mm/yy" });
+
+    var dtoNumuneDetay = @Html.Raw(Json.Encode(Model));
+
+    $("[data-collapse]").each(function () {
+        var me = $(this),
+            target = me.data("collapse");
+
+        me.click(function () {
+            $(target).collapse("toggle");
+            $(target).on("shown.bs.collapse", function () {
+                me.html('<i class="fas fa-minus" style="color:white"></i>');
+            });
+            $(target).on("hidden.bs.collapse", function () {
+                me.html('<i class="fas fa-plus" style="color:white"></i>');
+            });
+            return false;
+        });
+    });
+</script>
+

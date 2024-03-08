@@ -1,0 +1,58 @@
+﻿@model Tuple<int, int, int, int>
+
+
+@if (Model.Item1 == 0)
+{
+    <ul id="breadcrumb">
+        <li><a href="@Url.Action("Index", "AnaSayfa")"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+        <li><a href="@Url.Action("Index", "TanimlamaEkrani")"><span class="icon icon-double-angle-right"></span> Tanımlama Ekranı</a></li>
+    </ul>
+}
+else if (Model.Item1 == 1)
+{
+    <ul id="breadcrumb">
+        <li><a href="@Url.Action("Index", "AnaSayfa")"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+        <li><a href="@Url.Action("Index", "TanimlamaEkrani")"><span class="icon icon-double-angle-right"></span> Tanımlama Ekranı</a></li>
+        <li><a href="#" class="details" onclick="breadCrumbLink()"><span class="icon icon-double-angle-right"></span>Ölçü Tablosu Tanımlama</a></li>
+    </ul>
+}
+else if (Model.Item1 == 2)
+{
+    <ul id="breadcrumb">
+        <li><a href="@Url.Action("Index", "AnaSayfa")"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+        <li><a href="@Url.Action("Index", "TanimlamaEkrani")"><span class="icon icon-double-angle-right"></span> Tanımlama Ekranı</a></li>
+        <li><a href="#" class="details" onclick="breadCrumbLink()"><span class="icon icon-double-angle-right"></span>Ölçü Tablosu Tanımlama</a></li>
+    </ul>
+}
+else if (Model.Item1 == 3)
+{
+
+}
+else if (Model.Item1 == 4)
+{
+
+}
+else if (Model.Item1 == 5)
+{
+
+}
+
+<script>
+    function breadCrumblink() {
+        $.post("/TanimlamaEkrani/TabloTanimlama", {},
+            function (data) {
+                $('#tableContent').html(data);
+            });
+    }
+
+    function breadCrumbLink2(id) {
+        $.post("/TanimlamaEkrani/Modeller", { 'musteriID': id },
+            function (data) {
+                $('#musteriCard').hide();
+                $('#tabloContent').hide();
+                $('#')
+                $('#modelContent').html(data);
+            });
+    }
+
+</script>

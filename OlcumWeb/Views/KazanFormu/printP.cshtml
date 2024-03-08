@@ -1,0 +1,305 @@
+﻿@model Tuple<List<OlcumWeb.dbOlcum.KazanAra>, List<OlcumWeb.dbOlcum.KazanAra>, List<OlcumWeb.dbOlcum.KazanHesaplama>, List<OlcumWeb.dbOlcum.KazanBarkod>>
+
+@* headerList, degerler, gerceklesenVeUygulananTolCekme *@
+<style>
+    .printTable {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .printTable td {
+            border: 1px solid grey;
+            padding: 1px;
+        }
+
+        .printTable th {
+            border: 1px solid grey;
+            padding: 1px;
+            text-align: center;
+        }
+</style>
+
+
+<table class="printTable">
+    <tbody>
+        <tr>
+            <td colspan="2"><b>Tarih: </b><label style="color:cadetblue">@ViewBag.tarih</label></td>
+            <td colspan="2" rowspan="4" style="text-align:center"><b><label style="color:cadetblue">@ViewBag.olcuTuruAd  @ViewBag.tabloTuruAd Raporu</label></b></td>
+            <td colspan="2"><b>Model: </b> <label style="color:cadetblue">@ViewBag.model   -   @ViewBag.artikel</label></td>
+            <td colspan="1"><b>Döküman Kodu</b></td>
+            <td colspan="1"><b>ÜRT. FR. 11</b></td>
+        </tr>
+
+        <tr>
+            <td colspan="2"><b>Order No: </b><label style="color:cadetblue">@ViewBag.orderNo</label></td>
+            <td colspan="2">
+                <b>Dikim Atölyesi: </b><label style="color:cadetblue">@ViewBag.atolyeAd</label>
+                @if (ViewBag.utuPaketAd != "")
+                {
+                    <br />
+                    <b>Ütü/Paket: </b><label style="color:cadetblue">@ViewBag.utuPaketAd</label>
+                }
+
+            </td>
+            <td colspan="1"><b>İlk Yürürlülük Tarihi</b></td>
+            <td colspan="1"><b>08.01.2018</b></td>
+        </tr>
+
+
+        <tr>
+            <td colspan="2" rowspan="2"><b>Müşteri: </b> <label style="color:cadetblue">@ViewBag.musteri </label>   </td>
+
+            <td colspan="2" rowspan="2"><b>Yıkama Yeri: </b><label style="color:cadetblue">@ViewBag.yikamaYer</label>   <b>Yıkama Sorumlusu: </b><label style="color:cadetblue">@ViewBag.yikamaSor</label></td>
+
+            <td colspan="1" rowspan="1"><b>Revizyon Tarihi</b></td>
+
+            <td colspan="1" rowspan="1"> </td>
+
+        </tr>
+
+
+        <tr>
+            <td colspan="1" rowspan="1"><b>Revizyon No</b></td>
+            <td colspan="1" rowspan="1"></td>
+        </tr>
+    </tbody>
+</table>
+<br />
+
+@if (ViewBag.fasonMu)
+{
+    <table class="printTable">
+        <thead>
+            <tr>
+                <th>Ölçü Noktası</th>
+
+                @foreach (var item in Model.Item1)
+                {
+                    <th>@item.Bedenler.beden</th>
+                }
+
+
+                @if (ViewBag.tabloTuruAd == "Yıkama Öncesi")
+                {
+                    <th>Ortalama Deger</th>
+                    <th>Gerçekleşen Tölerans</th>
+                    <th>Uygulanan Tölerans</th>
+                }
+                else
+                {
+                    <th>Ortalama Deger</th>
+                    <th>Gerçekleşen Çekme</th>
+                    <th>Uygulanan Çekme</th>
+                }
+
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.Item2.GroupBy(x => x.OlcuNoktalari).Select(y => y.Key))
+            {
+                <tr>
+                    <td> @item.olcuNoktasi </td>
+
+                    @foreach (var itemheader in Model.Item1)
+                    {
+
+                        double? deger = Model.Item2.Where(x => x.bedenID == itemheader.bedenID && x.enBoyCekme == itemheader.enBoyCekme && x.olcuNoktaID == item.id && x.pantNo == itemheader.pantNo).FirstOrDefault().deger;
+
+                        if (deger > 1 || deger <= -1)
+                        {
+                            <td style="color:red; text-align:center">@deger</td>
+                        }
+                        else
+                        {
+                            <td style="color:green;text-align:center">@deger</td>
+                        }
+                    }
+
+                    @if (Model.Item3.Where(x => x.olcuNoktasiID == item.id).Count() != 0)
+                    {
+                        if (Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().ortalamaDeger <= -1 || Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().ortalamaDeger >= 1)
+                        {
+                            <td style="color:red;text-align:center;">@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().ortalamaDeger</td>
+
+                        }
+                        else
+                        {
+                            <td style="color:green;text-align:center;">@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().ortalamaDeger</td>
+
+                        }
+
+                        <td style="text-align:center;">@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().gerceklesenTolCekme</td>
+
+
+                        <td style="text-align:center;">@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().uygulananTolCekme</td>
+
+                    }
+                    else
+                    {
+                        <td></td>
+                        <td></td>
+                    }
+
+                    @*<td>@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().gerceklesenTolCekme</td>
+                        <td>@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().uygulananTolCekme</td>*@
+
+                </tr>
+            }
+
+            <tr>
+                <td>Çekme</td>
+
+                @foreach (var item in Model.Item1)
+                {
+                    <td style="text-align:center;">@item.enBoyCekme</td>
+                }
+            </tr>
+
+            <tr>
+                <td>PNo</td>
+
+                @foreach (var item in Model.Item1)
+                {
+                    <td style="text-align:center;">@item.pantNo</td>
+                }
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+}
+else
+{
+    <table class="printTable">
+        <thead>
+            <tr>
+                <th>Ölçü Noktası</th>
+
+                @foreach (var item in Model.Item1)
+                {
+                    <th> @item.Bedenler.beden  -  @item.bpantNo</th>
+                }
+
+
+                @if (ViewBag.tabloTuruAd == "Yıkama Öncesi")
+                {
+                    <th>Ortalama Deger</th>
+                    <th>Gerçekleşen Tölerans</th>
+                    <th>Uygulanan Tölerans</th>
+                }
+                else
+                {
+                    <th>Ortalama Deger</th>
+                    <th>Gerçekleşen Çekme</th>
+                    <th>Uygulanan Çekme</th>
+                }
+
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model.Item2.GroupBy(x => x.OlcuNoktalari).Select(y => y.Key))
+            {
+                <tr>
+                    <td> @item.olcuNoktasi </td>
+
+                    @foreach (var itemheader in Model.Item1)
+                    {
+
+                        double? deger = Model.Item2.Where(x => x.bedenID == itemheader.bedenID && x.enBoyCekme == itemheader.enBoyCekme && x.olcuNoktaID == item.id && x.pantNo == itemheader.pantNo).FirstOrDefault().deger;
+
+                        if (deger > 1 || deger <= -1)
+                        {
+                            <td style="color:red; text-align:center">@deger</td>
+                        }
+                        else
+                        {
+                            <td style="color:green;text-align:center">@deger</td>
+                        }
+                    }
+
+                    @if (Model.Item3.Where(x => x.olcuNoktasiID == item.id).Count() != 0)
+                    {
+                        if (Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().ortalamaDeger <= -1 || Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().ortalamaDeger >= 1)
+                        {
+                            <td style="color:red;text-align:center;">@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().ortalamaDeger</td>
+
+                        }
+                        else
+                        {
+                            <td style="color:green;text-align:center;">@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().ortalamaDeger</td>
+
+                        }
+
+                        <td style="text-align:center;">@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().gerceklesenTolCekme</td>
+
+
+                        <td style="text-align:center;">@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().uygulananTolCekme</td>
+
+                    }
+                    else
+                    {
+                        <td></td>
+                        <td></td>
+                    }
+
+                    @*<td>@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().gerceklesenTolCekme</td>
+                <td>@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().uygulananTolCekme</td>*@
+
+                </tr>
+            }
+
+            <tr>
+                <td>
+                    Çekmeler
+                </td>
+
+                @foreach (var item in Model.Item1)
+                {
+                    <td>@item.enBoyCekme</td>
+                }
+            </tr>
+
+            @if (Model.Item4.Count > 0)
+            {
+                <tr>
+                    <td>Top No</td>
+
+                    @foreach (var item in Model.Item1)
+                    {
+                        var barcode = Model.Item4.Where(x => x.BedenId == item.bedenID && x.PantNo == item.pantNo && x.BedenPantNo == item.bpantNo).FirstOrDefault();
+
+                        <td>@barcode.TopNo</td>
+                    }
+                </tr>
+
+                <tr>
+                    <td>Kumaş En/Boy Çekme</td>
+
+                    @foreach (var item in Model.Item1)
+                    {
+                        var barcode = Model.Item4.Where(x => x.BedenId == item.bedenID && x.PantNo == item.pantNo && x.BedenPantNo == item.bpantNo).FirstOrDefault();
+
+                        <td>@barcode.EnBoyCekme</td>
+                    }
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+}
+
+
+
+<br />
+<p><b>Not: </b>  @ViewBag.aciklama</p>
+<br />

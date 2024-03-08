@@ -1,0 +1,172 @@
+﻿<div class="card-header">
+    <div class="card" style="width:100%">
+        <div class="card-header">
+            <h4>Order Ekleme Ekranı</h4>
+            <div class="card-header-action">
+                <a data-collapse="#mycard-collapse" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus" style="color:white"></i></a>
+            </div>
+        </div>
+        <div class="collapse show" id="mycard-collapse">
+            <div class="card-body" style="width:100%">
+                <div class="row">
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Order No:</label>
+                            <div class="input-group">
+                                @Html.TextBox("orderNo", null, new { @style = " width:120%; " })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Model Ad:</label>
+                            <div class="input-group">
+                                @Html.TextBox("modelAd")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Model No:</label>
+                            <div class="input-group">
+                                @Html.TextBox("modelNo", null, new { @style = " width:110%; " })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Kumaş:</label>
+                            <div class="input-group">
+                                @Html.TextBox("kumas")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Müşteri:</label>
+                            <div class="input-group">
+                                @Html.TextBox("musteri")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Atölye Adı:</label>
+                            <div class="input-group">
+                                @Html.TextBox("atolyeAd")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="width:100%">
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Yıkama Yeri:</label>
+                            <div class="input-group">
+                                @Html.TextBox("yikamaYeri")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Başlangıç Tarihi:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control datepicker" id="tarih1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+
+                        <div class="form-group">
+                            <label>Bitiş Tarihi:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control datepicker" id="tarih2">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <a href="#" class="btn btn-icon icon-left btn-info" style="margin-left:90%" onclick="FillTable()"><i class="fas fa-search" style="color:white"></i><span style="color:white">Ara</span> </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<div class="card-body">
+    <div id="selectedListAddOrder">
+
+    </div>
+    <section id="tablePartAddOrder">
+    </section>
+</div>
+
+<script>
+    var tabloTuru = @Html.Raw(Json.Encode(ViewBag.tabloTuru));
+    $(document).ready(function () {      
+        YukleniyorOnOff();
+        $.post("/Raporlama/AddOrderToArsivTable", { 'tabloTuru': tabloTuru }, function (data) {
+            $('#tablePartAddOrder').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    });
+
+    $(function () {
+        $(".datepicker").datepicker({
+            dateFormat: "dd-mm-yy",
+            altFormat: "yy-mm-dd",
+            altField: "#tarih-db",
+            monthNames: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+            dayNamesMin: ["Pa", "Pt", "Sl", "Ça", "Pe", "Cu", "Ct"],
+        });
+
+        $("#datepicker").datepicker('setDate', new Date());
+    });
+
+
+    $("[data-collapse]").each(function () {
+        var me = $(this),
+            target = me.data("collapse");
+
+        me.click(function () {
+            $(target).collapse("toggle");
+            $(target).on("shown.bs.collapse", function () {
+                me.html('<i class="fas fa-minus"></i>');
+            });
+            $(target).on("hidden.bs.collapse", function () {
+                me.html('<i class="fas fa-plus"></i>');
+            });
+            return false;
+        });
+    });
+
+    function FillTable() {
+        var orderNo = $('#orderNo').val();
+        var modelNo = $('#modelNo').val();
+        var kumas = $('#kumas').val();
+        var musteri = $('#musteri').val();
+        var atolyeAd = $('#atolyeAd').val();
+        var modelAd = $('#modelAd').val();
+        var yikamaYeri = $('#yikamaYeri').val();      
+        var tarih1 = $('#tarih1').val();
+        var tarih2 = $('#tarih2').val();
+
+        YukleniyorOnOff();
+        $.post("/Raporlama/AddOrderToArsivTable", { 'orderNo': orderNo, 'modelNo': modelNo, 'kumasAdi': kumas, 'musteri': musteri, 'atolye': atolyeAd, 'modelAdi': modelAd, 'yikamaYeri': yikamaYeri, 'tabloTuru': tabloTuru, 'tarih1': tarih1, 'tarih2': tarih2 }, function (data) {
+            $('#tablePartAddOrder').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+
+</script>

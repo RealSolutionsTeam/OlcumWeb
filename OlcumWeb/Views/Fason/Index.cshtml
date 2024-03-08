@@ -1,0 +1,437 @@
+﻿<title>Fason/Ütü Paket Ölçü Formu</title>
+
+<style>
+
+    .blueBackground {
+        box-shadow: 0 2px 6px #82d3f8;
+        background-color: #3abaf4;
+        border-color: #3abaf4;
+        color: #fff;
+    }
+
+    .blackBackground {
+        background-color: #353c48;
+        box-shadow: 0 2px 6px #acb5f6;
+        color: #fff;
+    }
+
+    .swal-modal {
+        width: 55% !important;
+    }
+
+    .swal-title:not(:last-child) {
+        margin-bottom: 0 !important;
+    }
+
+    .swal-title:first-child {
+        margin-top: 0 !important;
+    }
+
+    .swal-footer {
+        margin-top: 0 !important;
+    }
+
+    .main-content {
+        padding-left: 5% !important;
+        padding-right: 0% !important;
+    }
+
+    .card-body {
+        padding: 1% 0 !important;
+        max-width: none !important;
+        width: 100% !important;
+    }
+
+    .container {
+        max-width: none !important;
+        width: 100% !important;
+    }
+</style>
+
+<input value='@TempData["hata"]' hidden id="hataInput" />
+
+
+<div class="col-12">
+    <div class="card mt-3">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div id="form" style="width: 100%;">
+                        <div class="row m-0">
+                            <div class="lds-ring" style="margin: 5% auto;">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Kazan Devam Et Modal -->
+<div class="modal fade bd-example-modal-l" id="FasonDevamModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title m-auto"><span id="FasonDevamEtModalHeader"></span></h4>
+                <button data-dismiss="modal" type="button" aria-label="Close" class="btn btn-icon btn-sm btn-danger pull-right">✘</button>
+            </div>
+            <div class="modal-body" id="FasonDevamModalBody">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+<script>
+    $(document).ready(function () {
+        if ($('#hataInput').val() != "") {
+            iziToast.error({
+                title: $('#hataInput').val(),
+                message: '',
+                position: 'bottomRight'
+            });
+        }
+    });
+
+    const findDuplicates = (arr) => {
+        let sorted_arr = arr.slice().sort();
+        let results = [];
+        for (let i = 0; i < sorted_arr.length - 1; i++) {
+            if (sorted_arr[i + 1] == sorted_arr[i]) {
+                results.push(sorted_arr[i]);
+            }
+        }
+        return results;
+    }
+
+    var orderNo;
+    var model;
+    var musteri;
+    var olcuTuruAd;
+    var tabloTuruAd;
+    var atolyeAd;
+    var utuPaketAd;
+    var kazanDetayId = 0;
+    var olcuTaloDetayId = 0;
+    var dropDownorderId = 0;
+
+    var orderId = 0;
+    var olcuTabloOlcuTurId = 0;
+
+    var isAparat = false;
+    var isUtu = false;
+
+    console.log(isAparat);
+    console.log(isUtu);
+
+    var personel = JSON.parse(localStorage.getItem('personel'));
+
+
+    var paramOrderNo = "";
+    var paramTur = "";
+    var paramKontrolId = 0;
+    var paramInspectionId = 0;
+    var paramUrunKabulId = 0;
+    var paramAtolyeId = 0;
+    var paramUtuId = 0;
+
+    window.onload = function () {
+        try {
+            var url_string = (window.location.href);
+            var url = new URL(url_string);
+            var userName = url.searchParams.get("userName");
+            var psw = url.searchParams.get("psw");
+
+
+            if (userName != null && psw != null) {
+                paramOrderNo = url.searchParams.get("orderNo");
+                paramTur = url.searchParams.get("tur"); 
+                paramKontrolId = Number(url.searchParams.get("kontrolId"));
+                paramAtolyeId = Number(url.searchParams.get("atolyeId"));
+                paramUtuId = Number(url.searchParams.get("utuId"));
+                paramInspectionId = Number(url.searchParams.get("insId"));
+                paramUrunKabulId = Number(url.searchParams.get("urunKabulId"));
+
+
+                $.post("/Raporlama/SearchSingleOrder", { term: paramOrderNo }, function (responseListSuc) {
+                    dropDownorderId = responseListSuc.orderID;
+                    console.log(dropDownorderId);
+                }).fail(function (responseListErr) {
+                    alert('Error : ' + responseListErr.responseText);
+                    $(".loader").fadeOut("slow");
+                });
+
+
+                KayitYapiliyorOnOff();
+
+                $.post("/Giris/GirisLocal", { username: userName, password: psw }, function (responseSuccess) {
+                    console.log(responseSuccess);
+                    KayitYapiliyorOnOff();
+
+                    if (responseSuccess != null) {
+                        localStorage.setItem('personel', JSON.stringify(responseSuccess));
+
+                    } else {
+                        alert('Giriş yapılamadı kullanıcı adı veya şifre hatalı.Lütfen sistem yöneticisine bildiriniz');
+                    }  
+
+                    getFormPartial();
+
+
+                }).fail(function (responseError) {
+                    console.log(responseError);
+                    alert('Error : Giriş yapılamadı lütfen sistem yöneticisine bildiriniz ' + responseError.responseText);
+                    getFormPartial();
+
+                });
+
+            } else {
+                getFormPartial();
+            }
+
+
+        } catch (err) {
+            console.log("Issues with Parsing URL Parameter's - " + err);
+            alert('Error : Parametreler alınamadı lütfen sistem yöneticisine bildiriniz ' + err);
+            getFormPartial();
+
+        }
+    }
+
+    function getFormPartial() {
+
+        $.post("/Fason/FasonFormPartial", {}, function (responseSuccess) {
+            $('#form').html(responseSuccess);
+        }).fail(function (responseError) {
+            console.log(responseError);
+            alert('Error : ' + responseError.responseText);
+        });
+
+    }
+
+    function FormuKaydet() {
+
+
+        var porderId = $("#OrderSelect").val();
+        if (porderId == 0) {
+            iziToast.error({
+                title: 'Order Seçilmemiş',
+                message: '',
+                position: 'bottomRight'
+            });
+            return false
+        }
+
+        var patolyeId = $("#AtolyeSelect").val();
+
+
+        var polcuTurId = $("#OlcuTurSelect").val();
+        if (polcuTurId == 0) {
+            iziToast.error({
+                title: 'Ölçü Türü Seçilmemiş',
+                message: '',
+                position: 'bottomRight'
+            });
+            return false
+        }
+
+        var poTolcuTurId = $("#OlcuTabloOlcuTurSelect").val();
+        if (poTolcuTurId == 0) {
+            iziToast.error({
+                title: 'Ölçü Tablosu Ölçü Türü Seçilmemiş',
+                message: '',
+                position: 'bottomRight'
+            });
+            return false
+        }
+
+
+        var pgiysiTurId = $("#GiysiTurSelect").val();
+        if (pgiysiTurId == 0) {
+            iziToast.error({
+                title: 'Giysi Türü Seçilmemiş',
+                message: '',
+                position: 'bottomRight'
+            });
+            return false
+        }
+
+        var putuId = Number($("#UtuPaketSelect").val());
+
+
+        if (olcuTuruAd == "Fason Ham Ölçü") {
+            tabloTuruAd = "Yıkama Öncesi";
+        } else {
+            tabloTuruAd = "Yıkama Sonrası";
+        }
+
+        console.log(isAparat);
+        console.log(isUtu);
+
+        var ptabloTurId = tabloTuruAd == "Yıkama Öncesi" ? 0 : 1;
+
+        var ppersonel = JSON.parse(localStorage.getItem('personel'));
+
+        var postParam = { orderID: porderId, atolyeID: patolyeId, giysiTuruID: pgiysiTurId, olcuTuruID: polcuTurId, tabloTurId: ptabloTurId, kullaniciId: ppersonel.id, utuId: putuId, oTolcuTurId: poTolcuTurId, kontrolId: paramKontrolId, inspectionId: paramInspectionId, aparatliMi: isAparat, utuluMu: isUtu, urunKabulId: paramUrunKabulId };
+
+        KayitYapiliyorOnOff();
+
+        $.post("/Fason/FasonFormKaydet", postParam, function (responseSuccess) {
+
+            if (responseSuccess == "0") {
+                KayitYapiliyorOnOff();
+                iziToast.error({ title: 'Kayıt sırasında bir hata oluştu lütfen tekrar deneyiniz', message: '', position: 'bottomRight' });
+            } else if (responseSuccess == "1") {
+                KayitYapiliyorOnOff();
+                iziToast.error({ title: 'Seçtiginiz Order ve Ölçü Turune ait Ölçü tablosu bulunamadı', message: '', position: 'bottomRight' });
+            } else {
+                kazanDetayId = responseSuccess.kazanDetayId;
+                olcuTaloDetayId = responseSuccess.olcuTaloDetayId;
+                orderId = porderId;
+                olcuTabloOlcuTurId = poTolcuTurId;
+
+
+                $.post("/Fason/FasonTablePartial", responseSuccess, function (responseSuccess2) {
+                    KayitYapiliyorOnOff();
+                    $('#form').html(responseSuccess2);
+                }).fail(function (responseError) {
+                    KayitYapiliyorOnOff();
+                    console.log(responseError);
+                    alert('Error : ' + responseError.responseText);
+                });
+            }
+
+        }).fail(function (responseError) {
+            KayitYapiliyorOnOff();
+            console.log(responseError);
+            alert('Error : ' + responseError.responseText);
+        });
+
+
+    }
+
+    function kaydetDevamEt(isKaliteBagla) {
+
+        if ($('input[name = "devamChk"]:checked').length != 0) {
+            kazanDetayId = Number($('input[name = "devamChk"]:checked')[0].value);
+
+            KayitYapiliyorOnOff();
+
+            let newKaliteKontrolId = 0;
+            let newUrunKabulId = 0;
+            let newInspectionId = 0;
+
+            if (isKaliteBagla) {
+                newKaliteKontrolId = paramKontrolId;
+                newUrunKabulId = paramUrunKabulId;
+                newInspectionId = paramInspectionId;
+            }
+
+            $.post("/Fason/devamEtFasonFormKaydet", { kazanDetayId: kazanDetayId, newKontrolId: newKaliteKontrolId, newUrunKabulId: newUrunKabulId, newInspectionId: newInspectionId }, function (responseSuccess) {
+
+                if (responseSuccess == "0") {
+                    KayitYapiliyorOnOff();
+                    iziToast.error({ title: 'Kayıt sırasında bir hata oluştu lütfen tekrar deneyiniz', message: '', position: 'bottomRight' });
+                } else if (responseSuccess == "1") {
+                    KayitYapiliyorOnOff();
+                    iziToast.error({ title: 'Seçtiginiz Order ve Ölçü Turune ait Ölçü tablosu bulunamadı', message: '', position: 'bottomRight' });
+                } else {
+
+                    kazanDetayId = responseSuccess.kazanDetayId;
+                    olcuTaloDetayId = responseSuccess.olcuTaloDetayId;
+                    orderId = responseSuccess.orderId;
+                    olcuTabloOlcuTurId = responseSuccess.olcuTabloOlcuTurId;
+
+                    $.post("/Fason/FasonTablePartial", responseSuccess, function (responseSuccess2) {
+                        KayitYapiliyorOnOff();
+                        $('#form').html(responseSuccess2);
+                        $('#FasonDevamModal').modal('hide');
+                    }).fail(function (responseError) {
+                        KayitYapiliyorOnOff();
+                        console.log(responseError);
+                        alert('Error : ' + responseError.responseText);
+                    });
+                }
+
+            }).fail(function (responseError) {
+                KayitYapiliyorOnOff();
+                console.log(responseError);
+                alert('Error : ' + responseError.responseText);
+            });
+
+
+        } else {
+            iziToast.error({ title: 'Lütfen en az bir rapor seçiniz', message: '', position: 'bottomRight' });
+        }
+    }
+
+    function OlcuNokSec() {
+
+        if (firstOlcuNoktasiSecim) {
+
+            if (seciliOlcuNokIdList.length != 0) {
+                $('#olcuNoktalariSecimModal').modal('hide');
+
+            } else {
+                iziToast.error({
+                    title: 'Lütfen en az bir Ölçü Noktası seçiniz',
+                    message: '',
+                    position: 'bottomRight'
+                });
+            }
+
+        } else {
+
+            try {
+
+                if (seciliOlcuNokIdList.length != 0) {
+
+                    KayitYapiliyorOnOff();
+                    $.post("/Fason/changeOlcuNoktalari", {
+                        olcuTaloDetayId: olcuTaloDetayId, kazanDetayId: kazanDetayId, secilenNoktalar: seciliOlcuNokIdList, oldSecilenNoktalar: oldSeciliOlcuNokIdList
+                    }, function (responseSuccess) {
+                        KayitYapiliyorOnOff();
+                        $('#form').html("");
+                        $('#form').html(responseSuccess);
+                        $('#olcuNoktalariSecimModal').modal('hide');
+
+
+                    }).fail(function (responseError) {
+                        KayitYapiliyorOnOff();
+                        console.log(responseError);
+                        alert('Error : ' + responseError.responseText);
+                    });
+
+                } else {
+                    iziToast.error({
+                        title: 'Lütfen en az bir Ölçü Noktası seçiniz',
+                        message: '',
+                        position: 'bottomRight'
+                    });
+                }
+
+
+            } catch (e) {
+                KayitYapiliyorOnOff();
+                console.error(e);
+                iziToast.error({ title: 'Bir hata Oluştu', message: e.toString(), position: 'bottomRight' });
+                alert('Error : ' + e);
+            }
+        }
+    }
+
+</script>
+

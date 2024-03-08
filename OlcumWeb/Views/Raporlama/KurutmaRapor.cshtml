@@ -1,0 +1,40 @@
+﻿
+@{
+    ViewBag.Title = "KurutmaRapor";
+}
+
+    <div class="card" style="margin-top:2%">
+        <div class="card-header">
+            <h4>Kurutma Raporu</h4>
+        </div>
+        <div class="card-body" style="height:400px;">
+            <div class="row">
+                @Html.TextBox("orders", null, new { @placeholder = "ORDER NO", @style = "width:75%" })
+
+                <a href="#" class="btn btn-icon btn-info" style="margin-left:2%" onclick="SearchOrder()"><i class="fas fa-search" style="color:white;"></i></a>
+            </div>
+
+            <section id="orderResult" style="margin-top:10%">
+            </section>
+
+        </div>
+    </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+<script>
+    function SearchOrder() {
+        YukleniyorOnOff();
+
+        var orderNo = $('#orders').val();
+        console.log(orderNo);
+        $.post("/Raporlama/SearchOrder", { 'orderNo': orderNo }, function (deger) {
+            $('#orderResult').html(deger);
+            YukleniyorOnOff();
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+            YukleniyorOnOff();
+        });
+    }
+</script>

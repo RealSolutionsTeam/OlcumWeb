@@ -1,0 +1,202 @@
+﻿@model List<OlcumWeb.Models.DTO.DTORaporOrderList>
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/datatables.min.css">
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
+
+<style>
+
+    select[name="1_length"] {
+        height: 30px !important;
+    }
+
+    select[name="2_length"] {
+        height: 30px !important;
+    }
+
+    select[name="save-stage"] {
+        height: 30px !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+
+    .dataTables_filter label {
+        margin: 0 !important;
+    }
+
+        .dataTables_filter label input {
+            height: 30px !important;
+        }
+
+    .dataTables_paginate {
+        float: right !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+</style>
+
+<div class="card card-success" id="orderListCard">
+    <div class="card-header">
+        <h4>Order Listesi</h4>
+
+        <div class="row">
+
+        </div>
+        <div class="row">
+
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row" style="padding-bottom:2%;">
+            <label style="margin-top: 6px; padding-right:5%;  font-weight:bold">Order No:</label>
+            @Html.TextBox("search", null, new { @class = "form-control", @id = "searchButton", @style = "width:50%" })
+
+            <a href="#" class="btn btn-icon btn-primary" style="width:6%" onclick="OrderAra()"><i class="fas fa-search"></i></a>
+        </div>
+        <section id="searchSection">
+            <div class="table-responsive">
+                <table class="table table-striped table-md">
+                    <tbody>
+                        <tr>
+                            <th>#</th>
+                            <th>İşlem</th>
+                            <th>Order No</th>
+                            <th>Ölçü Türü</th>
+                            <th>Kullanıcı Adı</th>
+                            <th>Eklenme Tarihi</th>
+                        </tr>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            if (i % 2 == 0)
+                            {
+                                <tr>
+                                    <td>
+                                        @(i + 1)
+                                    </td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <a href="#" class="btn btn-info" onclick="Print(@Model[i].id, '@Model[i].orderNo', '@Model[i].olcuTuruAd', '@Model[i].tarih.ToShortDateString()')"><span style="color:white">Yazdır</span> </a>
+                                            </div>
+                                            <div class="col-6">
+                                                <a href="#" class="btn btn-info" onclick="TabloGoster(@Model[i].id)"><span style="color:white">Tablo Göster</span> </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @Model[i].orderNo
+                                    </td>
+                                    <td>
+                                        @Model[i].olcuTuruAd
+                                    </td>
+                                    <td>
+                                        @Model[i].kullanıcıAdı
+                                    </td>
+                                    <td>
+                                        @Model[i].tarih.ToShortDateString()
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td class="sorting_1">
+                                        @(i + 1)
+                                    </td>
+                                    <td>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <a href="#" class="btn btn-info" onclick="Print(@Model[i].id, '@Model[i].orderNo', '@Model[i].olcuTuruAd', '@Model[i].tarih.ToShortDateString()')"><span style="color:white">Yazdır</span> </a>
+                                            </div>
+                                            <div class="col-6">
+                                                <a href="#" class="btn btn-info" onclick="TabloGoster(@Model[i].id)"><span style="color:white">Tablo Göster</span> </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @Model[i].orderNo
+                                    </td>
+                                    <td>
+                                        @Model[i].olcuTuruAd
+                                    </td>
+                                    <td>
+                                        @Model[i].kullanıcıAdı
+                                    </td>
+                                    <td>
+                                        @Model[i].tarih.ToShortDateString()
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-success" style="visibility:hidden" data-kazanDetayID="@Model[i].id" id="yazdirButton" onclick="Print(this)"><i class="fas fa-print" style="color:white"></i> <span style="color:white">Yazdır</span></button>
+
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script src='https://pro.fontawesome.com/releases/v5.1.0/js/all.js'></script>
+<script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/1580009/highlight.pack.js'></script>
+<script src="~/CSS/customCk/script.js"></script>
+<script src="~/Tema/assets/bundles/datatables/datatables.min.js"></script>
+<script src="~/Tema/assets/bundles/sweetalert/sweetalert.min.js"></script>
+<script src="~/Tema/assets/js/page/sweetalert.js"></script>
+
+<script>
+
+    function Print(elem, orderNo, olcuTuruAd, tarih) {
+        var detayID = elem;
+        console.log(detayID);
+        var someJSONdata = [];
+        var propertiesList = [];
+
+        document.title = orderNo + " - " + olcuTuruAd + " - " + tarih;
+
+
+        $.post("/KazanFormu/kazanPrint", { kazanDetayId: detayID }, function (printSucc) {
+            printJS({
+                printable: someJSONdata,
+                properties: propertiesList,
+                header: printSucc,
+                //style: '.printTable { width: 100%;  border-collapse: collapse;} .printTable td { border: 1px solid grey; padding: 1px;  }  table td { border: 1px solid grey; padding: 1px;  } ',
+                type: 'json',
+                gridStyle: 'border: 1px solid grey; padding: 1px; ',
+                gridHeaderStyle: 'border: 1px solid grey; padding: 1px;'
+            });
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+    function TabloGoster(elem) {
+        var detayId = elem;
+
+        window.open("https://olcu.realkom.com/Raporlama/TabloGoster?id=" + detayId + "&tur=0");
+    }
+
+    function OrderAra() {
+        var arananOrder = $('#searchButton').val();
+        console.log(arananOrder);
+        YukleniyorOnOff();
+        $.post("/Raporlama/GetOrder", { 'orderNo': arananOrder },
+            function (data) {
+                $('#searchSection').html(data);
+                YukleniyorOnOff();
+            }
+        );
+    }
+
+
+</script>
+

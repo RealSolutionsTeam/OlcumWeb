@@ -1,0 +1,178 @@
+﻿@model List<OlcumWeb.Controllers.ArsivDataModel>
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/datatables.min.css">
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
+
+<style>
+
+    select[name="1_length"] {
+        height: 30px !important;
+    }
+
+    select[name="2_length"] {
+        height: 30px !important;
+    }
+
+    select[name="save-stage"] {
+        height: 30px !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+
+    .dataTables_filter label {
+        margin: 0 !important;
+    }
+
+        .dataTables_filter label input {
+            height: 30px !important;
+        }
+
+    .dataTables_paginate {
+        float: right !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+</style>
+
+<div style="width:100%">
+
+    <div class="table-responsive" id="orderListesi">
+        <div id="table-1_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+            <div class="col-sm-12">
+                <table class="table table-striped dataTable no-footer" id="save-stage2Arsiv" role="grid" aria-describedby="table-1_info">
+                    <thead>
+                        <tr role="row">
+
+                            <th>
+                                Rapor Adı
+                            </th>
+
+                            <th>Raporun İçeriğini Görüntüle</th>
+
+                            <th>
+                                Tarih
+                            </th>
+
+                            <th>
+                                Rapor Türü
+                            </th>
+
+                            <th>
+                                Kullanıcı
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a class="btn btn-icon btn-info" id="btn_@item.raporID" data-raporid="@item.raporID" onclick="GetRapor(this)"><span style="color:white">@item.raporAdi</span></a>
+                                </td>
+
+                                <td align="center">
+                                    <a class="btn btn-icon btn-info" data-reportid="@item.raporID" onclick="ReportDetail(this)"><i class="fas fa-eye" style="color:white;"></i></a>
+                                </td>                                   
+                                <td>
+                                    @item.tarih.ToShortDateString()
+                                </td>
+                                <td>
+                                    @if (item.tabloTuru == 0)
+                                    {
+                                        <span>Tölerans</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Çekme</span>
+                                    }
+                                </td>
+
+                                <td>@(item.personelAd + " " + item.personelSoyad)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="checkReportModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="min-width:100%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="checkReport_Modal">
+                </div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Tema/assets/bundles/datatables/datatables.min.js"></script>
+<script src="~/Tema/assets/bundles/sweetalert/sweetalert.min.js"></script>
+<script src="~/Tema/assets/js/page/sweetalert.js"></script>
+
+<script>
+    var list = [];
+    $('#save-stage2Arsiv').DataTable({
+        "dom": '<"top"<"row mr-0 ml-0 mt-1 mb-1"<"col-6 m-auto"f><"col-6 m-auto"l>>>rt<"row mt-2 mr-0 mb-0 ml-0"<"col - 6 m- auto"i><"col - 6 m - auto"p>><"clear">',
+        "pageLength": 10,
+        "searching": false,
+        "ordering": false,
+        "lengthMenu": [10, 20, 50, 100],
+        "language": {
+            "searchPlaceholder": "Arama",
+            "search": "",
+            //"info": "TOTAL Kayıt içerisinde START - END gösteriliyor",
+            "loadingRecords": "Yükleniyor...",
+            "zeroRecords": "Kayıt Bulunamadı",
+            "lengthMenu": "",
+            "infoEmpty": "",
+            "infoFiltered": "",
+            "paginate": {
+                "first": "İlk Sayfa",
+                "last": "Son Sayfa",
+                "next": "Sonraki Sayfa",
+                "previous": "Önceki Sayfa",
+            },
+        }
+    }).columns(-1).draw();
+
+    function GetRapor(elem) {
+        var raporID = $(elem).data('raporid');
+
+        window.open(window.location.origin + '/Raporlama/ArsivRapor?id=' + raporID);
+    }
+
+    function ReportDetail(elem) {
+        var id = $(elem).data('reportid');
+
+        $.post("/Raporlama/CheckReport", { 'id': id }, function (data) {
+            $('#checkReport_Modal').html(data);
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+
+        $('#checkReportModal').modal('show');
+    }
+
+
+</script>
+
+

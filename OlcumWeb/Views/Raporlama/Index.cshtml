@@ -1,0 +1,186 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+@section scriptsHead
+{
+    <script>
+        window.onload = function () {
+            var personel = this.localStorage.getItem('personel');
+
+            this.localStorage.clear();
+
+            this.localStorage.setItem('personel', personel);
+
+            if (bagliNumuneIdList !== undefined) {
+                if (bagliNumuneIdList.length > 0) {
+                    for (var i = 0; i < bagliNumuneIdList.length; i++) {
+                        this.localStorage.setItem(bagliNumuneIdList[i], JSON.stringify({ 'id': bagliNumuneIdList[i], 'raporTuru': 1 }));
+                    }
+                }
+            }
+
+
+
+            var url_string = (window.location.href);
+            var url = new URL(url_string);
+
+            var kazanDetayId = url.searchParams.get("kazanDetayId");
+
+            if (kazanDetayId != null) {
+                $(".rapor4").trigger("click");
+                var someJSONdataparam = [];
+                var propertiesListparam = [];
+                $.post("/KazanFormu/kazanPrint", { kazanDetayId: kazanDetayId }, function (printSucc) {
+                    printJS({
+                        printable: someJSONdataparam,
+                        properties: propertiesListparam,
+                        header: printSucc,
+                        type: 'json',
+                        gridStyle: 'border: 1px solid grey; padding: 1px; ',
+                        gridHeaderStyle: 'border: 1px solid grey; padding: 1px;'
+                    });
+
+                }).fail(function (printError) {
+                    alert('Error : ' + printError.responseText);
+                });
+            }
+        }
+    </script>
+
+}
+<title>
+    Raporlama Sayfası
+</title>
+
+<div style="margin-top:2%">
+    <section id="raporlamaCard">
+    </section>
+</div>
+
+
+<div class="modal fade" id="toleransModal" tabindex="-1" role="dialog" aria-hidden="true" style="left:100px">
+    <div class="modal-dialog" role="document" style="max-width:50%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="tolerans_Modal"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cekmeModal" tabindex="-1" role="dialog" aria-hidden="true" style="left:100px;margin-top:50%">
+    <div class="modal-dialog" role="document" style="max-width:50%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="cekme_Modal"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var personel = localStorage.getItem('personel');
+
+        if (personel == null) {
+            var url_string = (window.location.href);
+            var url = new URL(url_string);
+            var userName = url.searchParams.get("userName");
+            var psw = url.searchParams.get("psw");
+            if (userName != null && psw != null) {
+                $.post("/Giris/GirisLocal", { username: userName, password: psw }, function (responseSuccess) {
+                    console.log(responseSuccess);
+
+                    if (responseSuccess != null) {
+                        localStorage.setItem('personel', JSON.stringify(responseSuccess));
+                        personel = localStorage.getItem('personel');
+                    } else {
+                        alert('Giriş yapılamadı kullanıcı adı veya şifre hatalı. Lütfen sistem yöneticisine bildiriniz');
+                        window.location = window.location.origin;
+                    }
+
+
+                }).fail(function (responseError) {
+                    console.log(responseError);
+                    alert('Error : Giriş yapılamadı lütfen sistem yöneticisine bildiriniz ' + responseError.responseText);
+                    window.location = window.location.origin;
+                });
+            } else {
+                window.location = window.location.origin;
+            }
+
+        }
+    });
+
+    $(document).ready(function modalShow() {
+        $.post("/Raporlama/RaporlamaCardPartial", {}, function (deger) {
+            $('#raporlamaCard').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+
+        var url_string = (window.location.href);
+        var url = new URL(url_string);
+        var paramOrderNo = url.searchParams.get("orderNo");
+        var paramRaporAd = url.searchParams.get("raporAd");
+        console.log(paramOrderNo);
+        console.log(paramRaporAd);
+
+        if (paramRaporAd != null) {
+            if (paramRaporAd = "KazanPartiRaporlama") {
+                YukleniyorOnOff();
+                $.post("/Raporlama/KazanPartiRaporlama", {}, function (data) {
+                    $('#raporlamaIndex').hide();
+                    $('#raporlamaSayfa').html(data);
+                    YukleniyorOnOff();
+
+                    $('#searchButton').val(paramOrderNo);
+
+                    YukleniyorOnOff();
+                    $.post("/Raporlama/GetOrder", { 'orderNo': paramOrderNo },
+                        function (data) {
+                            $('#searchSection').html(data);
+                            YukleniyorOnOff();
+
+                        }).fail(function (responseGetOrder) {
+                            YukleniyorOnOff();
+                            alert('Error : ' + responseGetOrder.responseText);
+                        });
+
+                }).fail(function (response) {
+                    YukleniyorOnOff();
+                    alert('Error : ' + response.responseText);
+                });
+            }
+        }
+
+    });
+
+
+
+
+
+
+
+</script>

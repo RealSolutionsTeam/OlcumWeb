@@ -1,0 +1,61 @@
+﻿@model List<OlcumWeb.dbOlcum.Musteriler>
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+
+<div class="card card-success" id="musteriCard">
+    <div class="card-header">
+        <h4>Müşteriler</h4>
+        <form class="card-header-form">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search">
+                <div class="input-group-btn">
+                    <button class="btn btn-primary btn-icon"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <div class="col-12 col-md-6 col-lg-3 musteriler" style="width:400px;height:125px; cursor:pointer;" data-musteriid="@Model[i].id">
+                    <div class="card card-primary">
+                        <div class="card-body">
+                            <p style="margin-top:10px;margin-left:10px;  font-weight:bold;">@Model[i].musteriAd.ToString()</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('.musteriler').on("click", function () {
+                    var buttonClicked = $(this);
+        var id = buttonClicked.attr('data-musteriid');
+        var text = buttonClicked.find('p').text();
+        $.post("/TanimlamaEkrani/Modeller", { 'musteriID': id},
+            function (data) {
+                $('#breadcrumb').append('<li><a href="#" class="details2" onclick ="breadCrumbLink2('+id+')"><span class="icon icon-double-angle-right"></span>' + text + '</a></li>');
+                $('#musteriCard').hide();
+                $('#modelContent').html(data);
+            });
+    });
+
+    function breadCrumbLink2(id) {
+         $.post("/TanimlamaEkrani/Modeller", { 'musteriID': id},
+            function (data) {
+                $('#musteriCard').hide();
+                $('#tabloContent').hide();
+                $('#')
+                $('#modelContent').html(data);
+            });
+    }
+
+</script>
+
+
+

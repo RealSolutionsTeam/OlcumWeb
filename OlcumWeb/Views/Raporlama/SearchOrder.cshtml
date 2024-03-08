@@ -1,0 +1,47 @@
+﻿@model OlcumWeb.Controllers.KurutmaModel
+
+<style>
+
+    table, th, td, tr {
+        border-collapse: collapse;
+        border: 1px solid black;
+    }
+
+    td {
+        max-width: 50px;
+    }
+</style>
+@if (Model != null)
+{
+    <table class="table table-hover">
+        <tbody>
+            <tr>
+                <td style="background-color:gainsboro;font-weight:bold">
+                    Order No:
+                </td>
+                <td>
+                    @Model.orderNo
+                </td>
+                <td style="background-color:gainsboro;font-weight:bold">
+                    Derece:
+                </td>
+                <td>
+                    @Model.derece
+                </td>
+                <td style="background-color:gainsboro;font-weight:bold">
+                    Dakika:
+                </td>
+                <td>
+                    @Model.dakika
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+}
+else
+{
+    <h3 style="        text-align: center
+"> Bu Order'a ait kurutma verisi bulunamadı.</h3>
+}
+

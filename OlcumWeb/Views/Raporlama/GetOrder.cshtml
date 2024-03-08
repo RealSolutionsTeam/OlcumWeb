@@ -1,0 +1,83 @@
+﻿@model List<OlcumWeb.Models.DTO.DTORaporOrderList>
+
+
+<div class="table-responsive">
+    <table class="table table-striped table-md">
+        <tbody>
+            <tr>
+                <th>#</th>
+                <th>Order No</th>
+                <th>Ölçü Türü</th>
+                <th>Kullanıcı Adı</th>
+                <th>Eklenme Tarihi</th>
+            </tr>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    <tr>
+                        <td>
+                            @(i + 1)
+                        </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-6">
+                                    <a href="#" class="btn btn-info" onclick="Print(@Model[i].id)"><span style="color:white">Yazdır</span> </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="#" class="btn btn-info" onclick="TabloGoster(@Model[i].id)"><span style="color:white">Tablo Göster</span> </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @Model[i].orderNo
+                        </td>
+                        <td>
+                            @Model[i].olcuTuruAd
+                        </td>
+                        <td>
+                            @Model[i].kullanıcıAdı
+                        </td>
+                        <td>
+                            @Model[i].tarih.ToShortDateString()
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td class="sorting_1">
+                            @(i + 1)
+                        </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-6">
+                                    <a href="#" class="btn btn-info" onclick="Print(@Model[i].id)"><span style="color:white">Yazdır</span> </a>
+                                </div>
+                                <div class="col-6">
+                                    <a href="#" class="btn btn-info" onclick="TabloGoster(@Model[i].id)"><span style="color:white">Tablo Göster</span> </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            @Model[i].orderNo
+                        </td>
+                        <td>
+                            @Model[i].olcuTuruAd
+                        </td>
+                        <td>
+                            @Model[i].kullanıcıAdı
+                        </td>
+                        <td>
+                            @Model[i].tarih.ToShortDateString()
+                        </td>
+                        <td>
+                            <button class="btn btn-success" style="visibility:hidden" data-kazanDetayID="@Model[i].id" id="yazdirButton" onclick="Print(this)"><i class="fas fa-print" style="color:white"></i> <span style="color:white">Yazdır</span></button>
+
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

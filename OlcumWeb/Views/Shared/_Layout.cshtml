@@ -1,0 +1,479 @@
+﻿<!DOCTYPE html>
+<html lang="tr" style="overflow-y:auto !important;">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+    <title> Ölçüm </title>
+    <!-- General CSS Files -->
+    <link rel="stylesheet" href="~/Tema/assets/css/app.min.css">
+    <link rel="stylesheet" href="~/Tema/assets/bundles/izitoast/css/iziToast.min.css">
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="~/Tema/assets/css/style.css">
+    <link rel="stylesheet" href="~/Tema/assets/css/components.css">
+    <!-- Custom style CSS -->
+    <link rel="stylesheet" href="~/Tema/assets/css/custom.css">
+    <link rel='shortcut icon' type='image/x-icon' href='~/Tema/assets/img/logoR.png' />
+    <link rel="stylesheet" href="~/CSS/style.css">
+
+    <link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" href="~/CSS/loading/RingLoading.css">
+    <link rel="stylesheet" href="~/CSS/loading/RollerLoading.css">
+
+    <link rel="stylesheet" href="~/CSS/print.min.css">
+
+
+    <style>
+        .mertLoading {
+            margin: auto;
+            width: 100%;
+            position: fixed;
+            padding: 0px;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            z-index: 999999999999999999998;
+            background: #000;
+            opacity: 0.6;
+            transition: opacity 0.3s linear;
+        }
+
+        h1{
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+        p {
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+        .mertLoadingHidden {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s 0.3s, opacity 0.3s linear;
+            z-index: 999999999999999999998;
+        }
+
+        ::-webkit-input-placeholder {
+            color: black !important;
+        }
+
+        ::-moz-placeholder {
+            color: black !important;
+        }
+
+        :-ms-placeholder {
+            color: black !important;
+        }
+
+        :placeholder {
+            color: black !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 40px !important;
+        }
+
+        .modal-header {
+            padding-top: 1% !important;
+        }
+
+        .main-content {
+            padding-top: 90px !important;
+        }
+
+        .theme-redish .navbar {
+            background-color: /*#ea5455*/ #fa1e4e !important;
+        }
+
+        .light-sidebar.sidebar-mini .main-sidebar:after {
+            background-color: #353c48 !important;
+        }
+
+        .dropdown-title {
+            background-color: #353c48 !important;
+        }
+
+        .nav-link-benim {
+            background-color: #353c48 !important;
+            color: white !important;
+        }
+
+        li ul.dropdown-menu li a {
+            background-color: #353c48 !important;
+            color: white !important;
+        }
+
+        .dropdown-title-benim {
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            color: #191d21 !important;
+            padding: 10px 20px;
+            line-height: 20px;
+            color: #98a6ad;
+        }
+
+        #back2Top {
+            width: 40px;
+            line-height: 40px;
+            overflow: hidden;
+            z-index: 999;
+            display: none;
+            cursor: pointer;
+            -moz-transform: rotate(270deg);
+            -webkit-transform: rotate(270deg);
+            -o-transform: rotate(270deg);
+            -ms-transform: rotate(270deg);
+            transform: rotate(270deg);
+            position: fixed;
+            bottom: 50px;
+            right: 0;
+            background-color: #DDD;
+            color: #555;
+            text-align: center;
+            font-size: 50px;
+            text-decoration: none;
+        }
+
+            #back2Top:hover {
+                background-color: #DDF;
+                color: #000;
+            }
+    </style>
+    @RenderSection("scriptsHead", required: false)
+</head>
+
+<body class="dark-sidebar theme-black sidebar-mini " style="overscroll-behavior:contain; touch-action:manipulation;">
+    <div class="loader"></div>
+    <div id="app">
+        <div class="main-wrapper main-wrapper-1">
+            <div class="navbar-bg"></div>
+            <nav class="navbar navbar-expand-lg main-navbar" style="height: 7%;">
+                <div class="form-inline mr-auto">
+                    <ul class="navbar-nav mr-3">
+                        <li>
+                            <a href="#" data-toggle="sidebar" class="nav-link nav-link-lg collapse-btn"> <i style="color: white !important" data-feather="align-justify"></i></a>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-link nav-link-lg fullscreen-btn">
+                                <i style="color: white !important" data-feather="maximize"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+
+                <div class="form-inline ml-auto">
+                    <ul class="navbar-nav mr-3">
+                        <li>
+                            <a href="@Url.Action("Logout","Giris")" onclick="git(1)" class="nav-link nav-link-lg">
+                                <i style="color: white !important" data-feather="log-out"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </nav>
+            <div class="main-sidebar sidebar-style-2 dark-sidebar">
+                <aside id="sidebar-wrapper">
+                    <div class="sidebar-brand">
+                        <a onclick="git(2)">
+                            <img alt="image" src="~/Tema/assets/img/logoR2.png" class="header-logo" /> <span class="logo-name">Realkom</span>
+                        </a>
+                    </div>
+                    <ul class="sidebar-menu" style="background-color:#353c48;">
+
+                        <li class="menu-header">Numune Kesim Sayfası</li>
+                        <li class="dropdown">
+                            <a onclick="git(3)">
+                                <i style="color: white !important;" data-feather="copy"></i><span style="color:white;">Numune Kesim Formu</span>
+                            </a>
+                        </li>
+
+                        <li class="menu-header">Ölçü Tabloları</li>
+                        <li class="dropdown">
+                            <a onclick="git(4)">
+                                <i style="color: white !important;" data-feather="check-circle"></i><span style="color:white;">Hazır Ölçü Tablo</span>
+                            </a>
+                        </li>
+                        <li class="dropdown">
+                            <a onclick="git(5)">
+                                <i style="color: white !important;" data-feather="check-circle"></i><span style="color:white;">İmalat Ölçü Tablosu</span>
+                            </a>
+                        </li>
+
+                        <li class="dropdown">
+                            <a onclick="git(6)">
+                                <i style="color: white !important;" data-feather="check-circle"></i><span style="color:white;">Numune Ölçü Tablosu</span>
+                            </a>
+                        </li>
+
+                        <li class="menu-header dropdown" style="color:white;background-color:#353c48;">Raporlamar</li>
+                        <li class="dropdown">
+                            <a onclick="git(7)">
+                                <i style="color: white !important;" data-feather="briefcase"></i><span style="color:white;background-color:#353c48;">Raporlama Sayfası</span>
+                            </a>
+                            @*<ul class="dropdown-menu">
+                                    <li><a class="nav-link" href="~/Tanimlama/FirmaTanimla">Firma Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/BolumTanimla">Bölüm Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/VardiyaTanimla">Vardiya Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/BolumIsTurTanimla">İş Türü Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/IsEmriTanimla">İş Emri Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/MakineTanimla">Makine Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/OperasyonTanimla">Operasyon Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/PersonelTanimla">Personel Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/HataTanimla">Hata Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/RaporTanimla">Rapor Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/TamirTipiTanimla">Tamir Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/HedefTanimla">Hedef Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/IslemDetayTanimlama">İşlem Detay Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/CinsAciklama">Cins - Açıklama Tanımlama</a></li>
+                                    <li><a class="nav-link" href="~/Tanimlama/UrunMudurTanimla">Ürün Müdürü Ata</a></li>
+                                </ul>*@
+                        </li>
+
+                    </ul>
+                </aside>
+            </div>
+            <!-- Main Content -->
+            <div class="main-content" style="padding-top: 50px !important;">
+
+                @RenderBody()
+
+            </div>
+
+            <a id="back2Top" title="Back to top" href="#" style="">
+                <img src="~/Araclar/Resim/yukari.png" />
+            </a>
+        </div>
+    </div>
+    <!-- General JS Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="~/Tema/assets/js/app.min.js"></script>
+    <script src="~/Tema/assets/bundles/izitoast/js/iziToast.min.js"></script>
+    <script src="~/Tema/assets/bundles/prism/prism.js"></script>
+    <script src="~/Tema/assets/js/page/toastr.js"></script>
+    <link href="~/Content/themes/base/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+
+    <script src="~/Tema/assets/bundles/sweetalert/sweetalert.min.js"></script>
+    <script src="~/Tema/assets/js/page/sweetalert.js"></script>
+
+    <script src="~/Tema/assets/js/scripts.js"></script>
+
+    <script src="~/CSS/print.min.js"></script>
+
+
+
+    <div class="modal fade" id="bedenModal" tabindex="-1" role="dialog" aria-hidden="true" style="left:100px">
+        <div class="modal-dialog" role="document" style="max-width:50%">
+            <div class="modal-content">
+                <div class="modal-header" style="display:block">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="beden_Modal"></div>
+                </div>
+                <div class="modal-footer" style="display:none">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mertLoadingKayitYapiliyor" class="mertLoading mertLoadingHidden">
+        <div class="row" style="margin-top:15%;">
+            <div class="lds-roller m-auto"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+        <div class="row" style="margin-top:2%;">
+            <span style="font-family:sans-serif; font-size:26px; font-weight:200; color:white; margin:auto;"> Kayıt Yapılıyor...</span>
+        </div>
+    </div>
+
+    <div id="yukleniyorID" class="mertLoading mertLoadingHidden">
+        <div class="row" style="margin-top:15%;">
+            <div class="lds-roller m-auto"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+        <div class="row" style="margin-top:2%;">
+            <span style="font-family:sans-serif; font-size:26px; font-weight:200; color:white; margin:auto;"> Yükleniyor...</span>
+        </div>
+    </div>
+
+    <div class="modal fade" id="printRaporModal" tabindex="-1" role="dialog" aria-hidden="true" style="left:100px;height:100%;margin-top: -2%;">
+        <div class="modal-dialog" role="document" style="min-width:80%">
+            <div class="modal-content">
+                <div class="modal-header" style="display:block">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="PrintRaporModalClose()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <div id="printRapor_Modal"></div>
+                </div>
+                <div class="modal-footer" style="display:none">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="anaCekmeModal" tabindex="-1" role="dialog" aria-hidden="true" style="left:10px;height:100%;margin-top: -2%;">
+        <div class="modal-dialog" role="document" style="min-width:100%">
+            <div class="modal-content">
+                <div class="modal-header" style="display:block">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="anaCekme_Modal">
+
+                    </div>
+                </div>
+                <div class="modal-footer" style="display:none">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $(window).scroll(function () {
+            var height = $(window).scrollTop();
+            if (height > 100) {
+                $('#back2Top').fadeIn();
+            } else {
+                $('#back2Top').fadeOut();
+            }
+        });
+
+        function KayitYapiliyorOnOff() {
+            $("#mertLoadingKayitYapiliyor").toggleClass("mertLoadingHidden");
+        }
+
+        function YukleniyorOnOff() {
+            $('#yukleniyorID').toggleClass("mertLoadingHidden");
+        }
+
+        function AlertMesaj(m) {
+            iziToast.info({
+                title: 'Mesaj!',
+                message: m,
+                position: 'topRight'
+            });
+        };
+
+        function AlertBasari(b) {
+            iziToast.success({
+                title: 'Başarılı!',
+                message: b,
+                position: 'topRight'
+            });
+        };
+
+        function AlertUyari(u) {
+            iziToast.warning({
+                title: 'Uyarı!',
+                message: u,
+                position: 'topRight'
+            });
+        };
+
+        function AlertHata(h) {
+            iziToast.error({
+                title: 'Hata!',
+                message: h,
+                position: 'topCenter'
+            });
+        };
+
+        function cikis() {
+            $.ajax({
+                type: "GET",
+                url: '/Giris/cikis',
+                contentType: "application/json; charset=utf-8",
+                data: { ciktimi: true },
+                dataType: "json"
+            });
+        }
+
+        function getUrlVars(url) {
+            var vars = {};
+            var parts = url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+                vars[key] = value;
+            });
+            return vars;
+        }
+
+
+
+        $(document).ready(function () {
+
+            $("#back2Top").click(function (event) {
+                event.preventDefault();
+                $("html, body").animate({ scrollTop: 0 }, "slow");
+                return false;
+            });
+
+
+            $('.scroll_To_Top').click(function () {
+                $('html, body').animate({ scrollTop: 0 }, 700);
+                return false;
+            });
+
+        });
+
+            $(function () {
+        $("#orderNo").autocomplete({
+            source: '@Url.Action("GetOrderNo","AnaSayfa")'
+        });
+            });
+
+        $(function () {
+            $('#orderNo').keydown(function (e) {
+                if (e.keyCode === 13) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("KeyPress","AnaSayfa")'
+                    });
+                }
+            });
+        });
+
+        function git(id) {
+            var x = JSON.parse(localStorage.getItem("personel"));
+
+            if (id == 1) {
+                localStorage.clear();
+            }
+            else if (id == 2) {
+                window.location.href = "/Anasayfa/Index?id=" + x.id;
+            }
+            else if (id == 3) {
+                window.location.href = "/NumuneKesim?ad=" + x.personelAd + "&soyad=" + x.personelSoyad;
+            }
+            else if (id == 4) {
+                window.location.href = "/TanimlamaEkrani/Index/" + x.id;
+            }
+            else if (id == 5) {
+                window.location.href = "/ImalatTablosu/Index/" + x.id;
+            }
+            else if (id == 6) {
+                window.location.href = "/OlcuFormu/Index/" + x.id;
+            }
+            else if (id == 7) {
+                window.location.href = "/Raporlama";
+            }
+
+        }
+
+        function PrintRaporModalClose() {
+            window.printList = [];
+        }
+    </script>
+
+</body>
+</html>

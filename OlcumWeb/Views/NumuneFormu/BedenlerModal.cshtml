@@ -1,0 +1,211 @@
+﻿@model List<OlcumWeb.dbOlcum.Bedenler>
+
+<style>
+    .checkBoxSize {
+        width: 20px;
+        height: 20px;
+    }
+</style>
+
+<div style="text-align:center">
+    <h2 class="swal2-title">
+        <br />
+        Son olarak lütfen işlem yapmak istediğiniz Bedenleri seçiniz.
+    </h2>
+
+    @if (ViewBag.isFromReference == 0)
+    {
+        @Html.DropDownList("bedenTuru", (SelectList)ViewBag.bedenTurs
+, new { @class = "form-control select2", @id = "bedenTuru" })
+    }
+
+</div>
+<hr />
+
+<div id="bedenListTab">
+    @{ var t = 0; var i = 1; }
+    <div class="tab-@t row" id="tab_@(t)">
+        @{
+            int bedenSistemi = ViewBag.bedenSistemi;
+            List<OlcumWeb.dbOlcum.Bedenler> data = new List<OlcumWeb.dbOlcum.Bedenler>();
+
+            if (bedenSistemi == 0)
+            {
+                data = Model.Where(x => x.bedenSistemi == bedenSistemi && x.beden != "Hata").ToList();
+
+            }
+            else
+            {
+                data = Model.Where(x => x.bedenSistemi == bedenSistemi).OrderBy(x => x.beden).ToList();
+
+            }
+        }
+
+        @foreach (var item in data)
+        {
+            <div class="col-3">
+                <div class="checkbox">
+                    <div class="row">
+                        <label>
+                            <input type="checkbox" class="checkBoxSize" value=""><span style="margin-left:4px;font-weight:bold;color:black;font-size:15px;">@item.beden</span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            if (i % 4 == 0)
+            {
+                t++;
+            @:</div><div class="tab-@t row" id="tab_@(t)" style="margin-top:1%">
+            }
+            i++;
+        }
+    </div>
+</div>
+
+@if (ViewBag.isFromReference == 0)
+{
+    <div class="swal2-actions">
+        <button type="button" class="swal2-confirm swal2-styled" aria-label="" style="display: inline-block;" onclick="ChooseSize()">Seç</button>
+    </div>
+}
+else
+{
+
+    if (ViewBag.isNumune == 1)
+    {
+        <div class="swal2-actions">
+            <button type="button" class="swal2-confirm swal2-styled" aria-label="" style="display: inline-block;" onclick="ChooseReferenceSize()">Seç</button>
+        </div>
+    }
+    else
+    {
+        <div class="swal2-actions">
+            <button type="button" class="swal2-confirm swal2-styled" aria-label="" style="display: inline-block;" onclick="ChooseReferenceSizeImalat()">Seç</button>
+        </div>
+    }
+
+
+}
+
+
+
+<script>
+    var bedenSistemi = @Html.Raw(Json.Encode(ViewBag.bedenSistemi));
+    var isFromHazirTablo = @Html.Raw(Json.Encode(ViewBag.isFromHazirTablo));
+    var modalBedenList = [];
+
+    $('#bedenTuru').on('change', function () {
+        var bedenSistemi = $('#bedenTuru option:selected').index();
+
+        $.post("/NumuneFormu/BedenlerModal", { bedenSistemi: bedenSistemi, isFromHazirTablo: isFromHazirTablo  }, function (data) {
+            $('#stepContainer').html(data);
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    });
+
+    function ChooseSize() {
+        modalBedenList = [];
+        $('.checkBoxSize:checked').each(function (i) {
+            modalBedenList.push($(this).next().text());
+        });
+
+        bedenList = modalBedenList;
+        console.log(isFromModelist);
+
+        if (isFromHazirTablo == 0) {
+
+            $.post("/NumuneFormu/TableView", { orderId: orderIdAnaSayfa, bedenler: bedenList, tolerans: belirlenenTolerans, cekme: belirlenenCekme, fromModelist: isFromModelist }, function (data) {
+                $('#tableContent').html(data);
+                $('#stepsModal').modal('toggle');
+                $('.modal-backdrop').remove();
+                $('#stepsModal').css("display", 'none');
+
+
+                $.post("/NumuneFormu/OrderDetay", { orderId: orderIdAnaSayfa }, function (orderData) {
+                    $('#orderContent').html(orderData);
+                }).fail(function (printError) {
+                    alert('Error : ' + printError.responseText);
+                });
+
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+        } else {
+
+            $.post("/NumuneFormu/TableWithCustomerTable", { bedenler: bedenList, orderId: orderIdAnaSayfa }, function (data) {
+                $('#tableContent').html(data);
+                $('#stepsModal').modal('toggle');
+                $('.modal-backdrop').remove();
+                $('#stepsModal').css("display", 'none');
+
+
+                $.post("/NumuneFormu/OrderDetay", { orderId: orderIdAnaSayfa }, function (orderData) {
+                    $('#orderContent').html(orderData);
+                }).fail(function (printError) {
+                    alert('Error : ' + printError.responseText);
+                });
+
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+        }
+
+    }
+
+    function ChooseReferenceSize() {
+        modalBedenList = [];
+        $('.checkBoxSize:checked').each(function (i) {
+            modalBedenList.push($(this).next().text());
+        });
+
+        bedenList = modalBedenList;
+
+        $.post("/NumuneFormu/TableViewWithIdReference", { numuneDetayId: @Html.Raw(Json.Encode(ViewBag.numuneDetayId)), bedenList: bedenList }, function (data) {
+            $('#tableContent').html(data);
+            $('#stepsModal').modal('toggle');
+            $('.modal-backdrop').remove();
+            $('#stepsModal').removeClass('show');
+            $('#stepsModal').css("display", 'none');
+
+            $.post("/NumuneFormu/OrderDetay", { orderId: orderIdAnaSayfa }, function (orderData) {
+                $('#orderContent').html(orderData);
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+    function ChooseReferenceSizeImalat() {
+        modalBedenList = [];
+        $('.checkBoxSize:checked').each(function (i) {
+            modalBedenList.push($(this).next().text());
+        });
+
+        bedenList = modalBedenList;
+
+         $.post("/NumuneFormu/TableViewWithImalatIdReference", { olcuTabloId: @Html.Raw(Json.Encode(ViewBag.numuneDetayId)), bedenList: bedenList }, function (data) {
+            $('#tableContent').html(data);
+            $('#stepsModal').modal('toggle');
+            $('.modal-backdrop').remove();
+            $('#stepsModal').removeClass('show');
+            $('#stepsModal').css("display", 'none');
+
+            $.post("/NumuneFormu/OrderDetay", { orderId: orderIdAnaSayfa }, function (orderData) {
+                $('#orderContent').html(orderData);
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+</script>

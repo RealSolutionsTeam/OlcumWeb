@@ -1,0 +1,32 @@
+﻿@model List<OlcumWeb.dbOlcum.KazanAra>
+
+<style>
+    .barkodTable{
+        border:1px solid black;
+        width:100%;
+    }
+</style>
+
+<div>
+    <table class="table table-bordered barkodTable">
+        <thead>
+            <tr>
+                <th>Ölçü Noktası</th>
+                <th>@(Model.FirstOrDefault().Bedenler.beden) Beden</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @item.OlcuNoktalari.olcuNoktasi
+                    </td>
+                    <td>
+                        @item.deger
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

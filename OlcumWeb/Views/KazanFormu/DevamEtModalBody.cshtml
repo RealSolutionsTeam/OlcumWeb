@@ -1,0 +1,110 @@
+﻿@model Tuple<List<OlcumWeb.Models.DTO.kazanDevamEtModalDto>>
+
+<style>
+
+    .devamTable td, th {
+        padding-left: 2px;
+        padding-right: 2px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .trash-btn {
+        color: #fdc500;
+        background-color: transparent;
+        border: none;
+        outline: none;
+    }
+
+        .trash-btn:focus {
+            outline: none;
+            border: none;
+        }
+
+        .trash-btn i {
+            color: #fdc500;
+        }
+</style>
+
+<div class="row m-0">
+
+    <table class="devamTable" style="width:100%;">
+        <thead>
+            <tr>
+                <th style="width:50px;"></th>
+                <th>Ölçü Türü</th>
+                <th>Tablo Türü</th>
+                <th>Aparatlı</th>
+                <th>Ütülü</th>
+                <th>Tarih</th>
+                <th>Kullanıcı</th>
+                <th>Durum</th>
+                <th style="width:50px;"></th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var item in Model.Item1)
+            {
+                <tr>
+                    <td>
+                        <div class="row m-0 h-100">
+                            <input class="form-check-input m-auto" data-personelid="@item.kullaniciId" style="height: 20px; width: 20px; position: inherit;" type="checkbox" name="devamChk" id="inlineCheckbox-@item.id" onchange="ClickChk('inlineCheckbox-@item.id', '@item.olcuTuruAd')" value="@item.id">
+                        </div>
+                    </td>
+
+                    <td>@item.olcuTuruAd</td>
+                    <td>@(item.tabloTuru == 0 ? "Yıkama Öncesi": "Yıkama Sonrası")</td>
+                    <td>@(item.aparatliMi ? "Evet": "Hayır")</td>
+                    <td>@(Convert.ToBoolean(item.utuluMu) ? "Evet": "Hayır")</td>
+                    <td>@item.tarih</td>
+                    <td>@item.kullaniciAd</td>
+                    <td>@(item.durum ? "Bitti" : "Devam Ediyor") </td>
+                    <td><button class="trash-btn" onclick="deleteOlcu(@item.id,@item.kullaniciId,'@item.olcuTuruAd',@item.tabloTuru,'@item.tarih')"><i class="far fa-trash-alt font-20"></i></button> </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+
+</div>
+
+<div class="row m-0" style="margin-top: 3% !important;">
+    <button class="btn btn-warning" style="margin: auto auto auto 1%;" onclick="kaydetDevamEt(false)"> Devam Et </button>
+
+    <button id="kaliteBagla" class="btn btn-success my-auto ml-auto" style="display:none;" onclick="kaydetDevamEt(true)"> Kalite Raporunu Bağla </button>
+
+</div>
+
+
+<script>
+    if (typeof paramTur !== 'undefined') {
+        if (paramTur == "Fason Ham Ölçü" || paramTur == "Ütü Paket Ön Final" || paramTur == "Ütü Paket Son Final" || paramTur == "Ütü Paket Sevk") {
+            $('#kaliteBagla').show();
+        }
+    }
+
+
+
+
+    function ClickChk(chkId, olcuTuruAdParam) {
+        olcuTuruAd = olcuTuruAdParam;
+        $('input[name = "devamChk"]').each(function (i, obj) {
+
+            if ($(this)[0].id != chkId) {
+                $(this)[0].checked = false;
+            }
+
+            if (Number($(this).data('personelid')) != personel.id) {
+                $(this)[0].checked = false;
+                if ($(this)[0].id == chkId) {
+                    iziToast.error({ title: 'Sadece rapor sahibi düzenleme yapabilir', message: '', position: 'bottomRight' });
+                }
+
+            }
+
+        });
+    }
+</script>

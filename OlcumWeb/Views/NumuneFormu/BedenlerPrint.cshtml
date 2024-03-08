@@ -1,0 +1,70 @@
+﻿<style>
+    label {
+        font-size: 18px;
+    }
+
+    input[name="bedenlerPrint"] {
+        width: 25px;
+        height: 25px;
+    }
+</style>
+
+<h4>Lütfen yazdırmak istediğiniz bedenleri seçiniz.</h4>
+<br />
+@{
+    var bedenler = ViewBag.bedenler;
+
+    <div class="row">
+        @foreach (var item in bedenler)
+        {
+            <div class="col-3">
+                <div class="pretty p-default p-round p-thick">
+                    <input type="checkbox" name="bedenlerPrint" data-beden="@item.BedenAd" data-mudahalemi="@item.MüdahaleMi" data-bedenad="@(item.MüdahaleMi == 1 ? item.BedenAd + "-Müdahale" : item.BedenAd)" checked>
+                    <div class="state p-success-o">
+                        <label>@(item.MüdahaleMi == 1 ? item.BedenAd + "-Müdahale" : item.BedenAd)</label>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+}
+<br />
+<a class="btn btn-success" onclick="Print()"><span style="color:white">Yazdır</span></a>
+
+
+<script>
+      var detayDto = CreateDetayDto();
+      var araListDto = CreateAraDto();
+
+
+    function Print() {
+
+        var bedenlerPrint = [];
+
+        $('input[name="bedenlerPrint"]:checked').each(function () {
+
+            bedenlerPrint.push($(this).data('bedenad'));
+        });
+
+        console.log(bedenlerPrint);
+
+        if (bedenlerPrint.length > 0) {
+
+            $.post("/NumuneFormu/PrintTable", { detay: detayDto, araList: araListDto, bedenler: bedenlerPrint }, function (deger) {
+                var popupWin = window.open('', '_blank', 'width=auto,height=auto');
+                popupWin.document.open();
+                popupWin.document.write('<html><head></head><body>');
+                popupWin.document.write(deger);
+                popupWin.document.write('</body></html>');
+                popupWin.print();
+                popupWin.document.close();
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+        }
+        else {
+            alert('Lütfen yazdırmak için beden seçiniz.')
+        }
+    }
+</script>

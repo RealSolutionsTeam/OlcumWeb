@@ -1,0 +1,229 @@
+﻿
+
+<div class="card card-success">
+    <div class="card-header">
+        İmalat Tablosu Ekranı
+    </div>
+    <div class="card-body">
+        <div class="card-body">
+
+            @*<section class="section" id="tablolar"></section>*@
+            <ul class="nav nav-pills" id="myTab3" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="ysTab" data-toggle="tab" href="#yikamaSonrasi" data-index="0" role="tab" aria-controls="home" aria-selected="true">Yıkama Sonrası</a>
+                </li>
+                <li class="nav-item" style="display:none" id="yikamaOncesiTablo">
+                    <a class="nav-link" id="yoTab" data-toggle="tab" href="#yikamaOncesi" data-index="1" role="tab" aria-controls="home" aria-selected="true">Yikama Öncesi</a>
+                </li>
+                <li class="nav-item" style="display:none" id="ekleButton">
+                    <a href="#" class="btn btn-icon btn-lg btn-info" onclick="TabloEkle()" id="tabloEkleBtn"><i class="fas fa-plus" style="color:white"></i></a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent2">
+                <div class="tab-pane fade active show" id="yikamaSonrasi" role="tabpanel" aria-labelledby="home-tab3">
+                    <section class="section" id="yikamaSonrasiContent"></section>
+                </div>
+                <div class="tab-pane" id="yikamaOncesi" role="tabpanel" aria-labelledby="home-tab3">
+                    <section class="section" id="yikamaOncesiContent"></section>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="row" style="margin-left:1%">
+            <div class="col-2">
+                <button type="button" class="btn btn-primary" id="btnSecKaydet" onclick="HazirTabloKaydet()">Hazır Tabloya Kaydet</button>
+            </div>
+
+            <div class="col-1">
+                <button type="button" class="btn btn-primary" id="btnSecKaydet" onclick="TabloKaydet()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    var kulID = JSON.parse(localStorage.getItem('personel'));
+    var tablelarList = [];
+    var detayObjectList = [];
+    var detayObjectYs = {};
+    $(document).ready(function modalShow() {
+        $.post("/ImalatTablosu/ModalAnaSayfa", { 'orderID': $("#orderNo").val() }, function (deger) {
+            $('#hazirTablo_Modal').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+        $('#hazirTabloModal').modal('show');
+
+
+    });
+
+    var tabloList = [];
+
+    function deneme() {
+        $('#orderContent').show();
+        $('#tableContent').hide();
+        if ($("#tabloyaDonBtn").length > 0) {
+
+        }
+        else {
+            $('#buttonEklemek').append('<button id="tabloyaDonBtn" class="btn btn-warning" onclick="TabloyaDon()"><span style="color:white">Tabloya Dön</span></button>');
+        }
+
+        $('#breadcrumb li:last-child').remove();
+    };
+
+    function TabloKaydet() {
+        var activeTabIndex = Number($('ul.nav-pills > li > a.active').data('index'));
+
+        if (activeTabIndex == 0) {
+            if (!anaBedenClicked) {
+                AlertHata("Lütfen ana beden seçiniz!");
+            }
+            else {
+                var rowCount = $('#tableBody_' + activeTabIndex + ' tr').length;
+                var columnCount = $('#tableHead_' + activeTabIndex + ' th').length;
+
+
+                detayObjectYs = {
+                    'orderID': $("#orderNo").val(),
+                    'olcuTuruID': $("#olcuTuruAd").val(),
+                    'anaBeden': anaBeden,
+                    'tabloTuru': 1
+                };
+
+                for (var i = 0; i < rowCount; i++) {
+                    var olcuNoktasi = $('#cell_' + i + '_0').data('olcunoktasi');
+                    var bedenList = [];
+                    var degerList = []
+
+                    for (var j = 1; j < columnCount; j++) {
+                        var beden = $('#column_0_' + j).html();
+                        var deger = parseFloat($('#cell_' + i + '_' + j).html());
+
+                        bedenList.push(beden);
+                        degerList.push(deger);
+                    }
+
+                    tabloList.push({ 'olcuNoktasi': olcuNoktasi, 'beden': bedenList, 'deger': degerList });
+
+                }
+
+                YukleniyorOnOff();
+                $.post("/ImalatTablosu/YikamaSonrasiKaydet", { 'detay': detayObjectYs, 'tablo': tabloList, 'personel': kulID }, function (gelenCagri) {
+                    if (gelenCagri == 1) {
+                        YukleniyorOnOff();
+
+                        swal({
+                            title: "Başarılı",
+                            text: "Tablonuz başarıyla kaydedildi.",
+                            icon: "success",
+                            button: "Tamam",
+                        });
+                    }
+                    else {
+                        YukleniyorOnOff();
+                        swal({
+                            title: "Başarısız",
+                            text: "Tablo kaydı yapılırken bir hatayla karşılaşıldı!",
+                            icon: "error",
+                            button: "Tamam",
+                        });
+                    }
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+
+                $('#ekleButton').css("display", "block");
+            }
+        }
+        else if (activeTabIndex == 1) {
+            var cekmeCount = $('#myTabCekme > li').length - 1;
+            tablelarList.length = 0;
+            detayObjectList.length = 0;
+
+            for (var i = 0; i < cekmeCount; i++) {
+                var tableList = [];
+
+                var detayObject = {
+                    'orderID': $("#orderNo").val(),
+                    'olcuTuruID': $("#olcuTuruAd").val(),
+                    'anaBeden': anaBeden,
+                    'tabloTuru': 0,
+                    'enBoyCekme': $('#cekme_0' + i).html()
+                };
+                var columnCount = $('#yikamaOncesiHead_' + i + ' > th').length;
+                var rowCount = $('#yikamaOncesiBody_' + i + ' > tr').length;
+
+                for (var j = 0; j < rowCount; j++) {
+                    var olcuNoktasi = $('#cell_' + i + '_' + j + '_0').html();
+                    var degerList = [];
+                    var bedenList = [];
+                    for (var k = 1; k < columnCount - 3; k++) {
+                        var beden = $("#column_0_0_" + k).html();
+                        var deger = $("#cell_" + i + "_" + j + "_" + k).html();
+                        degerList.push(deger);
+                        bedenList.push(beden);
+                    }
+
+                    var tolerans = $("#cell_" + i + "_" + j + "_" + (columnCount - 3)).html();
+                    var cekme = $("#cell_" + i + "_" + j + "_" + (columnCount - 2)).html();
+                    var oran = $("#cell_" + i + "_" + j + "_" + (columnCount - 1)).html();
+                    tableList.push({ 'olcuNoktasi': olcuNoktasi, 'beden': bedenList, 'deger': degerList, 'tolerans': tolerans, 'cekme': cekme, 'oran': oran });
+                }
+
+                tablelarList.push(tableList);
+                detayObjectList.push(detayObject);
+            }
+
+            YukleniyorOnOff();
+            $.post("/ImalatTablosu/YikamaOncesiKaydet", { 'detaylar': detayObjectList, 'tablolar': tablelarList, 'personel': kulID }, function (gelenCagri) {
+                if (gelenCagri == 1) {
+                    YukleniyorOnOff();
+
+                    swal({
+                        title: "Başarılı",
+                        text: "Tablonuz başarıyla kaydedildi.",
+                        icon: "success",
+                        button: "Tamam",
+                    });
+                }
+                else {
+                    YukleniyorOnOff();
+
+                    swal({
+                        title: "Başarısız",
+                        text: "Tablo kaydı yapılırken bir hatayla karşılaşıldı!",
+                        icon: "error",
+                        button: "Tamam",
+                    });
+                }
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+            console.log(tablelarList);
+
+        }
+
+        $('#yazdirButton').css('visibility', 'visible');
+
+    }
+
+    function TabloEkle() {
+
+        $.post("/ImalatTablosu/EnBoyCekmeModal", { 'anaBeden': anaBeden, 'previousTablo': tabloList }, function (deger) {
+            $('#enBoyCekme_Modal').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+        $('#enBoyCekmeModal').modal('show');
+
+
+        $('#yikamaOncesiTablo').css("display", "block");
+        $('#tabloEkleBtn').css("display", "none");
+    }
+</script>

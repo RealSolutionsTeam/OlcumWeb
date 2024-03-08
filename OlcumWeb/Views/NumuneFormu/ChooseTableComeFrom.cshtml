@@ -1,0 +1,49 @@
+﻿<style>
+    .btnOlcuTuru {
+        width: 60%;
+        height: 60px;
+        font-size: 18px;
+        min-width: 200px !important;
+        text-align: center;
+    }
+</style>
+
+
+<div style="text-align:center">
+    <br />
+    <br />
+    <h2 class="swal2-title">
+
+        Tabloya ait girilmiş bir veri bulunamadı. Yeni bir veri oluşturmak için aşağıdan size uygun olan seçeneği seçiniz.
+    </h2>
+</div>
+<br />
+<br />
+<div class="row" style="vertical-align:middle;text-align:center">
+    <div class="col-4">
+        <a href="#" class="btn btn-info btnOlcuTuru" onclick="GetFromReferenceTable()" style="margin-left:1%"><span style="color:white">Referans Tablodan Al</span></a>
+
+    </div>
+    <div class="col-4">
+        <a href="#" class="btn btn-danger btnOlcuTuru" onclick="GetFromAdvancedReport()" style="margin-left:2%"><span style="color:white">Gelişmiş Raporlamadan Al</span></a>
+
+    </div>
+    <div class="col-4">
+        <a href="#" class="btn btn-success btnOlcuTuru" onclick="GetFromSetTable()" style="margin-left:1%"><span style="color:white">Hazır Tablodan Al</span></a>
+
+    </div>
+</div>
+<br />
+<div class="row" style="vertical-align:middle;text-align:center">
+
+</div>
+
+<script>
+    function GetFromReferenceTable() {
+        GetFromReferenceTableModal();
+    }
+
+    function GetFromAdvancedReport() {
+        SwalOpenModal(1);
+    }
+</script>

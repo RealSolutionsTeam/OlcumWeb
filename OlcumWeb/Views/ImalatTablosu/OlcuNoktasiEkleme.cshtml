@@ -1,0 +1,20 @@
+﻿<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+
+@Html.DropDownList("olcuNoktalari", new SelectList(ViewBag.olcuNoktalari, "id", "olcuNoktasi"), "Seçiniz...", new { @class = "form-control select2", @id = "olcuTuruAd_" + ViewBag.index, @style = "width:75%" })
+
+@Html.Hidden("oldOlcuNokta_" + (object)ViewBag.index, (object)ViewBag.oldOlcuNokta)
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2();
+    };
+
+    $("#olcuTuruAd_" + @ViewBag.index).change(function () {
+        $("#oldOlcuNokta_" + @ViewBag.index).val($('#olcuTuruAd_' + @ViewBag.index).val());
+        var index = @ViewBag.index;
+        $("#cell_" + index + "_0").data('olcunoktasi', $('#olcuTuruAd_' + @ViewBag.index).val());
+    });
+</script>

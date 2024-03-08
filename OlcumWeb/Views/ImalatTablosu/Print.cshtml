@@ -1,0 +1,323 @@
+﻿@model Tuple<List<OlcumWeb.Models.DTO.DTOImalatTabloDetay>, List<List<OlcumWeb.Models.DTO.DTOImalatTabloGoster>>>
+@{
+    int rowCount = Model.Item2.Count;
+    string pixel = "";
+    string line_height = "";
+
+    if (rowCount > 42)
+    {
+        pixel = "13px";
+        line_height = "13.7px";
+    }
+    else
+    {
+        pixel = "15px";
+        line_height = "15.7px";
+    }
+}
+
+<style type="text/css">
+    .tg {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+        .tg td {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            overflow: hidden;
+            padding: 5px 5px;
+            word-break: normal;
+            font-weight: bold;
+        }
+
+        .tg th {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 30px;
+            font-weight: normal;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+
+        .tg .tg-0pky {
+            border-color: inherit;
+            text-align: left;
+            vertical-align: top
+        }
+
+
+    .tablo {
+        border: solid #000 !important;
+        border-width: 1px 1px !important;
+        border-collapse: collapse;
+        overflow: visible;
+    }
+
+        .tablo tbody tr {
+            line-height: @(line_height);
+        }
+
+        .tablo th {
+            border: solid #000 !important;
+            border-width: 1px 1px !important;
+            font-size: 11px;
+            font-weight: bold;
+            background-color:lightskyblue;
+        }
+
+        .tablo td {
+            border: solid #000 !important;
+            border-width: 1px 1px !important;
+            font-size: @(pixel);
+            font-weight: bold;
+        }
+
+            .tablo td:first-child {
+                width: 25%;
+            }
+
+        .td3 {
+            border: solid #000 !important;
+            border-width: 1px 1px !important;
+            font-size: 10px !important;
+            font-weight: bold;
+        }
+
+
+    .tg2 {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+
+        .tg2 td {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            overflow: hidden;
+            padding: 5px 5px;
+            word-break: normal;
+            font-weight: bold;
+        }
+
+        .tg2 th {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 30px;
+            font-weight: normal;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+
+        .tg2 .tg-0pky {
+            border-color: inherit;
+            text-align: left;
+            vertical-align: top
+        }
+
+
+
+
+    .sayfaSon {
+        page-break-after: always;
+    }
+</style>
+
+
+@for (int i = 0; i < Model.Item1.Count; i++)
+{
+     double solUstTop = (i * 100) + 2;
+    double solUstOrta = (i * 100) + 1;
+    double solUstSag = (i * 100)+ 2;
+    double table = (i * 100) + 8.5;
+    double aciklama = -(i * 100) - 0;
+
+    <div id="yikamaSonrasi" style="margin-top:3%">
+        <div>
+            <div class="col-4" style="position:absolute; left:0.8%; top:@(solUstTop.ToString().Replace(',','.'))%;">
+                <table class="tg2">
+                    <tbody>
+                        <tr>
+                            <td class="tg-0lax">Müşteri:</td>
+                            <td>@ViewBag.order.musteri</td>
+                            <td class="tg-0lax">Kumaş:</td>
+                            <td>@ViewBag.order.kumas</td>
+                        </tr>
+                        <tr>
+                            <td class="tg-0lax">Artikel:</td>
+                            <td>@ViewBag.order.modelNo - @ViewBag.order.modelAd</td>
+                            <td class="tg-0lax">Modelist:</td>
+                            <td>@Model.Item1[0].kullanıcıAdı</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div class="col-4" style="position:absolute; left:50%; top:@(solUstOrta)%;">
+                <p style="font-size:13px; font-weight:bold">@ViewBag.order.orderNo - @ViewBag.olcuTuru @(Model.Item1[i].tabloTuru == 0 ? "Yıkama Öncesi Tablosu" : "Yıkama Sonrası Tablosu")</p>
+                <p style="font-size:13px; font-weight:bold; color:blue">Tarih: @Model.Item1[i].tarih.ToShortDateString() @(Model.Item1[i].tabloTuru == 1 ? "" : "- " + @Model.Item1[i].enBoyCekme) </p>
+
+            </div>
+
+            <div class="col-4" style="position:absolute;right:1%; top:@(solUstSag.ToString().Replace(',','.'))%;">
+                <table class="tg2">
+                    <tbody>
+                        <tr>
+                            <td style="color:blue">Döküman Kodu:</td>
+                            <td style="color:black">FRM-204</td>
+                            <td style="color:blue">REVİZYON TARİHİ:</td>
+                            <td style="color:black"></td>
+                        </tr>
+                        <tr>
+                            <td style="color:blue">İLK YÜRÜRLÜLÜK TARİHİ:</td>
+                            <td style="color:black">01.11.2018</td>
+                            <td style="color:blue">REVİZYON NO:</td>
+                            <td style="color:black"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="ys_Table" style="position:absolute; width:98%; top: @(table.ToString().Replace(',','.'))%;right:2%">
+            <table id="mainTable" class="tablo" style="cursor: pointer; width:100%;">
+                <thead style="width:100%">
+                    <tr id="tableHead_0">
+                        <th>Ölçü Noktası</th>
+
+
+
+                        @for (int j = 0; j < Model.Item2[i][j].beden.Count; j++)
+                        {
+                            <th id="column_0_@(j + 1)">@Model.Item2[i][0].beden[j]</th>
+                        }
+
+                        @if (Model.Item1[i].tabloTuru == 0)
+                        {
+                            <th>
+                                Tölerans
+                            </th>
+                            <th>
+                                Çekme
+                            </th>
+                            <th>
+                                Oran
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody id="tableBody_0">
+                    @{ string anaBeden = Model.Item1[i].anaBeden;}
+
+                    @{ int rowIndex2 = 0;}
+                    @for (int j = 0; j < Model.Item2[i].Count; j++)
+                    {
+                        if (j == 0)
+                        {
+                            <tr id="satir_@rowIndex2">
+                                <td class="td3" data-editable="false" id="cell_@(0 + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item2[i][j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(0 + "_" +rowIndex2)">
+                                    @Model.Item2[i][j].olcuNoktasi
+                                </td>
+
+                                @for (int z = 0; z < Model.Item2[i][j].deger.Count(); z++)
+                                {
+                                    if (anaBeden == Model.Item2[i][j].beden[z])
+                                    {
+                                        <td tabindex="1" id="cell_@(0 + "_" + rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(0 + "_" + z+1)" data-rowIndex="@(0 + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                            @Model.Item2[i].Where(x => x.olcuNoktasi == Model.Item2[i][j].olcuNoktasi && x.beden == Model.Item2[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td tabindex="1" id="cell_@(0 + "_" + rowIndex2 + "_" + (z+1))" data-columnIndex="@(0 + "_" + z+1)" data-rowIndex="@(0 + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                            @Model.Item2[i].Where(x => x.olcuNoktasi == Model.Item2[i][j].olcuNoktasi && x.beden ==Model.Item2[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                        </td>
+                                    }
+                                }
+
+                                @if (Model.Item1[i].tabloTuru == 0)
+                                {
+                                    <td style="background-color:lightskyblue">
+                                        @Model.Item2[i][j].tolerans
+                                    </td>
+                                    <td style="background-color:lightskyblue">
+                                        @Model.Item2[i][j].cekme
+                                    </td>
+                                    <td style="background-color:lightskyblue">
+                                        @Model.Item2[i][j].oran
+                                    </td>
+                                }
+                            </tr>
+                            rowIndex2++;
+                        }
+                        else
+                        {
+                            if (Model.Item2[i][j].olcuNoktasi != Model.Item2[i][j-1].olcuNoktasi)
+                            {
+                                <tr id="satir_@rowIndex2">
+                                    <td class="td3" data-editable="false" id="cell_@(0 + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item2[i][j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(0 + "_" +rowIndex2)">
+                                        @Model.Item2[i][j].olcuNoktasi
+                                    </td>
+
+                                    @for (int z = 0; z < Model.Item2[i][j].deger.Count(); z++)
+                                    {
+                                        if (anaBeden == Model.Item2[i][j].beden[z])
+                                        {
+                                            <td tabindex="1" id="cell_@(0 + "_" + rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(0 + "_" + z+1)" data-rowIndex="@(0 + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                                @Model.Item2[i].Where(x => x.olcuNoktasi == Model.Item2[i][j].olcuNoktasi && x.beden == Model.Item2[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td tabindex="1" id="cell_@(0 + "_" + rowIndex2 + "_" + (z+1))" data-columnIndex="@(0 + "_" + z+1)" data-rowIndex="@(0 + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                                @Model.Item2[i].Where(x => x.olcuNoktasi == Model.Item2[i][j].olcuNoktasi && x.beden == Model.Item2[i][j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                            </td>
+                                        }
+                                    }
+
+                                    @if (Model.Item1[i].tabloTuru == 0)
+                                    {
+                                        <td style="background-color:lightskyblue">
+                                            @Model.Item2[i][j].tolerans
+                                        </td>
+                                        <td style="background-color:lightskyblue">
+                                            @Model.Item2[i][j].cekme
+                                        </td>
+                                        <td style="background-color:lightskyblue">
+                                            @Model.Item2[i][j].oran
+                                        </td>
+                                    }
+                                </tr>
+                                rowIndex2++;
+                            }
+
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+    <div class="row" style="position:absolute; bottom:@(aciklama.ToString().Replace(',','.'))%;">
+        <p style="color:red;font-size:18px;">@Model.Item1[i].aciklama</p>
+    </div>
+
+    <div class="sayfaSon"></div>
+}
+

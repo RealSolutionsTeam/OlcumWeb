@@ -1,0 +1,93 @@
+﻿<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<div class="card card-success" style="height:400px">
+    <div class="card-header">
+        <div class="col-6">
+            <button class="btn btn-icon btn-success" style="margin-right:5%" onclick="AnaSayfayaDon()"><i class="fas fa-backspace"></i></button>
+            Lütfen order seçiniz.
+        </div>
+
+        <div class="col-6">
+            @Html.DropDownList("orderNo", new SelectList(ViewBag.order, "id", "orderNo"), "Seçiniz...", new { @class = "form-control select2", @id = "orderNo2" })
+        </div>
+    </div>
+    <div class="card-body" style="margin-top: 50px">
+        <section class="section" id="rptTablolar"></section>
+    </div>
+    <div class="card-footer">
+        <div class="row"><button type="button" class="btn btn-primary" id="btnSec" onclick="CekmeSec()">Seç</button></div>
+    </div>
+</div>
+
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2();
+    };
+
+    $('#orderNo2').select2({ width: 'inherit' });
+
+    $("#orderNo2").change(function () {
+        $.post("/ImalatTablosu/Cekmeler", { 'orderNo': $("#orderNo2 option:selected").text() }, function (deger) {
+            $('#rptTablolar').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    });
+
+    function CekmeSec() {
+        var orderNo = $("#orderNo2 option:selected").text();
+
+        var seciliCekmeler = [];
+
+        $('input[name="cekmeler"]:checked').each(function () {
+            seciliCekmeler.push(this.value);
+        });
+
+        if (seciliCekmeler.length != 0) {
+            if (seciliCekmeler.indexOf("Yıkama Sonrası") == -1) {
+                AlertHata("Lütfen yıkama sonrasını da seçiniz!");
+            }
+            else {
+                YukleniyorOnOff();
+                $.post("/ImalatTablosu/YikamaSonrasiOncekiTablo", { 'orderID': $("#orderNo2 option:selected").val(), 'olcuTuruID': $('#olcuTuruAd').val() }, function (deger) {
+                    $('#yikamaSonrasiContent').html(deger);
+
+                    $.post("/ImalatTablosu/YikamaOncesiOncekiTablo", { 'orderID': $("#orderNo2 option:selected").val(), 'olcuTuruID': $('#olcuTuruAd').val(), 'cekmeler': seciliCekmeler }, function (deger2) {
+                        $('#yikamaOncesiContent').html(deger2);
+
+                          $.post("/ImalatTablosu/KalipOlcusuOncekiTablo", { 'orderID': $("#orderNo2 option:selected").val(), 'olcuTuruID': $('#olcuTuruAd').val(), 'cekmeler': seciliCekmeler }, function (deger3) {
+                            $('#kalipOlcusuContent').html(deger3);
+                            YukleniyorOnOff();
+                            }).fail(function (response) {
+                                alert('Error : ' + response.responseText);
+                            });
+                    }).fail(function (response) {
+                        alert('Error : ' + response.responseText);
+                    });
+
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+
+                $('#hazirTabloModal').modal('toggle');
+
+            }
+        }
+        else {
+            AlertHata("Lütfen aktarılacak bir çekme seçin!");
+        }
+
+    }
+
+    function AnaSayfayaDon() {
+
+        $.post("/ImalatTablosu/ModalAnaSayfa", { 'orderID': $("#orderNo").val() }, function (deger) {
+            $('#hazirTablo_Modal').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+</script>

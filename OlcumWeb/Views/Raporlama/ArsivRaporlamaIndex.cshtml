@@ -1,0 +1,179 @@
+﻿<div class="card-header">
+    <div class="card" style="width:100%">
+        <div class="card-header">
+            <h4>Arşiv Ekranı</h4>
+            <div class="card-header-action">
+                <a data-collapse="#mycard-collapse" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus" style="color:white"></i></a>
+            </div>
+        </div>
+        <div class="collapse show" id="mycard-collapse">
+            <div class="card-body" style="width:100%">
+                <div class="row">
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Rapor Adı:</label>
+                            <div class="input-group">
+                                @Html.TextBox("raporAdArsiv")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Order No:</label>
+                            <div class="input-group">
+                                @Html.TextBox("orderNoArsiv", null, new { @style = " width:120%; " })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Model Ad:</label>
+                            <div class="input-group">
+                                @Html.TextBox("modelAdArsiv")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Model No:</label>
+                            <div class="input-group">
+                                @Html.TextBox("modelNoArsiv", null, new { @style = " width:110%; " })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Kumaş:</label>
+                            <div class="input-group">
+                                @Html.TextBox("kumasArsiv")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Müşteri:</label>
+                            <div class="input-group">
+                                @Html.TextBox("musteriArsiv")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="width:100%">
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Atölye Adı:</label>
+                            <div class="input-group">
+                                @Html.TextBox("atolyeAdArsiv")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Yıkama Yeri:</label>
+                            <div class="input-group">
+                                @Html.TextBox("yikamaYeriArsiv")
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Başlangıç Tarihi:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control datepicker" id="tarih1Arsiv">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+
+                        <div class="form-group">
+                            <label>Bitiş Tarihi:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control datepicker" id="tarih2Arsiv">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <a href="#" class="btn btn-icon icon-left btn-info" style="margin-left:90%" onclick="FillTableArsiv()"><i class="fas fa-search" style="color:white"></i><span style="color:white">Ara</span> </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-body">
+    <section id="tablePartArsiv">
+    </section>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+
+        if (isFromNumunePage != 0) {
+            var personel = localStorage.getItem('personel');
+
+            localStorage.clear();
+
+            localStorage.setItem('personel', personel);
+
+            if (bagliNumuneIdList.length > 0) {
+                for (var i = 0; i < bagliNumuneIdList.length; i++) {
+                    localStorage.setItem(bagliNumuneIdList[i], JSON.stringify({ 'id': bagliNumuneIdList[i], 'raporTuru': 1 }));
+                }
+            }
+
+        }
+
+        YukleniyorOnOff();
+        $.post("/Raporlama/ArsivRaporlamaTable", {}, function (data) {
+            $('#tablePartArsiv').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    });
+
+
+    $(function () {
+        $(".datepicker").datepicker({
+            dateFormat: "dd-mm-yy",
+            altFormat: "yy-mm-dd",
+            altField: "#tarih-db",
+            monthNames: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+            dayNamesMin: ["Pa", "Pt", "Sl", "Ça", "Pe", "Cu", "Ct"],
+        });
+
+        $("#datepicker").datepicker('setDate', new Date());
+    });
+
+    function FillTableArsiv() {
+        var orderNo = $('#orderNoArsiv').val();
+        var modelNo = $('#modelNoArsiv').val();
+        var kumas = $('#kumasArsiv').val();
+        var musteri = $('#musteriArsiv').val();
+        var atolyeAd = $('#atolyeAdArsiv').val();
+        var modelAd = $('#modelAdArsiv').val();
+        var yikamaYeri = $('#yikamaYeriArsiv').val();
+        var raporAdi = $('#raporAdArsiv').val();
+
+
+        var tarih1 = $('#tarih1Arsiv').val();
+        var tarih2 = $('#tarih2Arsiv').val();
+
+
+        YukleniyorOnOff();
+        $.post("/Raporlama/ArsivRaporlamaTable", { 'raporAdi': raporAdi, 'orderNo': orderNo, 'modelNo': modelNo, 'kumas': kumas, 'musteri': musteri, 'atolye': atolyeAd,'modelAdi': modelAd, 'yikamaYeri': yikamaYeri, 'tarih1': tarih1, 'tarih2': tarih2 }, function (data) {
+            $('#tablePartArsiv').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+</script>

@@ -1,0 +1,138 @@
+﻿@model Tuple<List<List<double?>>, List<Tuple<string, string>>, List<string>>
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/datatables.min.css">
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
+
+<style>
+
+    select[name="1_length"] {
+        height: 30px !important;
+    }
+
+    select[name="2_length"] {
+        height: 30px !important;
+    }
+
+    select[name="save-stage"] {
+        height: 30px !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+
+    .dataTables_filter label {
+        margin: 0 !important;
+    }
+
+        .dataTables_filter label input {
+            height: 30px !important;
+        }
+
+    .dataTables_paginate {
+        float: right !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+</style>
+
+<div class="table-responsive">
+    <div id="table-1_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+        <div class="col-sm-12">
+            <table class="table table-striped dataTable no-footer" id="save-stage2" role="grid" aria-describedby="table-1_info">
+                <thead>
+                    <tr role="row">
+                        <th class="text-center sorting_asc" tabindex="0" aria-controls="table-1" rowspan="1" colspan="1" aria-label="
+                              #
+                            : activate to sort column descending" style="width: 24px;" aria-sort="ascending">
+                            #
+                        </th>
+
+                        <th class="sorting" tabindex="0" aria-controls="table-1" rowspan="1" colspan="1" style="width: 148px;">Ölçü Noktaları</th>
+
+
+                        @for (int i = 0; i < Model.Item2.Count; i++)
+                        {
+                            <th class="sorting" tabindex="0" aria-controls="table-1" rowspan="1" colspan="1" style="width: 148px;">@(Model.Item2[i].Item1 + "/" + Model.Item2[i].Item2)</th>
+
+                        }
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Item3.Count; i++)
+                    {
+
+                        if (i % 2 == 0)
+                        {
+                            <tr role="row" class="odd">
+                                <td class="sorting_1">
+                                    @(i + 1)
+                                </td>
+
+                                <td>
+                                    @Model.Item3[i]
+                                </td>
+
+                                @for (int j = 0; j < Model.Item1.Count; j++)
+                                {
+                                    <td>
+                                        @Model.Item1[j][i]
+                                    </td>
+                                }
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr role="row" class="odd">
+                                <td class="sorting_1">
+                                    @(i + 1)
+                                </td>
+                                <td>
+                                    @Model.Item3[i]
+                                </td>
+
+                                @for (int j = 0; j < Model.Item1.Count; j++)
+                                {
+                                    <td>
+                                        @Model.Item1[j][i]
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/Tema/assets/bundles/datatables/datatables.min.js"></script>
+<script src="~/Tema/assets/bundles/sweetalert/sweetalert.min.js"></script>
+<script src="~/Tema/assets/js/page/sweetalert.js"></script>
+
+<script>
+    $('#save-stage2').DataTable({
+        "dom": '<"top"<"row mr-0 ml-0 mt-1 mb-1"<"col-6 m-auto"f><"col-6 m-auto"l>>>rt<"row mt-2 mr-0 mb-0 ml-0"<"col - 6 m- auto"i><"col - 6 m - auto"p>><"clear">',
+        "pageLength": 10,
+        "lengthMenu": [10, 20, 50, 100],
+        "ordering": false,
+        "language": {
+            "searchPlaceholder": "Arama",
+            "search": "",
+            //"info": "TOTAL Kayıt içerisinde START - END gösteriliyor",
+            "loadingRecords": "Yükleniyor...",
+            "zeroRecords": "Kayıt Bulunamadı",
+            "lengthMenu": "",
+            "infoEmpty": "",
+            "infoFiltered": "",
+        }
+    }).columns(-1).order('desc').draw();
+
+</script>

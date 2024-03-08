@@ -1,0 +1,363 @@
+﻿@model Tuple<List<OlcumWeb.Models.DTO.DtoOlcuNokDeger>, List<OlcumWeb.Models.DTO.pListDto>, List<OlcumWeb.Models.DTO.kazanGirilenListDto>, List<OlcumWeb.Models.DTO.OlcuNokIdwithSiraNoDto>>
+
+<link rel="stylesheet" href="~/CSS/neonBorder.css">
+
+<style>
+
+    .istenilenTable {
+        border-collapse: collapse;
+        width: 100%;
+        color: black;
+        font-family: "Nunito Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; 
+    }
+
+    .istenlenTd {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        background: #FFF;
+        color: #000; 
+    }
+
+    .istenlenTh {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        font-size: 17px;
+        background: #FFF;
+        color: #000;
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+    }
+
+    .seciliHucre {
+        background: #C5BFBF;
+        /*background: #30ca74;*/
+    }
+
+    .deleteBtn {
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        padding: 0;
+        font-size: 14px;
+        margin: auto 1% auto auto;
+    }
+
+    .stickyth {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+    }
+
+    .stickytd1 {
+        position: -webkit-sticky;
+        position: sticky;
+        left: -1px;
+    }
+
+    .stickytd2 {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 197px;
+    }
+
+    .stickytd3 {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 260px;
+    }
+
+    .min-with60 {
+        min-width: 65px !important;
+    }
+
+    .bedenHeader {
+        color: black;
+        font-weight: 700;
+        margin: auto;
+    }
+
+
+    .bedenHeader-active {
+        color: #4dcc4d !important;
+        font-weight: 900;
+        margin: auto;
+        font-size: 20px;
+    }
+
+    .deger-active {
+        color: #4dcc4d !important;
+        font-weight: 900;
+    }
+
+</style>
+
+<div class="row">
+
+    <div style="width: 100%; overflow: auto; max-height:750px;">
+
+        <table class="istenilenTable">
+            <thead>
+                <tr>
+                    <th class="istenlenTh stickyth" style="left: -1px; z-index: 1; min-width:200px !important;">Ölçü Noktası</th>
+                    <th class="istenlenTh stickyth" style="left: 197px; z-index: 1;">Değer</th>
+
+                    @for (int s = 0; s < Model.Item2.Count(); s++)
+                    {
+                        if (s == 0)
+                        {
+                            <th class="istenlenTh stickyth min-with60" style="left: 260px; z-index: 1;" data-cekme="@Model.Item2[s].cekme" data-bedenad="@Model.Item2[s].bedenad" data-bedenid="@Model.Item2[s].bedenid" data-pno="@Model.Item2[s].pno" data-bpantno="@Model.Item2[s].bpantno"><div class="row"> <a id="headerBeden-@Model.Item2[s].pno" class="bedenHeader bedenHeader-active" data-pno="@Model.Item2[s].pno">@Model.Item2[s].bedenad</a> <button onclick="Psil(@Model.Item2[s].pno)" class="btn btn-icon btn-danger deleteBtn"><i class="fas fa-times"></i></button> </div>  </th>
+
+                        }
+                        else
+                        {
+                            <th class="istenlenTh min-with60" data-cekme="@Model.Item2[s].cekme" data-bedenad="@Model.Item2[s].bedenad" data-bedenid="@Model.Item2[s].bedenid" data-pno="@Model.Item2[s].pno" data-bpantno="@Model.Item2[s].bpantno"><div class="row"> <a id="headerBeden-@Model.Item2[s].pno" class="bedenHeader" data-pno="@Model.Item2[s].pno">@Model.Item2[s].bedenad</a> <button onclick="Psil(@Model.Item2[s].pno)" class="btn btn-icon btn-danger deleteBtn"><i class="fas fa-times"></i></button> </div>  </th>
+
+                        }
+                    }
+
+
+                </tr>
+            </thead>
+
+            <tbody style="width: 100%; ">
+
+
+                @for (int i = 0; i < Model.Item1.Count(); i++)
+                {
+                    if (i == 0)
+                    {
+                        <tr class="neonFocus" id="tr-@i" data-satirid="@i" data-olcuNokId="@Model.Item1[i].olcuNokId">
+
+                            <td class="istenlenTd stickytd1" data-olcuNokId="@Model.Item1[i].olcuNokId" data-satirid="@i" id="tdAd-@Model.Item1[i].olcuNokId">@Model.Item1[i].olcuNokAd</td>
+                            <td class="istenlenTd stickytd2  deger-active" data-olcuNokId="@Model.Item1[i].olcuNokId" data-satirid="@i" id="tdDeger-@Model.Item1[i].olcuNokId" style="text-align: center;">@Model.Item1[i].deger</td>
+
+                            @for (int j = 0; j < Model.Item2.Count(); j++)
+                            {
+                                if (j == 0)
+                                {
+                                    if (Model.Item3.Count() != 0 && ViewBag.silindiMi == true)
+                                    {
+                                        <td class="istenlenTd seciliHucre stickytd3" data-olcuNokId="@Model.Item1[i].olcuNokId" data-bpantno="@Model.Item2[j].bpantno" data-pno="@Model.Item2[j].pno" data-cekme="@Model.Item2[j].cekme" data-bedenad="@Model.Item2[j].bedenad" data-bedenid="@Model.Item2[j].bedenid" data-satirid="@i" id="tdG-@Model.Item1[i].olcuNokId-@Model.Item2[j].pno" onclick="HucreyiSec(this)" style="text-align: center;">
+
+                                            @if (Model.Item3.Any(x => x.bedenad == Model.Item2[j].bedenad && x.cekme == Model.Item2[j].cekme && x.olcunokid == Model.Item1[i].olcuNokId && x.pno == Model.Item2[j].pno))
+                                            {
+                                                @Model.Item3.Where(x => x.bedenad == Model.Item2[j].bedenad && x.cekme == Model.Item2[j].cekme && x.olcunokid == Model.Item1[i].olcuNokId && x.pno == Model.Item2[j].pno).FirstOrDefault().deger
+                                            }
+
+
+
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="istenlenTd seciliHucre stickytd3" data-olcuNokId="@Model.Item1[i].olcuNokId" data-bpantno="@Model.Item2[j].bpantno" data-pno="@Model.Item2[j].pno" data-cekme="@Model.Item2[j].cekme" data-bedenad="@Model.Item2[j].bedenad" data-bedenid="@Model.Item2[j].bedenid" data-satirid="@i" id="tdG-@Model.Item1[i].olcuNokId-@Model.Item2[j].pno" onclick="HucreyiSec(this)" style="text-align: center;"></td>
+
+                                    }
+                                }
+                                else
+                                {
+                                    if (Model.Item3.Count() != 0)
+                                    {
+                                        <td class="istenlenTd" data-olcuNokId="@Model.Item1[i].olcuNokId" data-bpantno="@Model.Item2[j].bpantno" data-pno="@Model.Item2[j].pno" data-cekme="@Model.Item2[j].cekme" data-bedenad="@Model.Item2[j].bedenad" data-bedenid="@Model.Item2[j].bedenid" data-satirid="@i" id="tdG-@Model.Item1[i].olcuNokId-@Model.Item2[j].pno" onclick="HucreyiSec(this)" style="text-align: center;">
+
+                                            @if (Model.Item3.Any(x => x.bedenad == Model.Item2[j].bedenad && x.cekme == Model.Item2[j].cekme && x.olcunokid == Model.Item1[i].olcuNokId && x.pno == Model.Item2[j].pno))
+                                            {
+                                                @Model.Item3.Where(x => x.bedenad == Model.Item2[j].bedenad && x.cekme == Model.Item2[j].cekme && x.olcunokid == Model.Item1[i].olcuNokId && x.pno == Model.Item2[j].pno).FirstOrDefault().deger
+                                            }
+
+
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="istenlenTd" data-olcuNokId="@Model.Item1[i].olcuNokId" data-bpantno="@Model.Item2[j].bpantno" data-pno="@Model.Item2[j].pno" data-cekme="@Model.Item2[j].cekme" data-bedenad="@Model.Item2[j].bedenad" data-bedenid="@Model.Item2[j].bedenid" data-satirid="@i" id="tdG-@Model.Item1[i].olcuNokId-@Model.Item2[j].pno" onclick="HucreyiSec(this)" style="text-align: center;"></td>
+                                    }
+                                }
+                            }
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr id="tr-@i" data-satirid="@i" data-olcuNokId="@Model.Item1[i].olcuNokId">
+
+                            <td class="istenlenTd stickytd1" data-olcuNokId="@Model.Item1[i].olcuNokId" data-satirid="@i" id="tdAd-@Model.Item1[i].olcuNokId">@Model.Item1[i].olcuNokAd</td>
+                            <td class="istenlenTd stickytd2" data-olcuNokId="@Model.Item1[i].olcuNokId" data-satirid="@i" id="tdDeger-@Model.Item1[i].olcuNokId" style="text-align: center;">@Model.Item1[i].deger</td>
+
+                            @for (int j = 0; j < Model.Item2.Count(); j++)
+                            {
+                                if (j == 0)
+                                {
+                                    if (Model.Item3.Count() != 0 && ViewBag.silindiMi == true)
+                                    {
+                                        <td class="istenlenTd stickytd3" data-olcuNokId="@Model.Item1[i].olcuNokId" data-bpantno="@Model.Item2[j].bpantno" data-pno="@Model.Item2[j].pno" data-cekme="@Model.Item2[j].cekme" data-bedenad="@Model.Item2[j].bedenad" data-bedenid="@Model.Item2[j].bedenid" data-satirid="@i" id="tdG-@Model.Item1[i].olcuNokId-@Model.Item2[j].pno" onclick="HucreyiSec(this)" style="text-align: center;">
+
+                                            @if (Model.Item3.Any(x => x.bedenad == Model.Item2[j].bedenad && x.cekme == Model.Item2[j].cekme && x.olcunokid == Model.Item1[i].olcuNokId && x.pno == Model.Item2[j].pno))
+                                            {
+                                                @Model.Item3.Where(x => x.bedenad == Model.Item2[j].bedenad && x.cekme == Model.Item2[j].cekme && x.olcunokid == Model.Item1[i].olcuNokId && x.pno == Model.Item2[j].pno).FirstOrDefault().deger
+                                            }
+
+                                        </td>
+
+                                    }
+                                    else
+                                    {
+                                        <td class="istenlenTd stickytd3" data-olcuNokId="@Model.Item1[i].olcuNokId" data-bpantno="@Model.Item2[j].bpantno" data-pno="@Model.Item2[j].pno" data-cekme="@Model.Item2[j].cekme" data-bedenad="@Model.Item2[j].bedenad" data-bedenid="@Model.Item2[j].bedenid" data-satirid="@i" id="tdG-@Model.Item1[i].olcuNokId-@Model.Item2[j].pno" onclick="HucreyiSec(this)" style="text-align: center;"></td>
+
+                                    }
+                                }
+                                else
+                                {
+                                    if (Model.Item3.Count() != 0)
+                                    {
+                                        <td class="istenlenTd" data-olcuNokId="@Model.Item1[i].olcuNokId" data-bpantno="@Model.Item2[j].bpantno" data-pno="@Model.Item2[j].pno" data-cekme="@Model.Item2[j].cekme" data-bedenad="@Model.Item2[j].bedenad" data-bedenid="@Model.Item2[j].bedenid" data-satirid="@i" id="tdG-@Model.Item1[i].olcuNokId-@Model.Item2[j].pno" onclick="HucreyiSec(this)" style="text-align: center;">
+
+                                            @if (Model.Item3.Any(x => x.bedenad == Model.Item2[j].bedenad && x.cekme == Model.Item2[j].cekme && x.olcunokid == Model.Item1[i].olcuNokId && x.pno == Model.Item2[j].pno))
+                                            {
+                                                @Model.Item3.Where(x => x.bedenad == Model.Item2[j].bedenad && x.cekme == Model.Item2[j].cekme && x.olcunokid == Model.Item1[i].olcuNokId && x.pno == Model.Item2[j].pno).FirstOrDefault().deger
+                                            }
+
+
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="istenlenTd" data-olcuNokId="@Model.Item1[i].olcuNokId" data-bpantno="@Model.Item2[j].bpantno" data-pno="@Model.Item2[j].pno" data-cekme="@Model.Item2[j].cekme" data-bedenad="@Model.Item2[j].bedenad" data-bedenid="@Model.Item2[j].bedenid" data-satirid="@i" id="tdG-@Model.Item1[i].olcuNokId-@Model.Item2[j].pno" onclick="HucreyiSec(this)" style="text-align: center;"></td>
+                                    }
+                                }
+                            }
+
+                        </tr>
+                    }
+                }
+            <tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+    jQuery(document).ready(function () {
+        jQuery(".main-table").clone(true).appendTo('#table-scroll').addClass('clone');
+    });
+
+    pantolonList = [];
+    pantolonList = @Html.Raw(Json.Encode(Model.Item2));
+    console.log("pantolonList");
+    console.log(pantolonList);
+
+
+    olcuYerleriList = @Html.Raw(Json.Encode(ViewBag.olcuYeriList));
+    console.log("olcuYerleriList");
+    console.log(olcuYerleriList);
+    setOlcuYeri();
+
+    seciliOlcuNokIdList  = @Html.Raw(Json.Encode(Model.Item4));
+    console.log("seciliOlcuNokIdList");
+    console.log(seciliOlcuNokIdList);
+
+    var olcuNokelementList = $("[name='olcuNokInput']");
+
+    $.each(olcuNokelementList, function (index, value) {
+
+        if (seciliOlcuNokIdList.find(x => x.olcunokid == Number(value.dataset.olcunokid))) {
+            if (!value.checked) {
+                value.checked = true;
+                $("#" + value.labels[0].id).toggleClass("checked");
+                $("#" + value.nextElementSibling.id).toggleClass("fa-square");
+                $("#" + value.nextElementSibling.id).toggleClass("fa-check-square");
+            }
+
+        } else {
+            if (value.checked) {
+                value.checked = false;
+                $("#" + value.labels[0].id).toggleClass("checked");
+                $("#" + value.nextElementSibling.id).toggleClass("fa-square");
+                $("#" + value.nextElementSibling.id).toggleClass("fa-check-square");
+            }
+        }
+
+     
+    });
+
+
+    tabloGirilenList = [];
+    var ModeltabloGirilenList = @Html.Raw(Json.Encode(Model.Item3));
+    console.log("ModeltabloGirilenList");
+    console.log(ModeltabloGirilenList);
+
+    $.each(ModeltabloGirilenList, function (index, value) {
+        if (value.deger != null) {
+            if (value.deger.toString().includes(".")) {
+                value.deger = value.deger.toString().replace(".", ",");
+            } else {
+                value.deger = value.deger.toString();
+            }
+        }
+        tabloGirilenList.push(value);
+    });
+
+    console.log("tabloGirilenList");
+    console.log(tabloGirilenList);
+
+
+    var olmasiGerekenListModal = @Html.Raw(Json.Encode(Model.Item1));
+    console.log("olmasiGerekenListModal");
+    console.log(olmasiGerekenListModal);
+
+
+    var setReturnListModal =  @Html.Raw(Json.Encode(ViewBag.setReturnList));
+    console.log("setReturnListModal");
+    console.log(setReturnListModal);
+
+
+    if (isYikamaOncesi) {
+
+        $.each(olmasiGerekenListModal, function (index, value) {
+            if (tabloCekmeBedenOlmasiGerekenList.findIndex(x => x.cekme == value.cekme && x.bedenId == value.bedenId && x.olcuNokId == value.olcuNokId) == -1) {
+                tabloCekmeBedenOlmasiGerekenList.push(value);
+            }
+        });
+
+        if (setReturnListModal != null) {
+            $.each(setReturnListModal, function (index, value) {
+                if (tabloCekmeBedenOlmasiGerekenList.findIndex(x => x.cekme == value.cekme && x.bedenId == value.bedenId && x.olcuNokId == value.olcuNokId) == -1) {
+                    tabloCekmeBedenOlmasiGerekenList.push(value);
+                }
+            });
+        }
+
+    } else {
+
+        $.each(olmasiGerekenListModal, function (index, value) {
+            if (tabloCekmeBedenOlmasiGerekenList.findIndex(x => x.bedenId == value.bedenId && x.olcuNokId == value.olcuNokId) == -1) {
+                value.cekme = "";
+                tabloCekmeBedenOlmasiGerekenList.push(value);
+            }
+        });
+
+
+        if (setReturnListModal != null) {
+
+            $.each(setReturnListModal, function (index, value) {
+                if (tabloCekmeBedenOlmasiGerekenList.findIndex(x => x.bedenId == value.bedenId && x.olcuNokId == value.olcuNokId) == -1) {
+                    value.cekme = "";
+                    tabloCekmeBedenOlmasiGerekenList.push(value);
+                }
+            });
+        }
+
+    }
+
+
+    console.log("tabloCekmeBedenOlmasiGerekenList");
+    console.log(tabloCekmeBedenOlmasiGerekenList);
+
+</script>
+

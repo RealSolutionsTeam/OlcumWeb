@@ -1,0 +1,355 @@
+﻿
+<title>Kazan Formu</title>
+<style>
+
+    .blueBackground {
+        box-shadow: 0 2px 6px #82d3f8;
+        background-color: #3abaf4;
+        border-color: #3abaf4;
+        color: #fff;
+    }
+
+    .blackBackground {
+        background-color: #353c48;
+        box-shadow: 0 2px 6px #acb5f6;
+        color: #fff;
+    }
+
+    .swal-modal {
+        width: 55% !important;
+    }
+
+    .swal-title:not(:last-child) {
+        margin-bottom: 0 !important;
+    }
+
+    .swal-title:first-child {
+        margin-top: 0 !important;
+    }
+
+    .swal-footer {
+        margin-top: 0 !important;
+    }
+
+    .main-content {
+        padding-left: 5% !important;
+        padding-right: 0% !important;
+    }
+
+    .card-body {
+        padding: 1% 0 !important;
+        max-width: none !important;
+        width: 100% !important;
+    }
+
+    .container {
+        max-width: none !important;
+        width: 100% !important;
+    }
+</style>
+
+<input value='@TempData["hata"]' hidden id="hataInput" />
+
+
+<div class="col-12">
+    <div class="card mt-3">
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+
+                    <div id="form" style="width: 100%;">
+                        <div class="row m-0">
+                            <div class="lds-ring" style="margin: 5% auto;">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Kazan Devam Et Modal -->
+<div class="modal fade bd-example-modal-l" id="KazanDevamModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title m-auto"><span id="KazanDevamEtModalHeader"></span></h4>
+                <button data-dismiss="modal" type="button" aria-label="Close" class="btn btn-icon btn-sm btn-danger pull-right">✘</button>
+            </div>
+            <div class="modal-body" id="KazanDevamModalBody">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+<script>
+    $(document).ready(function () {
+
+        $.post("/KazanFormu/KazanFormuPartial", {}, function (responseSuccess) {
+            $('#form').html(responseSuccess);
+        }).fail(function (responseError) {
+            console.log(responseError);
+            alert('Error : ' + responseError.responseText);
+        });
+
+
+        if ($('#hataInput').val() != "") {
+            iziToast.error({
+                title: $('#hataInput').val(),
+                message: '',
+                position: 'bottomRight'
+            });
+        }
+
+    });
+
+    const findDuplicates = (arr) => {
+        let sorted_arr = arr.slice().sort();
+        let results = [];
+        for (let i = 0; i < sorted_arr.length - 1; i++) {
+            if (sorted_arr[i + 1] == sorted_arr[i]) {
+                results.push(sorted_arr[i]);
+            }
+        }
+        return results;
+    }
+
+
+    var orderNo = "";
+    var model = "";
+    var musteri = "";
+    var olcuTuruAd = "";
+    var tabloTuruAd = "";
+    var tabloTuru;
+    var atolyeAd = "";
+    var yikamaYer = "";
+    var yikamaSor = "";
+    var personel = JSON.parse(localStorage.getItem('personel'));
+    var kazanDetayId = 0;
+
+    function FormuKaydet() {
+        swal({
+            title: "Seçim Yapınız",
+            dangerMode: true,
+            closeOnClickOutside: false,
+            buttons: {
+                olcum: {
+                    text: "Yıkama Öncesi",
+                    value: "0",
+                    visible: true,
+                    className: "blueBackground",
+                    closeModal: true
+                },
+                confirm: {
+                    text: "Yıkama Sonrası",
+                    value: "1",
+                    visible: true,
+                    className: "",
+                    closeModal: true
+                }
+            }
+        }).then((response) => {
+
+            if (response == "0") {
+                tabloTuruAd = "Yıkama Öncesi";
+                tabloTuru = 0;
+            } else {
+                tabloTuruAd = "Yıkama Sonrası";
+                tabloTuru = 1;
+            }
+
+            var orderId = $("#OrderSelect").val();
+            if (orderId == 0) {
+                iziToast.error({
+                    title: 'Order Seçilmemiş',
+                    message: '',
+                    position: 'bottomRight'
+                });
+                return false
+            }
+
+            var atolyeId = $("#AtolyeSelect").val();
+            if (atolyeId == 0) {
+                iziToast.error({
+                    title: 'Atolye Seçilmemiş',
+                    message: '',
+                    position: 'bottomRight'
+                });
+                return false
+            }
+
+            var olcuTurId = $("#OlcuTurSelect").val();
+            if (olcuTurId == 0) {
+                iziToast.error({
+                    title: 'Ölçü Türü Seçilmemiş',
+                    message: '',
+                    position: 'bottomRight'
+                });
+                return false
+            }
+
+            var giysiTurId = $("#GiysiTurSelect").val();
+            if (giysiTurId == 0) {
+                iziToast.error({
+                    title: 'Giysi Türü Seçilmemiş',
+                    message: '',
+                    position: 'bottomRight'
+                });
+                return false
+            }
+
+            var yikamayeri = $("#yikamaYerInput").val();
+
+            var yikamaSor = $("#yikamaSorInput").val();
+
+            var postParam = { orderID: orderId, atolyeID: atolyeId, giysiTuruID: giysiTurId, olcuTuruID: olcuTurId, yikamaYeri: yikamayeri, yikamaSorumlu: yikamaSor, tabloTuru: Number(response), };
+            var postData = { postParam: postParam, kullanıcıID: personel.id };
+
+            KayitYapiliyorOnOff();
+
+            $.post("/KazanFormu/KazanFormKaydet", postData, function (responseSuccess) {
+
+                if (responseSuccess == "0") {
+                    KayitYapiliyorOnOff();
+                    iziToast.error({ title: 'Kayıt sırasında bir hata oluştu lütfen tekrar deneyiniz', message: '', position: 'bottomRight' });
+                } else if (responseSuccess == "1") {
+                    KayitYapiliyorOnOff();
+                    iziToast.error({ title: 'Seçtiginiz Order ve Ölçü Turune ait Ölçü tablosu bulunamadı', message: '', position: 'bottomRight' });
+                } else {
+
+                    $.post("/KazanFormu/KazanFormuTablePartial", responseSuccess, function (responseSuccess2) {
+                        KayitYapiliyorOnOff();
+                        $('#form').html(responseSuccess2);
+                    }).fail(function (responseError) {
+                        KayitYapiliyorOnOff();
+                        console.log(responseError);
+                        alert('Error : ' + responseError.responseText);
+                    });
+                }
+
+            }).fail(function (responseError) {
+                KayitYapiliyorOnOff();
+                console.log(responseError);
+                alert('Error : ' + responseError.responseText);
+            });
+
+
+        });
+    }
+
+
+    function kaydetDevamEt() {
+
+        if ($('input[name = "devamChk"]:checked').length != 0) {
+            kazanDetayId = Number($('input[name = "devamChk"]:checked')[0].value);
+
+            KayitYapiliyorOnOff();
+
+            $.post("/KazanFormu/devamEtKazanFormKaydet", { kazanDetayId: kazanDetayId }, function (responseSuccess) {
+
+                if (responseSuccess == "0") {
+                    KayitYapiliyorOnOff();
+                    iziToast.error({ title: 'Kayıt sırasında bir hata oluştu lütfen tekrar deneyiniz', message: '', position: 'bottomRight' });
+                } else if (responseSuccess == "1") {
+                    KayitYapiliyorOnOff();
+                    iziToast.error({ title: 'Seçtiginiz Order ve Ölçü Turune ait Ölçü tablosu bulunamadı', message: '', position: 'bottomRight' });
+                } else {
+
+                    $.post("/KazanFormu/KazanFormuTablePartial", responseSuccess, function (responseSuccess2) {
+                        KayitYapiliyorOnOff();
+                        $('#form').html(responseSuccess2);
+                        $('#KazanDevamModal').modal('hide');
+                    }).fail(function (responseError) {
+                        KayitYapiliyorOnOff();
+                        console.log(responseError);
+                        alert('Error : ' + responseError.responseText);
+                    });
+                }
+
+            }).fail(function (responseError) {
+                KayitYapiliyorOnOff();
+                console.log(responseError);
+                alert('Error : ' + responseError.responseText);
+            });
+
+
+        } else {
+            iziToast.error({ title: 'Lütfen en az bir rapor seçiniz', message: '', position: 'bottomRight' });
+        }
+
+
+
+
+    }
+
+
+    function OlcuNokSec() {
+
+        if (firstOlcuNoktasiSecim) {
+
+            if (seciliOlcuNokIdList.length != 0) {
+                $('#olcuNoktalariSecimModal').modal('hide');
+
+            } else {
+                iziToast.error({
+                    title: 'Lütfen en az bir Ölçü Noktası seçiniz',
+                    message: '',
+                    position: 'bottomRight'
+                });
+            }
+
+        } else {
+
+            try {
+
+                if (seciliOlcuNokIdList.length != 0) {
+
+                    KayitYapiliyorOnOff();
+                    $.post("/KazanFormu/changeOlcuNoktalari", {
+                        olcuTaloDetayId: olcuTaloDetayId, kazanDetayId: kazanDetayId, atabloturu: tabloTurID, secilenNoktalar: seciliOlcuNokIdList, oldSecilenNoktalar: oldSeciliOlcuNokIdList
+                    }, function (responseSuccess) {
+                        KayitYapiliyorOnOff();
+                        $('#form').html("");
+                        $('#form').html(responseSuccess);
+                        $('#olcuNoktalariSecimModal').modal('hide');
+
+
+                    }).fail(function (responseError) {
+                        KayitYapiliyorOnOff();
+                        console.log(responseError);
+                        alert('Error : ' + responseError.responseText);
+                    });
+
+                } else {
+                    iziToast.error({
+                        title: 'Lütfen en az bir Ölçü Noktası seçiniz',
+                        message: '',
+                        position: 'bottomRight'
+                    });
+                }
+
+
+            } catch (e) {
+                KayitYapiliyorOnOff();
+                console.error(e);
+                iziToast.error({ title: 'Bir hata Oluştu', message: e.toString(), position: 'bottomRight' });
+                alert('Error : ' + e);
+            }
+        }
+    }
+
+
+</script>
+
+

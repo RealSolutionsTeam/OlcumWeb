@@ -1,0 +1,64 @@
+﻿<div class="card card-success" id="raporlamaIndex">
+    <div class="card-header">
+        <h4>Raporlama Sayfası</h4>
+    </div>
+    <div class="card-body">
+
+        <div class="row">
+            <div class="col-4 rapor4" style="cursor: pointer;">
+                <div class="card card-success" style="border-top:5px solid #54ca68; height:125px;">
+                    <div class="card-body">
+                        <p style="margin-top:20px; font-size:16px;  font-weight:bold;">Kazan/Parti Raporlama</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4 rapor5" style="cursor: pointer;">
+                <div class="card card-success" style="border-top:5px solid #54ca68; height:125px;">
+                    <div class="card-body">
+                        <p style="margin-top:20px; font-size:16px;   font-weight:bold;">Gelişmiş Raporlama</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4 rapor6" style="cursor: pointer;">
+                <div class="card card-success" style="border-top:5px solid #54ca68; height:125px;">
+                    <div class="card-body">
+                        <p style="margin-top:20px; font-size:16px;   font-weight:bold;">Kurutma Raporlama</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<section id="raporlamaSayfa">
+</section>
+
+<script>
+   
+    $('.rapor4').on("click", function () {
+        YukleniyorOnOff();
+        $.post("/Raporlama/KazanPartiRaporlama", {}, function (data) {
+            $('#raporlamaIndex').hide();
+            $('#raporlamaSayfa').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    });
+
+    $('.rapor5').on("click", function () {
+        YukleniyorOnOff();
+        window.location.href = '/Raporlama/GelismisRaporlama';
+    });
+
+    
+    $('.rapor6').on("click", function () {
+        window.location.href = '/Raporlama/KurutmaRapor';
+    });
+
+</script>

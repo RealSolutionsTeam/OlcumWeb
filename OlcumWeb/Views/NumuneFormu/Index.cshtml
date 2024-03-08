@@ -1,0 +1,876 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    .modal {
+        overflow-y: auto;
+    }
+
+
+
+
+    .containerModal {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        padding: 0 20px;
+    }
+
+    .breadcrumbDeneme {
+        display: flex;
+        border-radius: 6px;
+        margin: auto;
+        text-align: center;
+        top: 50%;
+        width: 100%;
+        height: 70px;
+        z-index: 1;
+        font-size: 18px;
+        flex-wrap: nowrap;
+    }
+
+
+    .breadcrumb__inner {
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+        z-index: 2;
+    }
+
+    .breadcrumb__title {
+        font-weight: bold;
+    }
+
+    .breadcrumb__desc {
+        font-size: 18px;
+    }
+
+    .breadcrumbDeneme > a {
+        color: #fff;
+        display: block;
+        background: #12bbd4;
+        text-decoration: none;
+        position: relative;
+        height: 80px;
+        line-height: 40px;
+        padding: 0 10px 0 20px;
+        text-align: center;
+        margin-right: 25px;
+        font-size: 16px;
+        width: 100%;
+    }
+
+        .breadcrumbDeneme > a:hover, .breadcrumbDeneme > a .active {
+            color: #fff;
+        }
+
+    .breadcrumbDeneme > :nth-child(even) a {
+        background-color: #12bbd4;
+    }
+
+        .breadcrumbDeneme > :nth-child(even) a:before {
+            border-color: #12bbd4;
+            border-left-color: transparent;
+        }
+
+        .breadcrumbDeneme > :nth-child(even) a:after {
+            border-left-color: #12bbd4;
+        }
+
+    .breadcrumbDeneme > :first-child a {
+        padding-left: 15px;
+        -moz-border-radius: 4px 0 0 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px 0 0 4px;
+        opacity: 1;
+    }
+
+        .breadcrumbDeneme > :first-child a:before {
+            border: none;
+        }
+
+    .breadcrumbDeneme > :last-child a {
+        padding-right: 15px;
+        -moz-border-radius: 0 4px 4px 0;
+        -webkit-border-radius: 0;
+        border-radius: 0 4px 4px 0;
+    }
+
+        .breadcrumbDeneme > :last-child a:after {
+            border: none;
+        }
+
+    .breadcrumbDeneme > a:before {
+        left: -20px;
+        border-left-color: transparent;
+    }
+
+
+    .activeA {
+        background: #16a085 !important
+    }
+
+        .activeA:hover {
+            background: #1ccdaa !important
+        }
+
+        .activeA:before, .activeA:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            border: 0 solid #16a085;
+            border-width: 40px 19px;
+            width: 0;
+            height: 0;
+        }
+
+        .activeA:after {
+            left: 100%;
+            border-color: transparent;
+            border-left-color: #16a085;
+        }
+
+        .activeA:hover::after {
+            border-left-color: #1ccdaa;
+        }
+
+
+        .activeA:hover::before {
+            border-color: #1ccdaa;
+            border-left-color: transparent;
+        }
+
+
+    .afterA {
+        background: #ca4e70 !important
+    }
+
+        .afterA:hover {
+            background: #ff0047 !important
+        }
+
+        .afterA:before, .afterA:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            border: 0 solid #ca4e70;
+            border-width: 40px 19px;
+            width: 0;
+            height: 0;
+        }
+
+        .afterA:after {
+            left: 100%;
+            border-color: transparent;
+            border-left-color: #ca4e70;
+        }
+
+        .afterA:hover::after {
+            border-left-color: #ff0047;
+        }
+
+
+        .afterA:hover::before {
+            border-color: #ff0047;
+            border-left-color: transparent;
+        }
+
+
+    .previousA {
+        background: #2793ef !important
+    }
+
+
+        .previousA:hover {
+            background: #005aa9 !important
+        }
+
+        .previousA:before, .previousA:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            border: 0 solid #2793ef;
+            border-width: 40px 19px;
+            width: 0;
+            height: 0;
+        }
+
+        .previousA:after {
+            left: 100%;
+            border-color: transparent;
+            border-left-color: #2793ef;
+        }
+
+        .previousA:hover::after {
+            border-left-color: #005aa9;
+        }
+
+
+        .previousA:hover::before {
+            border-color: #005aa9;
+            border-left-color: transparent;
+        }
+</style>
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+
+<script>
+    window.onload = function () {
+        window.personelID = @ViewBag.id;
+    };
+</script>
+<title>Numune Ölçüm Formu</title>
+
+<div style="margin-top:2%">
+    @if (ViewBag.fromModelist == 0)
+    {
+        <ul id="breadcrumb">
+            <li><a href="@Url.Action("Index", "AnaSayfa",new { ViewBag.id})"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+            <li><a href="@Url.Action("Index", "OlcuFormu",new { ViewBag.id})"><span class="icon icon-double-angle-right"></span> Veri Girişi</a></li>
+            <li><a href="@Url.Action("Index", "NumuneFormu",new { ViewBag.id})"><span class="icon icon-double-angle-right"></span> Numune Formu</a></li>
+        </ul>
+    }
+    else
+    {
+        <ul id="breadcrumb">
+            <li><a href="@Url.Action("Index", "AnaSayfa",new { ViewBag.id})"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+            <li><a href="@Url.Action("Index", "CreateTable",new { id=ViewBag.id})"><span class="icon icon-double-angle-right"></span> Tablo Oluşturma</a></li>
+            <li><a href="@Url.Action("Index", "NumuneFormu",new { ViewBag.id})"><span class="icon icon-double-angle-right"></span> Numune Formu</a></li>
+        </ul>
+    }
+
+
+    <section class="section" id="orderContent">
+    </section>
+
+    <section id="tableContent"></section>
+</div>
+
+
+
+
+<div class="modal fade" id="receteDetailModal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Reçete Adımları</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="receteDetail_Modal">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-info" onclick="ReceteDetailSave()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addSizeModal" role="dialog" aria-labelledby="exampleModalCenterTitle" data-backdrop="static" data-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Beden Ekleme</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="addSize_Modal">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-info" onclick="AddNewSize()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="kumasDetailModal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle" style="text-align:center">Kumaş Karakteri</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="kumasDetail_Modal">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-info" onclick="KumasDetailSearch()">Ara</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="kumasListModal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle" style="text-align:center">Kumaş Listesi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="kumasList_Modal">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-info" onclick="KumasListGet()">Seç</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="karsilastirmaModal" tabindex="-1" role="dialog" aria-hidden="true" style="left:20px;">
+    <div class="modal-dialog" role="document" style="max-width:100%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="karsilastirma_Modal"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="printBedenModal" tabindex="-1" role="dialog" aria-hidden="true" style="left:20px;">
+    <div class="modal-dialog" role="document" style="max-width:100%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="printBeden_Modal"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="differentOrderModal" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Order Seçiniz</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="differentOrder_Modal">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="SetDifferentOrderId()">Kaydet</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="stepsModal" role="dialog" aria-labelledby="stepsModalLable" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="min-width:100%;min-height:750px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="CloseStepsModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="steps_Modal">
+                    <div class="containerModal">
+                        <div class="breadcrumbDeneme">
+
+                            @if (ViewBag.fromModelist == 0)
+                            {
+                                <a href="#" class="activeA" id="step1" onclick="Steps(this)" data-isactive="1" data-step="1">
+                                    <span class="breadcrumb__inner">
+                                        <span class="breadcrumb__title">Adım 1</span>
+                                        <span class="breadcrumb__desc">Ölçü Türü Seçme</span>
+                                    </span>
+                                </a>
+                                <a href="#" class="afterA" id="step2" onclick="Steps(this)" data-isactive="0" data-step="2">
+                                    <span class="breadcrumb__inner">
+                                        <span class="breadcrumb__title">Adım 2</span>
+                                        <span class="breadcrumb__desc">Order Seçme</span>
+                                    </span>
+                                </a>
+                                <a href="#" class="afterA" id="step3" onclick="Steps(this)" data-isactive="0" data-step="3">
+                                    <span class="breadcrumb__inner">
+                                        <span class="breadcrumb__title">Adım 3</span>
+                                        <span class="breadcrumb__desc">Sipariş Seçme</span>
+                                    </span>
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="#" class="activeA" id="step1" onclick="Steps(this)" data-isactive="1" data-step="1">
+                                    <span class="breadcrumb__inner">
+                                        <span class="breadcrumb__title">Adım 1</span>
+                                        <span class="breadcrumb__desc">Ölçü Türü Seçme</span>
+                                    </span>
+                                </a>
+                                <a href="#" class="afterA" id="step2" onclick="Steps(this)" data-isactive="0" data-step="2">
+                                    <span class="breadcrumb__inner">
+                                        <span class="breadcrumb__title">Adım 2</span>
+                                        <span class="breadcrumb__desc">Order Seçme</span>
+                                    </span>
+                                </a>
+                                <a href="#" class="afterA" id="step3" onclick="Steps(this)" data-isactive="0" data-step="3">
+                                    <span class="breadcrumb__inner">
+                                        <span class="breadcrumb__title">Adım 3</span>
+                                        <span class="breadcrumb__desc">Önceki Order Seçme</span>
+                                    </span>
+                                </a>
+                                <a href="#" class="afterA" id="step4" onclick="Steps(this)" data-isactive="0" data-step="4">
+                                    <span class="breadcrumb__inner">
+                                        <span class="breadcrumb__title">Adım 4</span>
+                                        <span class="breadcrumb__desc">Tablo Belirleme</span>
+                                    </span>
+                                </a>
+                                <a href="#" class="afterA" id="step5" onclick="Steps(this)" data-isactive="0" data-step="5">
+                                    <span class="breadcrumb__inner">
+                                        <span class="breadcrumb__title">Adım 5</span>
+                                        <span class="breadcrumb__desc">Çekme Belirleme</span>
+                                    </span>
+                                </a>
+                                <a href="#" class="afterA" id="step6" onclick="Steps(this)" data-isactive="0" data-step="6">
+                                    <span class="breadcrumb__inner">
+                                        <span class="breadcrumb__title">Adım 6</span>
+                                        <span class="breadcrumb__desc">Tölerans Belirleme</span>
+                                    </span>
+                                </a>
+                                <a href="#" class="afterA" id="step7" onclick="Steps(this)" data-isactive="0" data-step="7">
+                                    <span class="breadcrumb__inner">
+                                        <span class="breadcrumb__title">Adım 7</span>
+                                        <span class="breadcrumb__desc">Beden Seçme</span>
+                                    </span>
+                                </a>
+                            }
+
+
+                        </div>
+                    </div>
+
+                    <br />
+                    <div id="stepContainer" style="min-height:90%">
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@*<div class="modal fade" id="stepsModal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 90%;min-height: 800px;overflow-y:auto">
+            <div class="modal-content" style="min-height: 800px;">
+                <div class="modal-body">
+                    <div id="steps_Modal">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+<div style="display:none">
+    <table>
+        <tbody>
+            <tr id="hiddenRow">
+                <td data-editable="false" data-olcunoktaid="0" data-olcunoktaad="A">
+                    <div class="btn-group">
+                        <a class="btn btn-icon btn-lg btn-success" id="btn_ok" onclick="SetOk(this)"><i class="fas fa-check" style="color:white"></i></a>
+                        <a class="btn btn-icon btn-lg btn-danger" id="btn_sil" onclick="RemoveRow(this)"><i class="fas fa-times" style="color:white"></i></a>
+                    </div>
+
+                    @Html.DropDownList("olcuNoktalariNumune", new SelectList(ViewBag.olcuNoktalari, "id", "olcuNoktasi"), "Seçiniz...", new { @class = "form-control select2", @id = "olcuNoktalariNumune" })
+
+                </td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                @if (ViewBag.fromModelist == 0)
+                {
+                    <td tabindex="1">0</td>
+                    <td tabindex="1">0</td>
+                }
+            </tr>
+        </tbody>
+    </table>
+
+
+    <div class="btn-group bigButtons" id="btnGroup_0_0" style="margin-right:4%">
+        <a class="btn btn-icon btn-lg btn-danger" id="btn_sil" onclick="RemoveRow(this)"><i class="fas fa-times" style="color:white"></i></a>
+        <a class="btn btn-icon btn-lg btn-primary" id="btn_duzenle" onclick="EditRow(this)"><i class="far fa-edit" style="color:white"></i></a>
+        <a class="btn btn-icon btn-lg btn-info" id="btn_ekle" onclick="AddRow(this)"><i class="fas fa-plus-square" style="color:white;"></i></a>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js" integrity="sha256-xI/qyl9vpwWFOXz7+x/9WkG5j/SVnSw21viy8fWwbeE=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+
+
+    $('#stepsModal').modal({
+        backdrop: 'static',
+        keyboard : false
+    });
+
+  
+   
+    var personId = @Html.Raw(Json.Encode(ViewBag.id));
+    var isFromModelist = @Html.Raw(Json.Encode(ViewBag.fromModelist));
+    var olcuTuruId = 0;
+    var olcuTuruAd = "";
+    var orderIdAnaSayfa = 0;
+    var hasPreviousOrder = false;
+    var hasPreviousOrderId = 0;
+    var belirlenenTolerans = {};
+    var belirlenenCekme = {};
+    var bedenList = [];
+    var receteKodu = "";
+    var selectedNumuneDetayId = 0;
+    var referansOrderId = 0;
+    var continueOrderClicked = 0;
+    var selectedolcumNo = 0;
+
+    var bagliNumuneIdList = [];
+
+    function CloseStepsModal() {
+        $('.modal-backdrop').remove();
+        $('#stepsModal').modal('toggle');
+    }
+
+    function Steps(elem) {
+        var stepIndex = $(elem).data('step');
+
+        var isActive = $(elem).data('isactive');
+
+
+        if (isActive != 1) {
+            if ($(elem).hasClass('afterA') || $(elem).hasClass('firstAfterA')) {
+                Swal.fire({
+                    title: "Hata",
+                    text: "Tüm işlemler adım sırasıyla yapılmalıdır !",
+                    icon: "error",
+                    focusConfirm: false,
+                    showDenyButton: false,
+                    confirmButtonText: `Tamam`,
+                });
+            }
+            else {
+                if (stepIndex == 1) {
+                    SelectOlcuTuru();
+                    SetStepBreadCrumb(1);
+
+                }
+                else if (stepIndex == 2) {
+                    ChooseOrder(olcuTuruId);
+                    SetStepBreadCrumb(2);
+
+                }
+                else if (stepIndex == 3) {
+                    HasPreviousOrder(olcuTuruId);
+                    SetStepBreadCrumb(3);
+
+                }
+                else if (stepIndex == 4) {
+                    ChooseTableComeFrom();
+                    SetStepBreadCrumb(4);
+
+                }
+                else if (stepIndex == 5) {
+                    NewTableCekme();
+                    SetStepBreadCrumb(5);
+
+                }
+                else if (stepIndex == 6) {
+                    $('#GelismisRaporlamaModal').modal('show');
+                    SetStepBreadCrumb(6);
+
+                    CheckSilk();
+                }
+                else if (stepIndex == 7) {
+                    $('#GelismisRaporlamaModal').modal('show');
+                    CheckRecipe();
+                    SetStepBreadCrumb(7);
+
+
+                }
+                else if (stepIndex == 8) {
+                    Karsilastir(1);
+                    SetStepBreadCrumb(8);
+
+                }
+                else if (stepIndex == 9) {
+                    Karsilastir(0);
+                    SetStepBreadCrumb(9);
+
+                }
+            }
+        }
+    }
+
+    function SetStepBreadCrumb(stepIndex) {
+        $('#step' + stepIndex).removeClass('previousA');
+        $('#step' + stepIndex).removeClass('afterA');
+
+        $('#step' + stepIndex).addClass('activeA');
+        $('#step' + stepIndex).data('isactive', 1);
+
+        for (var i = stepIndex + 1; i < 8; i++) {
+            $('#step' + i).removeClass('previousA');
+            $('#step' + i).removeClass('activeA');
+            $('#step' + i).addClass('afterA');
+
+            $('#step' + i).data('isactive', 0);
+        }
+
+        for (var i = 1; i < stepIndex; i++) {
+            $('#step' + i).removeClass('afterA');
+            $('#step' + i).removeClass('activeA');
+            $('#step' + i).addClass('previousA');
+
+            $('#step' + i).data('isactive', 0);
+        }
+    }
+
+    function GetOrderId() {
+        orderIdAnaSayfa = $('#orderNosNumune').val();
+
+        CheckOrderExists(orderIdAnaSayfa);
+
+    }
+
+   
+
+    SelectOlcuTuru();
+    var selectedOrderId = 0;
+    function SelectOlcuTuru() {
+        $.post("/NumuneFormu/OlcuTurleriModal", {}, function (deger) {
+            $('#stepContainer').html(deger);
+
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+            YukleniyorOnOff();
+        });
+
+        $('#stepsModal').modal('show');
+    }
+
+    function ChooseOrder(olcuTuruId) {
+        $.post("/NumuneFormu/ChooseOrderModal", { olcuTuruId: olcuTuruId, isFromModelist: isFromModelist }, function (deger) {
+            SetStepBreadCrumb(2);
+            $('#stepContainer').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+    function CheckOrderExists(orderId) {
+        $.post("/NumuneFormu/CheckOrderExists", { orderId: orderId }, function (deger) {
+            console.log(deger);
+            if (deger) {
+                $.post("/NumuneFormu/OrderTablesModal", { orderId: orderId }, function (deger) {
+                    SetStepBreadCrumb(2);
+                    $('#stepContainer').html(deger);
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+            }
+            else {
+                HasPreviousOrder(olcuTuruId);
+            }
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+
+    function HasPreviousOrder(olcuTuruId) {
+
+        $.post("/NumuneFormu/HasPreviousOrderModal", { olcuTuruId: olcuTuruId }, function (deger) {
+
+            SetStepBreadCrumb(3);
+
+            $('#stepContainer').html(deger);
+
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+    function GetPreviousOrders(orderId) {
+        $.post("/NumuneFormu/SetReferenceTable", { orderId: orderId }, function (deger) {
+            bagliNumuneIdList = deger;
+
+            ChooseTableComeFrom();
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+    function ChooseTableComeFrom() {
+        $.post("/NumuneFormu/ChooseTableComeFrom", {}, function (deger) {
+            $('#stepContainer').html(deger);
+            SetStepBreadCrumb(4);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+    function GetFromSetTable() {
+        $.post("/NumuneFormu/BedenlerModal", { bedenSistemi: 0, isFromHazirTablo : 1 }, function (data) {
+            $('#stepContainer').html(data);
+            SetStepBreadCrumb(7);
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+    function SwalOpenModal(toleransMi) {
+
+        $.post("/NumuneFormu/GelismisRaporlamaModal", { orderId: orderIdAnaSayfa, toleransMi: toleransMi, isAddingOrder:0 }, function (data) {
+            $('#stepContainer').html(data);
+            SetStepBreadCrumb(5);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+    function GetFromReferenceTableModal() {
+        $.post("/NumuneFormu/GetFromReferenceTableModal", {}, function (deger) {
+            $('#stepContainer').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+    function ContinueOrder(elem) {
+        var numuneDetayId = $(elem).data('numuneid');
+        selectedNumuneDetayId = numuneDetayId;
+        selectedolcumNo = $(elem).data('olcumno');
+        var tabloTuru = $(elem).data('tabloturu');
+
+        if (tabloTuru == -1 || tabloTuru == 1) {
+
+
+            $.post("/NumuneFormu/TableViewWithId", { numuneDetayId: numuneDetayId, isFromModelist: isFromModelist }, function (data) {
+                $('#tableContent').html(data);
+
+                $.post("/NumuneFormu/OrderDetayWithId", { numuneDetayId: numuneDetayId }, function (orderData) {
+                    $('#orderContent').html(orderData);
+
+                    $("#stepsModal").removeClass("in");
+                    $(".modal-backdrop").remove();
+                    $("#stepsModal").hide();
+
+                    //$('#stepsModal').modal('toggle');
+                }).fail(function (printError) {
+                    alert('Error : ' + printError.responseText);
+                });
+
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+        }
+        else if (tabloTuru == 0) {
+            continueOrderClicked = 1;
+            $.post("/NumuneFormu/TableEditModal", { numuneDetayId: numuneDetayId }, function (data) {
+                $("#stepContainer").html(data);
+                //$('#stepsModal').modal('toggle');
+            }).fail(function (printError) {
+                alert('Error : ' + printError.responseText);
+            });
+
+        }
+    }
+
+    function ChooseReferenceSize(elem) {
+        var numuneDetayId = $(elem).data('numuneid');
+        var orderId = orderIdAnaSayfa;
+
+        referansOrderId = numuneDetayId;
+
+        $.post("/NumuneFormu/BedenlerWithReference", { numuneDetayId: numuneDetayId, orderId: orderId }, function (data) {
+            $("#stepContainer").html(data);
+            SetStepBreadCrumb(7);
+            //$('#stepsModal').modal('toggle');
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+    function ChooseReferenceSizeImalat(elem) {
+        var olcuTabloId = $(elem).data('olcutabloid');
+        var orderId = orderIdAnaSayfa;
+
+        referansOrderId = olcuTabloId;
+
+        $.post("/NumuneFormu/BedenlerWithReference", { numuneDetayId: olcuTabloId, orderId: orderId, IsNumune: 0 }, function (data) {
+            $("#stepContainer").html(data);
+            SetStepBreadCrumb(7);
+            //$('#stepsModal').modal('toggle');
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+    function NewTable() {
+        if (isFromModelist == 0) {
+
+        }
+        else {
+            HasPreviousOrder(olcuTuruId);
+        }
+    }
+</script>
+
+

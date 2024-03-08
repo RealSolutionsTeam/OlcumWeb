@@ -1,0 +1,78 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<div style="margin-top:2%">
+    <ul id="breadcrumb">
+        <li><a href="@Url.Action("Index", "AnaSayfa",new { id=ViewBag.id})"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+        <li><a href="@Url.Action("Index", "CreateTable",new { id=ViewBag.id})"><span class="icon icon-double-angle-right"></span> Tablo Oluşturma</a></li>
+    </ul>
+
+    <div class="card card-success">
+        <div class="card-header">
+            <h4>Ölçü Formları - </h4>
+            <span>Lütfen Tablo oluşturmak istediğiniz türü seçiniz.</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4  olcuTurucard" data-id="1">
+                    <div class="card card-secondary" style="border-radius:25px; border-top:7px solid; cursor:pointer; height:250px;">
+                        <div class="card-header">
+                            <h4>İmalat Ölçü Tablosu</h4>
+                        </div>
+                        <div class="card-body">
+                            <p><code>İmalat, Pilot, İmalat Eksiği</code> vb. tabloların oluşturulduğu girildiği bölüm. </p>
+                        </div>
+                        <div class="card-footer">
+                            Form Adeti: 0
+                        </div>
+                    </div>
+                </div>
+
+                @Html.Hidden("ImalatTablosu", Url.Action("Index", "ImalatTablosu"))
+
+
+                <div class="col-md-4 olcuTurucard" data-id="2">
+                    <div class="card card-danger" style="border-radius:25px; border-top:7px solid #fc544b;  cursor:pointer; height:250px;">
+                        <div class="card-header">
+                            <h4>Numune Ölçü Tablosu</h4>
+                        </div>
+                        <div class="card-body">
+                            <p><code>Proto, Tasarım, Çoğaltma</code> vb. tabloların oluşturulduğu bölüm.</p>
+                        </div>
+                        <div class="card-footer">
+                            Form Adeti: 0
+                        </div>
+                    </div>
+                </div>
+
+                @Html.Hidden("NumuneFormu", Url.Action("Index", "NumuneFormu"))
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+<script>
+         var userID = @(ViewBag.id);
+    $('.olcuTurucard').click(function () {
+        var id = $(this).data('id');
+        console.log(userID);
+
+        if (id == 1) {
+            var url = $("#ImalatTablosu").val();
+            location.href = url + "/Index/" + userID;
+        }
+        else if (id == 2) {
+            var url = $("#NumuneFormu").val();
+            location.href = url + "/Index?id=" + userID + "&fromModelist=1";
+        }
+    });
+
+</script>

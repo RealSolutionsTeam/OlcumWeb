@@ -1,0 +1,341 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<script>
+    window.onload = function () {
+        window.tableCountYO = 0;
+        window.controlZList = [];
+        // 0 değer geri alma
+        // 1 satır ekleme
+        // 2 satır silme
+        // 3 sütun ekleme
+        // 4 sütun silme
+        // 5 çekme ekleme
+        // 6 çekme silme
+        // {geri alınacak değer,geri alınacak index,yapılan işlem}
+
+        window.controlZListYO = [];
+
+        window.cekme = [];
+    };
+</script>
+
+<title>İmalat Ölçü Tablosu Oluşturma</title>
+
+
+<div style="margin-top:2%">
+    <ul id="breadcrumb">
+        <li><a href="@Url.Action("Index", "AnaSayfa",new { ViewBag.id})"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+        <li><a href="@Url.Action("Index", "CreateTable",new { id=ViewBag.id})"><span class="icon icon-double-angle-right"></span> Tablo Oluşturma</a></li>
+        <li><a href="@Url.Action("Index", "ImalatTablosu",new { id=ViewBag.id})"><span class="icon icon-double-angle-right"></span> İmalat Ölçü Tablosu Oluşturma</a></li>
+    </ul>
+
+
+    <section class="section" id="orderContent">
+    </section>
+
+    <section class="section" id="tableContent">
+    </section>
+</div>
+
+
+<div class="modal fade" id="hazirTabloModal" role="dialog" aria-hidden="true" style="left:100px">
+    <div class="modal-dialog" role="document" style="max-width:75%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="hazirTablo_Modal"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="enBoyCekmeModal" role="dialog" aria-hidden="true" style="left:100px;">
+    <div class="modal-dialog" role="document" style="max-width:75%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="enBoyCekme_Modal"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="toleransBelirlemeModal" role="dialog" aria-hidden="true" style="left:100px">
+    <div class="modal-dialog" role="document" style="max-width:75%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="toleransBelirleme_Modal"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cekmeBelirlemeModal" role="dialog" aria-hidden="true" style="left:100px">
+    <div class="modal-dialog" role="document" style="max-width:50%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="cekmeBelirleme_Modal"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="rptGetirModal" role="dialog" aria-hidden="true" style="left:100px; top:100px;">
+    <div class="modal-dialog" role="document" style="max-width:75%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="rptGetir_Modal"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="enBoyCekmeModal2" role="dialog" aria-hidden="true" style="left:100px;">
+    <div class="modal-dialog" role="document" style="max-width:75%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" id="closeEnBoyCekmeModal2" onclick="CloseModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="enBoyCekme_Modal2"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="enBoyCekmeModal3" role="dialog" aria-hidden="true" style="left:100px;">
+    <div class="modal-dialog" role="document" style="max-width:75%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="enBoyCekme_Modal3"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cekmeDegistir" role="dialog" aria-hidden="true" style="left:100px;">
+    <div class="modal-dialog" role="document" style="max-width:75%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="cekme_Degistir"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var personel = localStorage.getItem('personel');
+
+        if (personel == null) {
+            window.location = window.location.origin;
+        }
+    });
+
+    $.ajax({
+        url: '/ImalatTablosu/OrderDetay',
+        type: 'GET',
+        data: {id : @ViewBag.id},
+        dataType: 'html',
+        success: function (result) {
+            $('#orderContent').html(result);
+        },
+        error: function (xhr, status) {
+            alert(status);
+        }
+    });
+
+    function Print() {
+        var kulID = JSON.parse(localStorage.getItem('personel'));
+
+        var detayobjectList = [];
+
+        var tumtabloList = [];
+
+        //Önce yıkama sonrasını liste olarak çekiyorum.
+
+        var rowCount = $('#tableBody_' + 0 + ' tr').length;
+
+        var columnCount = $('#tableHead_' + 0 + ' th').length-3;
+
+
+        var sd = $("#tarih").datepicker('getDate');
+        var sDate = sd.getFullYear()+'-' + (sd.getMonth()+1) + '-'+sd.getDate();
+
+
+        detayObjectYs = {
+            'orderID': $("#orderNo").val(),
+            'olcuTuruID': $("#olcuTuruAd").val(),
+            'anaBeden': anaBeden,
+            'tabloTuru': 1,
+            'enBoyCekme': 'Yıkama Sonrası',
+            'aciklama': $('#aciklamaTa').val(),
+            'tarihString': sDate,
+            'kullanıcıAdı' : $('#modelist').val(),
+
+        };
+
+        var tabloList = [];
+
+        for (var i = 0; i < rowCount; i++) {
+
+            var olcuNoktasi = $('#cell_' + i + '_0').data('olcunoktasi');
+
+            var bedenList = [];
+
+            var degerList = []
+
+
+            for (var j = 1; j < columnCount; j++) {
+
+                var beden = $('#column_0_' + j).data('beden');
+
+                var deger = parseFloat($('#cell_' + i + '_' + j).html().replace(',','.'));
+
+
+                bedenList.push(beden);
+
+                degerList.push(deger);
+
+            }
+
+            tabloList.push({ 'olcuNoktasi': olcuNoktasi, 'beden': bedenList, 'deger': degerList });
+        }
+
+
+        detayobjectList.push(detayObjectYs);
+
+        tumtabloList.push(tabloList);
+
+
+
+            //Sonra yıkama öncelerini liste olarak alıyorum.
+
+        var columnCount = Number($("#tableHead_yo_0 th").length);
+
+        var rowCount = Number($("#tableBody_yo_0 tr").length);
+
+
+        for (var k = 0; k < tableCountYO; k++) {
+
+            detayObjectYo = {
+                'orderID': $("#orderNo").val(),
+                'olcuTuruID': $("#olcuTuruAd").val(),
+                'anaBeden': anaBeden,
+                'tabloTuru': 0,
+                'enBoyCekme': $('#myCekme_' + k).data('enboycekme'),
+                'aciklama': $('#aciklamaTa').val(),
+                'tarihString': sDate,
+                'kullanıcıAdı' : $('#modelist').val()
+            };
+            var tableList = [];
+
+
+
+            for (var i = 0; i < rowCount; i++) {
+                var olcuNoktasi = $("#cell_0_" + i + "_0").html().trim();
+                 var degerList = [];
+                var bedenList = [];
+                for (var j = 1; j < columnCount - 3; j++) {
+                    console.log($("#cell_" + k + "_" + i + "_" + j).html());
+                         degerList.push($("#cell_" + k + "_" + i + "_" + j).html().replace(',', '.'));
+                         bedenList.push($("#column_1_0_" + j).html());
+                }
+
+                     var tolerans = $("#cell_" + k + "_" + i + "_" + Number(columnCount - 3)).html().replace(',', '.');
+                     var cekme = $("#cell_" + k + "_" + i + "_" + Number(columnCount - 2)).html().replace(',', '.');
+
+                     var oran = $("#cell_" + k + "_" + i + "_" + Number(columnCount - 1)).html().replace(',', '.');
+                     tableList.push({ 'olcuNoktasi': olcuNoktasi, 'beden': bedenList, 'deger': degerList, 'tolerans': tolerans, 'cekme': cekme, 'oran': oran });
+            }
+
+            detayobjectList.push(detayObjectYo);
+
+            tumtabloList.push(tableList);
+
+
+        }
+
+       $.post("/ImalatTablosu/EnBoyCekmePrintModal", { 'param1': detayobjectList, 'param2': tumtabloList, 'cekme': cekmeler,'personel':kulID }, function (deger) {
+                $('#enBoyCekme_Modal3').html(deger);
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+            $('#enBoyCekmeModal3').modal('show');
+    }
+
+
+    function TabloyaDon() {
+        $('#tableContent').show();
+        $('#orderContent').hide();
+
+        var selectedOrder = $("#orderNo option:selected").text();
+        $('#breadcrumb').append('<li><a href="#" class="details" onclick="deneme()"><span class="icon icon-double-angle-right"></span>' + selectedOrder + '</a></li>');
+        //Burayı Düzelt
+    }
+</script>

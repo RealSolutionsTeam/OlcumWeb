@@ -1,0 +1,25 @@
+﻿@model List<OlcumWeb.Controllers.RaporlamaDataModel.RaporAraDTO>
+
+@foreach (var item in Model)
+{
+    <th data-kazanid="@item.kazanDetayID" data-orderno="@item.orderNo" data-orderid="@item.orderID" data-olcuturleri="@(item.olcuTuruAd)" data-olcuturuid="@item.olcuTuruID" data-enboycekme="@(item.enBoyCekme)" style="min-width:100px;">
+        <div class="row">
+            <div style="width: 100%;">@(item.orderNo)</div>
+            <div style="width:80%;margin-left:10%">@(item.olcuTuruAd)</div>
+            @if (item.enBoyCekme != "" || item.enBoyCekme != null)
+            {
+                <div style="width:80%;margin-left:10%">@(item.enBoyCekme)</div>
+            }
+            else
+            {
+                <div style="width:80%;margin-left:10%"></div>
+            }
+        </div>
+        <div class="row" style="margin-bottom:2%;margin-left:5%">
+            <a class="btn btn-icon btn-sm btn-danger" style="width:40%;margin-right:5%" data-kazanid="@item.kazanDetayID" onclick="DeleteColumn(this)"><i class="fas fa-times" style="color:white;"></i></a>
+            <a class="btn btn-icon btn-sm btn-info" style="width:40%;" data-kazanid="@item.kazanDetayID" data-orderno="@item.orderNo" onclick="GoTableOffID(this)"><i class="fas fa-eye" style="color:white;"></i></a>
+        </div>
+    </th>
+}
+
+

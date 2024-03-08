@@ -1,0 +1,1098 @@
+﻿<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<style>
+    .select2-selection--multiple {
+        max-height: 100px !important;
+        overflow: auto !important;
+    }
+
+    .select2-container--classic .select2-selection--multiple .select2-selection__choice {
+        font-weight: bolder;
+        color: black;
+        background-color: rgba(241, 240, 240,1);
+    }
+</style>
+
+<div class="card-header">
+    <div class="card" id="" style="width:100%">
+        <div class="card-header">
+            <h4>Gelişmiş Rapor Ekranı</h4>
+            <div class="card-header-action">
+                <a data-collapse="#mycard-collapse" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus" style="color:white"></i></a>
+            </div>
+        </div>
+        <div class="collapse show" id="mycard-collapse">
+            <div class="card-body" style="width:100%">
+                <div class="row">
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Order No:</label>
+                            <div class="input-group">
+                                @*<select id="orderNo" class="select2" multiple style="width:100%"></select>*@
+                                @*@Html.DropDownList("orderNo", new SelectList(ViewBag.orderNo, "orderNo"), "Seçiniz...", new { @class = "form-control select2", @multiple = "multiple", @id = "orderNo", @placeholder = "Lütfen bağlı orderları seçiniz" })*@
+                                @Html.TextBox("orderNo", null, new { @style = " width:100%; " })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Model Ad:</label>
+                            <div class="input-group">
+                                @*<select id="modelAd" class="select2" multiple style="width:100%"></select>*@
+                                @Html.TextBox("modelAd", null, new { @style = " width:100%; " })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Model No:</label>
+                            <div class="input-group">
+                                @Html.TextBox("modelNo", null, new { @style = " width:100%; " })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Müşteri:</label>
+                            <div class="input-group">
+                                @*<select id="musteri" class="select2" multiple style="width:100%"></select>*@
+                                @Html.TextBox("musteri", null, new { @style = " width:100%; " })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Kumaş:</label>
+                            <div class="input-group">
+                                @*<select id="kumas" class="select2" multiple style="width:100%"></select>*@
+                                @Html.TextBox("kumas", null, new { @style = " width:100%; " })
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Kumaş Detayı:</label>
+                                <div class="input-group">
+                                    <a href="#" id="kumasDetailBtn" class="btn btn-icon btn-sm btn-info" onclick="KumasDetail()"><i class="far fa-edit" style="color:white;"></i></a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="width:100%">
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Atölye Adı:</label>
+                            <div class="input-group">
+                                @*<select id="atolyeAd" class="select2" multiple style="width:100%"></select>*@
+                                @Html.TextBox("atolyeAd", null, new { @style = " width:100%; " })
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Yıkama Yeri:</label>
+                            <div class="input-group">
+                                @Html.TextBox("yikamaYeri", null, new { @style = " width:100%; " })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        @if (ViewBag.isFromNumunePage == 0)
+                        {
+                            <div class="pretty p-default p-round p-thick">
+                                <input type="checkbox" id="yikamaSonrasi" onclick="ChangeTick(1)">
+                                <label>Yıkama Sonrası</label>
+
+                            </div>
+                            <div class="pretty p-default p-round p-thick">
+                                <input type="checkbox" id="yikamaOncesi" checked="checked" onclick="ChangeTick(0)">
+                                <label>Yıkama Öncesi</label>
+                            </div>
+                        }
+                        else
+                        {
+                            if (ViewBag.toleransMi == 0)
+                            {
+                                <div class="pretty p-default p-round p-thick">
+                                    <input type="checkbox" id="yikamaSonrasi" onclick="ChangeTick(1)" disabled>
+                                    <label>Yıkama Sonrası</label>
+
+                                </div>
+                                <div class="pretty p-default p-round p-thick">
+                                    <input type="checkbox" id="yikamaOncesi" checked="checked" onclick="ChangeTick(0)">
+                                    <label>Yıkama Öncesi</label>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="pretty p-default p-round p-thick">
+                                    <input type="checkbox" id="yikamaSonrasi" checked="checked" onclick="ChangeTick(1)">
+                                    <label>Yıkama Sonrası</label>
+
+                                </div>
+                                <div class="pretty p-default p-round p-thick">
+                                    <input type="checkbox" id="yikamaOncesi" onclick="ChangeTick(0)" disabled>
+                                    <label>Yıkama Öncesi</label>
+                                </div>
+                            }
+                        }
+
+                    </div>
+
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Başlangıç Tarihi:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control datepicker" id="tarih1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label>Bitiş Tarihi:</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control datepicker" id="tarih2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        <div class="row" style="margin-left:3%">
+                            <div class="form-group">
+                                <label>Reçete Detayı:</label>
+                                <div class="input-group">
+                                    <a href="#" id="receteDetailBtn" class="btn btn-icon btn-sm btn-info" onclick="ReceteDetail()"><i class="far fa-edit" style="color:white;"></i></a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="display:block">
+                    <a class="btn btn-info" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                        <span style="color:white">Ölçü Türleri</span>
+                    </a>
+                    <div class="collapse" id="collapseExample">
+                        <div class="card card-body">
+                            <div class="row">
+                                <a class="btn btn-info" id="numuneSelect" role="button" aria-expanded="false" aria-controls="collapseExample" onclick="SelectOlcuTurleri(1)">
+                                    <span style="color:white">Numuneleri Seç</span>
+                                </a>
+                                <a class="btn btn-info" id="kazanSelect" role="button" aria-expanded="false" aria-controls="collapseExample" onclick="SelectOlcuTurleri(0)">
+                                    <span style="color:white">Kazanları Seç</span>
+                                </a>
+                                <a class="btn btn-info" id="kazanSelect" role="button" aria-expanded="false" aria-controls="collapseExample" onclick="SelectOlcuTurleri(2)">
+                                    <span style="color:white">Tümünü Seç</span>
+                                </a>
+                                <a class="btn btn-info" id="kazanSelect" role="button" aria-expanded="false" aria-controls="collapseExample" onclick="SelectOlcuTurleri(3)">
+                                    <span style="color:white">Tümünü Temizle</span>
+                                </a>
+                            </div>
+
+                            <br />
+
+
+                            @{ var t = 0; var i = 1; }
+                            <div class="tab-@t row" id="tab_@(t)">
+                                @foreach (var item in ViewBag.olcuTurleri)
+                                {
+                                    <div class="col-3">
+                                        <div class="checkbox" id="olcuTurleriCheckBoxList">
+                                            <div class="row">
+                                                <label>
+                                                    @if (item.tabloTuru == "Numune")
+                                                    {
+                                                        <input type="checkbox" class="checkBoxSize" value="" id="@item.id" data-isnumune="1" style="width:20px;height:20px;" checked><span style="margin-left:4px;font-weight:bold;color:black;font-size:14px;font-family:Arial">@item.olcuTuruAd.ToUpper()</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="checkbox" class="checkBoxSize" value="" id="@item.id" data-isnumune="0" style="width:20px;height:20px;" checked><span style="margin-left:4px;font-weight:bold;color:black;font-size:14px;font-family:Arial">@item.olcuTuruAd.ToUpper()</span>
+
+                                                    }
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    if (i % 4 == 0)
+                                    {
+                                        t++;
+                                    @:</div><div class="tab-@t row" id="tab_@(t)" style="margin-top:1%">
+                                    }
+                                    i++;
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-icon icon-left btn-info" style="float:right" onclick="FillTable()"><i class="fas fa-search" style="color:white"></i><span style="color:white">Ara</span> </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card-body">
+    <div id="selectedList">
+
+    </div>
+    <section id="tablePart">
+    </section>
+</div>
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+
+<script>
+    var kumasDetail = {};
+    var receteDetail = {};
+    var kumasKarakteri = null;
+    var recipeSteps = null;
+    var isFromNumunePage = @Html.Raw(Json.Encode(ViewBag.isFromNumunePage));
+    var isAddingOrder = @Html.Raw(Json.Encode(ViewBag.isAddingOrder));
+
+     @if(ViewBag.kumasKarakteriFromNumunePage != null)
+     {
+        <text>
+
+    kumasKarakteri = @Html.Raw(Json.Encode(ViewBag.kumasKarakteriFromNumunePage));
+
+    if (kumasKarakteri.id != 0) {
+        kumasKarakteri.elastikiyetAtkiOrtalama = kumasKarakteri.elastikiyetAtkiOrtalama.toString().replace('.', ',');
+        kumasKarakteri.elastikiyetCozguOrtalama = kumasKarakteri.elastikiyetCozguOrtalama.toString().replace('.', ',');
+        kumasKarakteri.kesilebilirEnOrtalama = kumasKarakteri.kesilebilirEnOrtalama.toString().replace('.', ',');
+        kumasKarakteri.kumasBoyCekmeOrtalama = kumasKarakteri.kumasBoyCekmeOrtalama.toString().replace('.', ',');
+        kumasKarakteri.kumasEnCekmeOrtalama = kumasKarakteri.kumasEnCekmeOrtalama.toString().replace('.', ',');
+        kumasKarakteri.tamEnOrtalama = kumasKarakteri.tamEnOrtalama.toString().replace('.', ',');
+    }
+
+
+    </text>
+     }
+
+    @if(ViewBag.recipeStepsFromNumunePage != null)
+     {
+         <text>
+            recipeSteps = @Html.Raw(Json.Encode(ViewBag.recipeStepsFromNumunePage));
+         </text>
+    }
+
+    $(document).ready(function () {
+        var personel = localStorage.getItem('personel');
+
+        localStorage.clear();
+
+        localStorage.setItem('personel', personel);
+        if (isFromNumunePage == 1) {
+            if (bagliNumuneIdList.length > 0) {
+                for (var i = 0; i < bagliNumuneIdList.length; i++) {
+                    localStorage.setItem(bagliNumuneIdList[i], JSON.stringify({ 'id': bagliNumuneIdList[i], 'raporTuru': 1 }));
+                }
+            }
+        }
+
+        var tableParameters = { isFromNumunePage: isFromNumunePage, isAddingOrder: isAddingOrder};
+
+        YukleniyorOnOff();
+        $.post("/Raporlama/KarsilastirmaliRaporlamaTable", { tableParameters: tableParameters }, function (data) {
+            $('#tablePart').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    });
+
+
+    if (isAddingOrder == 0) {
+        CheckSilk();
+    }
+
+    function CheckSilk() {
+        if (isFromNumunePage == 1) {
+            if (bagliNumuneIdList.length > 0 && jQuery.type(bagliNumuneIdList) === "array") {
+                var raporTuruListe = [];
+
+                for (var i = 0; i < bagliNumuneIdList.length; i++) {
+                    raporTuruListe.push(1);
+                }
+
+                if (localStorage.length) {
+                    if (bagliNumuneIdList.length > 0) {
+                        for (var i = 0; i < bagliNumuneIdList.length; i++) {
+                            localStorage.setItem(bagliNumuneIdList[i], JSON.stringify({ 'id': bagliNumuneIdList[i], 'raporTuru': 1 }));
+                        }
+                    }
+                }
+
+                $.post("/Raporlama/SelectedList", { id: bagliNumuneIdList, isFromNumune: 1, raporTuruListe: raporTuruListe }, function (data) {
+                    $('#selectedList').html(data);
+
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+            }
+
+        }
+
+
+        if (isFromNumunePage == 1 && kumasKarakteri == null) {
+            Swal.fire({
+                title: '<strong>Adım 6</strong> </br> ' +
+                    "Kumaş Özellikleri Sistemde Bulunamadı",
+                text: "Seçilen Order'a ait kumaşın özellikleri sistemde bulunamadı.",
+                icon: "error",
+                showCancelButton: false,
+                confirmButtonText: `Tamam`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    CheckRecipe();
+                }
+            });
+        }
+        else if (isFromNumunePage == 1 && kumasKarakteri != null) {
+            Swal.fire({
+
+                title: '<strong>Adım 6</strong> </br> ' +
+                    "Kumaş Özellikleri bulundu",
+                text: "Kumaş özellikleri bulundu, 'Kumaş Detayı' kısmından benzer kumaş araması yapabilirsiniz.",
+                icon: "success",
+                showCancelButton: false,
+                confirmButtonText: `Tamam`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    YukleniyorOnOff();
+                    $('#kumasDetailBtn').click();
+                    YukleniyorOnOff();
+
+                    //CheckRecipe();
+                }
+            });
+        }
+    }
+
+
+    function CheckRecipe() {
+        if (isFromNumunePage == 1 && recipeSteps == null) {
+            Swal.fire({
+                closeOnEsc: false,
+                closeOnClickOutside: false,
+                title: '<strong>Adım 7</strong> </br> ' +
+                    "Reçete Adımları Sistemde Bulunamadı",
+                text: "Seçilen Order'a ait yıkama kodu reçete sisteminde bulunamadı.",
+                icon: "error",
+                showCancelButton: false,
+                confirmButtonText: `Tamam`
+            });
+
+        }
+        else if (isFromNumunePage == 1 && recipeSteps != null) {
+            Swal.fire({
+                closeOnEsc: false,
+                closeOnClickOutside: false,
+                title: '<strong>Adım 7</strong> </br> ' +
+                    "Reçete Adımları bulundu",
+                text: "Reçete adımları sistemde bulundu, 'Reçete Detayı' kısmından benzer reçeteyle yapılmış orderları bulabilirsiniz.",
+                icon: "success",
+                showCancelButton: false,
+                confirmButtonText: `Tamam`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    YukleniyorOnOff();
+                    $('#receteDetailBtn').click();
+                    YukleniyorOnOff();
+
+                    //CheckRecipe();
+                }
+            });
+        }
+    }
+
+    if (jQuery().select2) {
+        $(".select2").select2({
+            width: '100%',
+            allowClear: true,
+            theme: 'classic',
+            multiple:true
+        });
+
+        //$('#orderNo').select2({
+        //    minimumInputLength: 4,
+        //    theme: 'classic',
+        //    language: {
+        //        inputTooShort: function (args) {
+
+        //            return "En az 4 karakter girmelisiniz";
+        //        },
+        //        noResults: function () {
+        //            return "Bulunamadı";
+        //        },
+        //        searching: function () {
+        //            return "Aranıyor";
+        //        }
+        //    },
+        //    allowClear: true,
+        //    formatInputTooShort: function (input, min) { return "Start typing to search"; },
+        //    ajax: {
+        //        url: ('/Raporlama/SearchOrders'),
+        //        dataType: 'json',
+        //        data: function (term) {
+        //            return {
+        //                term: term.term
+        //            };
+        //        },
+        //        type: "POST",
+        //        processResults: function (response) {
+        //            return {
+        //                results: $.map(response, function (item) {
+        //                    return {
+        //                        text: item.orderNo,
+        //                        id: item.orderID
+        //                    }
+        //                })
+        //            };
+        //        }
+        //    },
+
+        //});
+
+        //$('#modelAd').select2({
+        //    minimumInputLength: 4,
+        //    theme: 'classic',
+        //    language: {
+        //        inputTooShort: function (args) {
+
+        //            return "En az 4 karakter girmelisiniz";
+        //        },
+        //        noResults: function () {
+        //            return "Bulunamadı";
+        //        },
+        //        searching: function () {
+        //            return "Aranıyor";
+        //        }
+        //    },
+        //    allowClear: true,
+        //    formatInputTooShort: function (input, min) { return "Start typing to search"; },
+        //    ajax: {
+        //        url: ('/Raporlama/SearchModels'),
+        //        dataType: 'json',
+        //        data: function (term) {
+        //            return {
+        //                term: term.term
+        //            };
+        //        },
+        //        type: "POST",
+        //        processResults: function (response) {
+        //            return {
+        //                results: $.map(response, function (item) {
+        //                    return {
+        //                        text: item.ModelAd,
+        //                        id: item.ModelId
+        //                    }
+        //                })
+        //            };
+        //        }
+        //    },
+
+        //});
+
+        //$('#musteri').select2({
+        //    minimumInputLength: 4,
+        //    theme: 'classic',
+        //    language: {
+        //        inputTooShort: function (args) {
+
+        //            return "En az 4 karakter girmelisiniz";
+        //        },
+        //        noResults: function () {
+        //            return "Bulunamadı";
+        //        },
+        //        searching: function () {
+        //            return "Aranıyor";
+        //        }
+        //    },
+        //    allowClear: true,
+        //    formatInputTooShort: function (input, min) { return "Start typing to search"; },
+        //    ajax: {
+        //        url: ('/Raporlama/SearchCustomers'),
+        //        dataType: 'json',
+        //        data: function (term) {
+        //            return {
+        //                term: term.term
+        //            };
+        //        },
+        //        type: "POST",
+        //        processResults: function (response) {
+        //            return {
+        //                results: $.map(response, function (item) {
+        //                    return {
+        //                        text: item.Musteri,
+        //                        id: item.MusteriId
+        //                    }
+        //                })
+        //            };
+        //        }
+        //    },
+
+        //});
+
+        //$('#kumas').select2({
+        //    minimumInputLength: 4,
+        //    theme: 'classic',
+        //    language: {
+        //        inputTooShort: function (args) {
+
+        //            return "En az 4 karakter girmelisiniz";
+        //        },
+        //        noResults: function () {
+        //            return "Bulunamadı";
+        //        },
+        //        searching: function () {
+        //            return "Aranıyor";
+        //        }
+        //    },
+        //    allowClear: true,
+        //    formatInputTooShort: function (input, min) { return "Start typing to search"; },
+        //    ajax: {
+        //        url: ('/Raporlama/SearchSilks'),
+        //        dataType: 'json',
+        //        data: function (term) {
+        //            return {
+        //                term: term.term
+        //            };
+        //        },
+        //        type: "POST",
+        //        processResults: function (response) {
+        //            return {
+        //                results: $.map(response, function (item) {
+        //                    return {
+        //                        text: item.Kumas,
+        //                        id: item.KumasId
+        //                    }
+        //                })
+        //            };
+        //        }
+        //    },
+
+        //});
+
+        //$('#atolyeAd').select2({
+        //    minimumInputLength: 4,
+        //    theme: 'classic',
+        //    language: {
+        //        inputTooShort: function (args) {
+
+        //            return "En az 4 karakter girmelisiniz";
+        //        },
+        //        noResults: function () {
+        //            return "Bulunamadı";
+        //        },
+        //        searching: function () {
+        //            return "Aranıyor";
+        //        }
+        //    },
+        //    allowClear: true,
+        //    formatInputTooShort: function (input, min) { return "Start typing to search"; },
+        //    ajax: {
+        //        url: ('/Raporlama/SearchWorkShop'),
+        //        dataType: 'json',
+        //        data: function (term) {
+        //            return {
+        //                term: term.term
+        //            };
+        //        },
+        //        type: "POST",
+        //        processResults: function (response) {
+        //            return {
+        //                results: $.map(response, function (item) {
+        //                    return {
+        //                        text: item.AtolyeAd,
+        //                        id: item.Id
+        //                    }
+        //                })
+        //            };
+        //        }
+        //    },
+
+        //});
+    };
+
+
+    $(function () {
+        $(".datepicker").datepicker({
+            dateFormat: "dd-mm-yy",
+            altFormat: "yy-mm-dd",
+            altField: "#tarih-db",
+            monthNames: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+            dayNamesMin: ["Pa", "Pt", "Sl", "Ça", "Pe", "Cu", "Ct"],
+        });
+
+        //$(".datepicker").datepicker('setDate', new Date());
+    });
+
+    $("[data-collapse]").each(function () {
+        var me = $(this),
+            target = me.data("collapse");
+
+        me.click(function () {
+            $(target).collapse("toggle");
+            $(target).on("shown.bs.collapse", function () {
+                me.html('<i class="fas fa-minus"></i>');
+            });
+            $(target).on("hidden.bs.collapse", function () {
+                me.html('<i class="fas fa-plus"></i>');
+            });
+            return false;
+        });
+    });
+
+    function FillTable() {
+
+        var tableParameters = GetTableParameters();
+
+        $.post("/Raporlama/KarsilastirmaliRaporlamaTable", { tableParameters: tableParameters}, function (data) {
+            $('#tablePart').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+
+    }
+
+    function ChangeTick(deger) {
+        var yoTick = $('#yikamaOncesi');
+
+        var ysTick = $('#yikamaSonrasi');
+
+        if (deger == 0) {
+            if (yoTick.is(":checked")) {
+                ysTick.prop('checked', false);
+            }
+            else {
+                ysTick.prop('checked', true);
+
+                var personel = localStorage.getItem('personel');
+
+                var localStorageItemKey = localStorage.key(i);
+                var localStorageItem = JSON.parse(localStorage.getItem(localStorageItemKey));
+
+                if (localStorage.key(i) != 'personel' && localStorageItem.arsivMi == 1) {
+
+                    liste.push(localStorage.key(i));
+                }
+
+                localStorage.setItem('personel', personel);
+            }
+        }
+        else {
+            if (ysTick.is(":checked")) {
+                yoTick.prop('checked', false);
+            }
+            else {
+                yoTick.prop('checked', true);
+
+                var personel = localStorage.getItem('personel');
+
+                localStorage.clear();
+
+                localStorage.setItem('personel', personel);
+
+                if (bagliNumuneIdList.length > 0) {
+                    for (var i = 0; i < bagliNumuneIdList.length; i++) {
+                        localStorage.setItem(bagliNumuneIdList[i], JSON.stringify({ 'id': bagliNumuneIdList[i], 'raporTuru': 1 }));
+                    }
+                }
+            }
+        }
+    }
+
+    function KumasDetail() {
+        if ($('#kumasDetail_Modal').children().length == 0) {
+            if (kumasKarakteri != null) {
+                $.post("/Raporlama/KumasDetailModal", { kumasKarakteri: kumasKarakteri }, function (data) {
+                    $('#kumasDetail_Modal').html(data);
+                    if ($('#stepsModal').hasClass('show')) {
+                        $('#stepsModal').hide();
+                    }
+
+
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+            }
+            else {
+                $.post("/Raporlama/KumasDetailModal", {}, function (data) {
+                    $('#kumasDetail_Modal').html(data);
+
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+            }
+        }
+        else {
+            if (isAddingOrder == 1) {
+                $.post("/Raporlama/KumasDetailModal", { kumasKarakteri: kumasKarakteri }, function (data) {
+                    $('#kumasDetail_Modal').html(data);
+                    $('#karsilastirmaModal').modal('hide');
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+            }
+            else {
+                if (kumasKarakteri != null) {
+                    $('#stepsModal').modal('toggle');
+                }
+            }
+        }
+        $('#kumasDetailModal').modal('show');
+
+    }
+
+    function ReceteDetail() {
+        //hatalı aktarımları düzelt
+        if ($('#receteDetail_Modal').children().length == 0) {
+            if (recipeSteps != null) {
+                $.post("/Raporlama/ReceteDetailModal", { recipeStepsFromNumunePage: recipeSteps, isAddingOrder: isAddingOrder}, function (data) {
+                    $('#receteDetail_Modal').html(data);
+                    if ($('#stepsModal').hasClass('show')) {
+                        $('#stepsModal').modal('hide');
+                    }
+
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+            }
+            else {
+                $.post("/Raporlama/ReceteDetailModal", {}, function (data) {
+                    $('#receteDetail_Modal').html(data);
+                    if ($('#stepsModal').hasClass('show')) {
+                        $('#stepsModal').modal('hide');
+                        $('#stepsModal').hide();
+
+                    }
+
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+            }
+        }
+        else {
+            if (isAddingOrder == 1) {
+                $.post("/Raporlama/ReceteDetailModal", { recipeStepsFromNumunePage: recipeSteps, isAddingOrder: isAddingOrder }, function (data) {
+                    $('#receteDetail_Modal').html(data);
+                    if ($('#stepsModal').hasClass('show')) {
+                        $('#stepsModal').modal('hide');
+                    }
+                    $('#karsilastirmaModal').modal('hide');
+
+
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+            }
+            else {
+                if (recipeSteps != null) {
+                    if ($('#stepsModal').hasClass('show')) {
+                        $('#stepsModal').modal('hide');
+                        $('#stepsModal').hide();
+
+                    }
+                }
+            }
+        }
+
+        $('#receteDetailModal').modal('show');
+    }
+
+    function KumasDetailSearch() {
+        var kumasList = [];
+        $('#konstruksiyonInputs').find('li').each(function () {
+            kumasList.push({ 'konstruksiyonParameter': $(this).children().find('input[type="text"]').val(), 'konstruksiyonValue': parseFloat($(this).children().find('input[type="number"]').val()) });
+        });
+
+
+
+        kumasDetail = {
+            kumasEnMin: parseFloat($('#kumasEniMin').val().replace(',', '.')).toString().replace('.', ','), kumasEniMax: parseFloat($('#kumasEniMax').val().replace(',', '.')).toString().replace('.', ','),
+            kumasStrechMin: parseFloat($('#kumasStrechMin').val().replace(',', '.')).toString().replace('.', ','), kumasStrechMax: parseFloat($('#kumasStretchMax').val().replace(',', '.')).toString().replace('.', ','),
+            kumasEnCekmeMin: parseFloat($('#kumasEnMin').val().replace(',', '.')).toString().replace('.', ','), kumasEnCekmeMax: parseFloat($('#kumasEnMax').val().replace(',', '.')).toString().replace('.', ','),
+            kumasBoyCekmeMin: parseFloat($('#kumasBoyMin2').val().replace(',', '.')).toString().replace('.', ','), kumasBoyCekmeMax: parseFloat($('#kumasBoyMax2').val().replace(',', '.')).toString().replace('.', ','), konstruksiyonList: kumasList
+        };
+
+        //kumasDetail = {
+        //    kumasEnMin: $('#kumasEniMin').val(), kumasEniMax: $('#kumasEniMax').val(), kumasStrechMin: $('#kumasStrechMin').val(), kumasStrechMax: $('#kumasStretchMax').val() , konstruksiyonList: kumasList
+        //};
+
+        $.post("/Raporlama/KumasList", { kumasDetail: kumasDetail, isAddingOrder: isAddingOrder }, function (data) {
+            $('#kumasList_Modal').html(data);
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+
+        $('#kumasDetailModal').modal('toggle');
+        $('#kumasListModal').modal('show');
+
+    }
+
+    function ReceteDetailSave() {
+        var recipeSteps = [];
+        $('#recipeStepsInputs').find('li').each(function () {
+            recipeSteps.push({
+                'RecipeParameter': $(this).children().find('input[type="number"]').eq(0).data('recipestep'), 'RecipeMinValue': Number($(this).children().find('input[type="number"]').eq(0).val()), 'RecipeMaxValue': Number
+                    ($(this).children().find('input[type="number"]').eq(1).val())
+            });
+        });
+
+        if (recipeSteps.length != 0) {
+            receteDetail = { recipeSteps: recipeSteps, receteActive: 1 };
+        }
+        else {
+            receteDetail = {};
+        }
+
+
+
+        $('#receteDetailBtn').removeClass('btn-info');
+        $('#receteDetailBtn').addClass('btn-success');
+        if (isAddingOrder == 0) {
+            $('#stepsModal').modal('show');
+        }
+        else {
+            $('#karsilastirmaModal').modal('show');
+        }
+        $('#receteDetailModal').modal('toggle');
+
+    }
+
+    function KumasListGet() {
+        var dataTable = $('#kumasListTable').dataTable();
+        var getKumasListTable = [];
+        $(dataTable.fnGetNodes()).each(function () {
+            if ($(this).find(':last-child').find('input').eq(0).prop('checked') == true) {
+                getKumasListTable.push($(this).find(':last-child').find('input').eq(0).data('kumasad'));
+            }
+
+        });
+        $('#kumas').val(getKumasListTable).change();
+        $('#kumasListModal').modal('toggle');
+
+        if (isAddingOrder == 0) {
+            $('#stepsModal').modal('toggle');
+        }
+        else {
+            $('#karsilastirmaModal').modal('toggle');
+        }
+
+        if (isFromNumunePage == 1 && kumasKarakteri != null && isAddingOrder == 0) {
+            CheckRecipe();
+        }
+    }
+
+    function GetSelectedOlcuTurleri() {
+        var olcuTurleriList = {}; //Numune ve Kazan listesini ayrı içerecek.
+
+        var numuneList = $('[data-isnumune="1"]');
+        var kazanList = $('[data-isnumune="0"]');
+
+        var checkedNumuneList = [];
+        var checkedKazanList = [];
+
+        numuneList.each(function (key, value) {
+            if ($(value)[0].checked) {
+                var olcuTuruId = $(value)[0].id;
+
+                checkedNumuneList.push(olcuTuruId);
+            }
+        });
+
+        kazanList.each(function (key, value) {
+            if ($(value)[0].checked) {
+                var olcuTuruId = $(value)[0].id;
+
+                checkedKazanList.push(olcuTuruId);
+            }
+        });
+
+        olcuTurleriList = { 'NumuneList': checkedNumuneList, 'KazanList': checkedKazanList };
+
+        return olcuTurleriList;
+    }
+
+    function SelectOlcuTurleri(numuneMi) {
+        var kazanList = $('[data-isnumune="0"]');
+        var numuneList = $('[data-isnumune="1"]');
+
+        if (numuneMi == 0) { //kazanları seç numuneleri seçme
+
+            kazanList.each(function (key, value) {
+                if (!$(value)[0].checked) {
+                    $(value)[0].checked = true;
+                }
+            });
+
+
+            numuneList.each(function (key, value) {
+                if ($(value)[0].checked) {
+                    $(value)[0].checked = false;
+                }
+            });
+        }
+        else if (numuneMi == 1) { // numuneleri seç kazanları seçme
+            kazanList.each(function (key, value) {
+                if ($(value)[0].checked) {
+                    $(value)[0].checked = false;
+                }
+            });
+
+
+            numuneList.each(function (key, value) {
+                if (!$(value)[0].checked) {
+                    $(value)[0].checked = true;
+                }
+            });
+        }
+        else if (numuneMi == 2) {
+            kazanList.each(function (key, value) {
+                if (!$(value)[0].checked) {
+                    $(value)[0].checked = true;
+                }
+            });
+
+
+            numuneList.each(function (key, value) {
+                if (!$(value)[0].checked) {
+                    $(value)[0].checked = true;
+                }
+            });
+        }
+        else if (numuneMi == 3) {
+            kazanList.each(function (key, value) {
+                if ($(value)[0].checked) {
+                    $(value)[0].checked = false;
+                }
+            });
+
+
+            numuneList.each(function (key, value) {
+                if ($(value)[0].checked) {
+                    $(value)[0].checked = false;
+                }
+            });
+        }
+    }
+
+    //function GetTableParameters() {
+    //    var orderNo = $('#orderNo').select2('data');
+    //    var modelNo = $('#modelNo').val();
+    //    var kumas = $('#kumas').select2('data');
+    //    var musteri = $('#musteri').select2('data');
+    //    var atolyeAd = $('#atolyeAd').select2('data');
+    //    var modelAd = $('#modelAd').select2('data');
+    //    var yikamaYeri = $('#yikamaYeri').val();
+    //    var tabloTuru;
+    //    if ($('#yikamaOncesi').is(":checked")) {
+    //        tabloTuru = 0;
+    //    }
+    //    if ($('#yikamaSonrasi').is(":checked")) {
+    //        tabloTuru = 1;
+    //    }
+
+    //    var tarih1 = $('#tarih1').val();
+    //    var tarih2 = $('#tarih2').val();
+
+
+    //    var orderNoList = [];
+    //    //var modelNoList = [];
+    //    var kumasList = [];
+    //    var musteriList = [];
+    //    var atolyeAdList = [];
+    //    var modelAdList = [];
+
+    //    var selectedOlcuTuruList = GetSelectedOlcuTurleri();
+
+    //    $(orderNo).each(function (g, h) {
+    //        orderNoList.push("'" + h.text + "'");
+    //    });
+
+    //    orderNoList = orderNoList.join(',');
+
+    //    //$(modelNo).each(function (g, h) {
+    //    //    modelNoList.push("'" + h + "'");
+    //    //});
+
+    //    //modelNoList = modelNoList.join(',');
+
+    //    $(kumas).each(function (g, h) {
+    //        kumasList.push("'" + h.text  + "'");
+    //    });
+
+    //    kumasList = kumasList.join(',');
+
+    //    $(musteri).each(function (g, h) {
+    //        musteriList.push("'" + h.text  + "'");
+    //    });
+
+    //    musteriList = musteriList.join(',');
+
+    //    $(atolyeAd).each(function (g, h) {
+    //        atolyeAdList.push("'" + h.text  + "'");
+    //    });
+
+    //    atolyeAdList = atolyeAdList.join(',');
+
+    //    $(modelAd).each(function (g, h) {
+    //        modelAdList.push("'" + h.text  + "'");
+    //    });
+
+    //    modelAdList = modelAdList.join(',');
+
+
+    //    YukleniyorOnOff();
+
+    //    var tableParameters = { 'OrderNo': orderNoList, 'ModelNo': modelNo, 'Kumas': kumasList, 'Musteri': musteriList, 'Atolye': atolyeAdList, 'ModelAdi': modelAdList, 'YikamaYeri': yikamaYeri, 'TabloTuru': tabloTuru, 'StartDate': tarih1, 'EndDate': tarih2, 'ReceteDetail': receteDetail, IsFromNumunePage: isFromNumunePage, isAddingOrder: isAddingOrder, 'OlcuTuruParameter': selectedOlcuTuruList };
+
+    //    return tableParameters;
+    //}
+
+    function GetTableParameters() {
+        var orderNo = $('#orderNo').val();
+        var modelNo = $('#modelNo').val();
+        var kumas = $('#kumas').val();
+        var musteri = $('#musteri').val();
+        var atolyeAd = $('#atolyeAd').val();
+        var modelAd = $('#modelAd').val();
+        var yikamaYeri = $('#yikamaYeri').val();
+        var tabloTuru;
+        if ($('#yikamaOncesi').is(":checked")) {
+            tabloTuru = 0;
+        }
+        if ($('#yikamaSonrasi').is(":checked")) {
+            tabloTuru = 1;
+        }
+
+        var tarih1 = $('#tarih1').val();
+        var tarih2 = $('#tarih2').val();
+
+        var selectedOlcuTuruList = GetSelectedOlcuTurleri();
+        YukleniyorOnOff();
+
+        var tableParameters = { 'OrderNo': orderNo, 'ModelNo': modelNo, 'Kumas': kumas, 'Musteri': musteri, 'Atolye': atolyeAd, 'ModelAdi': modelAd, 'YikamaYeri': yikamaYeri, 'TabloTuru': tabloTuru, 'StartDate': tarih1, 'EndDate': tarih2, 'ReceteDetail': receteDetail, IsFromNumunePage: isFromNumunePage, isAddingOrder: isAddingOrder, 'OlcuTuruParameter': selectedOlcuTuruList };
+
+        return tableParameters;
+    }
+</script>

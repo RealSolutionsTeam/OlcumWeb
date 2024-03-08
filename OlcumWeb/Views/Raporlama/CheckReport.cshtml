@@ -1,0 +1,141 @@
+﻿@model OlcumWeb.Controllers.ArsivDataModel
+
+<style>
+
+    select[name="1_length"] {
+        height: 30px !important;
+    }
+
+    select[name="2_length"] {
+        height: 30px !important;
+    }
+
+    select[name="save-stage"] {
+        height: 30px !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+
+    .dataTables_filter label {
+        margin: 0 !important;
+    }
+
+        .dataTables_filter label input {
+            height: 30px !important;
+        }
+
+    .dataTables_paginate {
+        float: right !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+</style>
+<div style="text-align:center">
+    <span> @Model.raporAdi İsimli Raporun İçeriği</span>
+</div>
+
+<div class="table-responsive" id="orderListesi">
+    <div id="table-1_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+        <div class="col-sm-12">
+            <table class="table table-striped dataTable no-footer" id="save-stage2CheckReport" role="grid" aria-describedby="table-1_info">
+                <thead>
+                    <tr role="row">
+                        <th>
+                            Order No
+                        </th>
+
+                        <th>
+                            Model Ad
+                        </th>
+
+                        <th>
+                            Model No
+                        </th>
+
+                        <th>
+                            Kumaş
+                        </th>
+
+                        <th>
+                            Müşteri
+                        </th>
+
+                        <th>
+                            Atölye Adı
+                        </th>
+
+                        <th>
+                            Yıkama yeri
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.reportDetailList)
+                    {
+                        <tr>
+                            <td>
+                                @item.OrderNo
+                            </td>
+
+                            <td>
+                                @item.ModelAd
+                            </td>
+
+                            <td>
+                                @item.ModelNo
+                            </td>
+
+                            <td>
+                                @item.Kumas
+                            </td>
+
+                            <td>
+                                @item.Musteri
+                            </td>
+
+                            <td>
+                                @item.AtolyeAd
+                            </td>
+
+                            <td>
+                                @item.YikamaYeri
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#save-stage2CheckReport').DataTable({
+        "dom": '<"top"<"row mr-0 ml-0 mt-1 mb-1"<"col-6 m-auto"f><"col-6 m-auto"l>>>rt<"row mt-2 mr-0 mb-0 ml-0"<"col - 6 m- auto"i><"col - 6 m - auto"p>><"clear">',
+        "pageLength": 5,
+        "searching": false,
+        "ordering": false,
+        "lengthMenu": [10, 20, 50, 100],
+        "language": {
+            "searchPlaceholder": "Arama",
+            "search": "",
+            //"info": "TOTAL Kayıt içerisinde START - END gösteriliyor",
+            "loadingRecords": "Yükleniyor...",
+            "zeroRecords": "Kayıt Bulunamadı",
+            "lengthMenu": "",
+            "infoEmpty": "",
+            "infoFiltered": "",
+            "paginate": {
+                "first": "İlk Sayfa",
+                "last": "Son Sayfa",
+                "next": "Sonraki Sayfa",
+                "previous": "Önceki Sayfa",
+            },
+        }
+    }).columns(-1).draw();
+</script>

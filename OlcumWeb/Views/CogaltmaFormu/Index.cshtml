@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<ul id="breadcrumb">
+    <li><a href="@Url.Action("Index", "AnaSayfa",new { ViewBag.id})"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+    <li><a href="@Url.Action("OlcuFormu", "AnaSayfa",new { ViewBag.id})"><span class="icon icon-double-angle-right"></span> Ölçü Formu Sayfası</a></li>
+    <li><a href="@Url.Action("Index", "CogaltmaFormu",new { ViewBag.id})"><span class="icon icon-double-angle-right"></span> Çoğaltma Formu</a></li>
+</ul>
+
+
+
+<title>Çoğaltma Ölçüm Formu</title>
+
+<section class="section" id="orderContent">
+</section>
+
+<section class="section" id="tableContent">
+</section>
+
+<div class="modal fade" id="hazirTabloModal" tabindex="-1" role="dialog" aria-hidden="true" style="left:100px">
+    <div class="modal-dialog" role="document" style="max-width:80%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="hazirTablo_Modal"></div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script>
+    $.ajax({
+        url: '/CogaltmaFormu/OrderDetay',
+        type: 'GET',
+        dataType: 'html',
+        success: function (result) {
+            $('#orderContent').html(result);
+        },
+        error: function (xhr, status) {
+            alert(status);
+        }
+    });
+
+    function TabloyaDon() {
+        $('#tableContent').show();
+        $('#orderContent').hide();
+
+        var selectedOrder = $("#orderNo").val();
+        $('#breadcrumb').append('<li><a href="#" class="details" onclick="deneme()"><span class="icon icon-double-angle-right"></span>' + selectedOrder + '</a></li>');
+        //Burayı Düzelt
+    }
+
+
+</script>
+
+

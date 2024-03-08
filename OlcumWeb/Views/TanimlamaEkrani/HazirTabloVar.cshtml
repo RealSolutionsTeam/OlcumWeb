@@ -1,0 +1,199 @@
+﻿@model Tuple<List<OlcumWeb.dbOlcum.HazirTabloDetay>, List<List<OlcumWeb.Models.DTO.DTOHazirTablo>>>
+
+<link rel="stylesheet" href="~/Tema/Chips/Chips.css">
+<link rel="stylesheet" href="~/Tema/assets/bundles/pretty-checkbox/pretty-checkbox.min.css">
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<div class="card card-success">
+    <div class="card-header">
+        <h4>Tablo Özellikleri - </h4> <span>Lütfen tabloyla ilgili bilgileri sırasıyla seçiniz.</span>
+    </div>
+    <div class="card-body">
+        <div class="input-group">
+            <div class="row">
+                <button id="Ekstra" onclick="TabloDuzenle()" type="button" class="btn btn-primary btn-sm" style="margin-right:5px; margin-left:15px;">Tabloyu Düzenle</button>
+                <button id="Ekstra" onclick="TabloEkle()" type="button" class="btn btn-primary btn-sm">Tablo Ekle</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer" id="cardFooterID">
+        <div class="card">
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+
+                    @for (int i = 0; i < Model.Item1.Count; i++)
+                    {
+                        if (i == 0)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home_@i" data-index="@i" data-modelid="@Model.Item1[i].modelID" data-detayid="@Model.Item1[i].id" role="tab" aria-controls="home" aria-selected="true">@Model.Item1[i].tarih.Value.ToString("dd/MM/yyyy")</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" id="home-tab" data-toggle="tab" href="#home_@i" data-index="@i" data-modelid="@Model.Item1[i].modelID" data-detayid="@Model.Item1[i].id" role="tab" aria-controls="home" aria-selected="true">@Model.Item1[i].tarih.Value.ToString("dd/MM/yyyy")</a>
+                            </li>
+                        }
+                    }
+                </ul>
+                <div class="tab-content" id="myTabContent">
+
+                    @for (int i = 0; i < Model.Item1.Count; i++)
+                    {
+                        string deger = "";
+                        if (i == 0)
+                        {
+                            deger = "show active";
+                        }
+                        else
+                        {
+                            deger = "";
+                        }
+                        <div class="tab-pane fade @deger" id="home_@i" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="table-responsive" id="tableForm">
+                                <table id="mainTable_@i" class="table table-striped" style="cursor: pointer;">
+                                    <thead>
+                                        <tr id="tableHead_@i">
+                                            <th>Ölçü Noktası</th>
+                                            @for (int j = 0; j < Model.Item2[i].Select(x => x.beden).Distinct().Count(); j++)
+                                            {
+                                                <th id="beden_@(i + "_" + j)" data-bedenid="@Model.Item2[i][j].bedenID">@Model.Item2[i][j].beden</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tableBody_@i">
+                                        @{ var sayi = 0;}
+                                        @for (int j = 0; j < Model.Item2[i].Count; j++)
+                                        {
+                                            if (j == 0)
+                                            {
+                                                <tr id="satir_@sayi">
+                                                    <td data-editable="false">
+                                                        <p id="hidden_@(i + "_"+ sayi)" data-tabanID="@Model.Item2[i][j].tabanID" data-olcuNoktasiID="@Model.Item2[i][j].olcuNoktasiID" hidden>Deneme</p>
+                                                        @Model.Item2[i][j].olcuNoktasi
+                                                        @*@Html.DropDownList("dropDown", new SelectList(Model.Item3.Where(x=>x.tabanID == Model.Item2[i][j].tabanID), "olcuNoktasi"), Model.Item2[i][j].olcuNoktasi, new { @class = "form-control select2", @id = "olcuTuruAd" })*@
+                                                    </td>
+
+                                                    @for (int z = 0; z < Model.Item2[i][j].deger.Count(); z++)
+                                                    {
+                                                        <td tabindex="1" id="cell_@(i + "_" + sayi + "_" + z)"  data-aratabloid="@Model.Item2[i][j].id[z]">
+                                                            @Model.Item2[i].Where(x => x.olcuNoktasi == Model.Item2[i][j].olcuNoktasi && x.beden == Model.Item2[i][j].beden && x.id == Model.Item2[i][j].id).Select(x => x.deger[z]).FirstOrDefault()
+                                                        </td>
+                                                    }
+                                                </tr>
+                                                sayi++;
+                                            }
+                                            else
+                                            {
+                                                if (@Model.Item2[i][j].olcuNoktasi != @Model.Item2[i][j - 1].olcuNoktasi)
+                                                {
+                                                    <tr id="satir_@sayi">
+                                                        <td data-editable="false">
+                                                            <p id="hidden_@(i + "_"+ sayi)" data-tabanID="@Model.Item2[i][j].tabanID" data-olcuNoktasiID="@Model.Item2[i][j].olcuNoktasiID" hidden>Deneme</p>
+
+                                                            @Model.Item2[i][j].olcuNoktasi
+                                                            @*@Model.Item2[i][j].olcuNoktasi*@
+                                                        </td>
+
+                                                        @for (int z = 0; z < Model.Item2[i][j].deger.Count(); z++)
+                                                        {
+                                                            <td tabindex="1" id="cell_@(i + "_" + sayi + "_" + z)" data-aratabloid="@Model.Item2[i][j].id[z]">
+                                                                @Model.Item2[i].Where(x => x.olcuNoktasi == Model.Item2[i][j].olcuNoktasi && x.beden == Model.Item2[i][j].beden && x.id == Model.Item2[i][j].id).Select(x => x.deger[z]).FirstOrDefault()
+                                                            </td>
+                                                        }
+                                                    </tr>
+                                                    sayi++;
+                                                }
+
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <input style="position: absolute; display: none;">
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="card-footer">
+                <button id="Ekstra" onclick="TabloGuncelle()" type="button" class="btn btn-primary btn-sm">Güncelle</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+<script src="~/editable-table-master/mindmup-editabletable.js"></script>
+<script src="~/editable-table-master/numeric-input-example.js"></script>
+
+<script>
+    var tableCount = @Model.Item1.Count;
+
+    for (var i = 0; i < tableCount; i++) {
+        $('#mainTable_' + i).editableTableWidget();
+    }
+
+    function TabloEkle() {
+        var modelID = $('ul.nav-tabs > li > a').data("modelid");
+         $.post("/TanimlamaEkrani/HazirTablo", { 'modelID': modelID },
+                    function (data) {
+                        $('#hazirtabloContent').html(data);
+         });
+    }
+
+    function TabloDuzenle() {
+        var detayID = $('ul.nav-tabs > li > a.active').data("detayid");
+        $.post("/TanimlamaEkrani/HazirTabloDuzenle", { 'detayID': detayID },
+                    function (data) {
+                        $('#hazirtabloContent').html(data);
+         });
+    }
+
+    function TabloGuncelle() {
+        var detayID = $('ul.nav-tabs > li > a.active').data("detayid");
+        var activeTabIndex = Number($('ul.nav-tabs > li > a.active').data('index'));;
+        var rowCount = $('#tableBody_' + activeTabIndex +' tr').length;
+        var columnCount = $('#tableHead_' + activeTabIndex).find("th").length - 1;
+
+        console.log(columnCount);
+        var tableList = [];
+        KayitYapiliyorOnOff();
+
+        for (var i = 0; i < columnCount; i++) {
+            for (var j = 0; j < rowCount; j++) {
+
+                if ($('#cell_' + j + "_" + i).html() != "") {
+                        var olcuNoktaID = $('#hidden_' + activeTabIndex + "_" + j).data("olcunoktasiid");
+                    var bedenID = $('#beden_' + + activeTabIndex + "_" + i).data("bedenid");
+                    tableList.push({ 'olcuNoktaID': olcuNoktaID, 'bedenID': bedenID, 'deger': $('#cell_' + activeTabIndex + "_" + j + "_" + i).html(),'araID':$('#cell_' + activeTabIndex + "_" + j + "_" + i).data('aratabloid') });
+                    }
+
+            }
+        }
+
+        $.post("/TanimlamaEkrani/TabloGuncelle", { 'detayID': detayID, 'tablo': tableList }, function (gelenCagri) {
+            if (gelenCagri == 1) {
+                KayitYapiliyorOnOff();
+                swal({
+                title: "Başarılı",
+                text: "Tablonuz başarıyla kaydedildi.",
+                icon: "success",
+                button: "Tamam",
+                });
+            }
+            else {
+                KayitYapiliyorOnOff();
+               swal({
+                title: "Başarısız",
+                text: "Tablo kaydı yapılırken bir hatayla karşılaşıldı!",
+                icon: "error",
+                button: "Tamam",
+                });
+            }
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+</script>

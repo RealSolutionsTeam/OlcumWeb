@@ -1,0 +1,78 @@
+﻿<style>
+    #tableForm table {
+        border-collapse: collapse;
+    }
+
+    #tableForm table, .table-responsive table td, .table-responsive table th {
+        border: 1px solid #aaaaaa;
+    }
+</style>
+
+<div class="table-responsive" id="tableForm">
+    <table class="table table-striped mainTable" style="cursor: pointer;">
+        <thead>
+            <tr>
+                <th>Ölçü Noktaları</th>               
+                <th>Kalıp Ölçü</th>
+                <th>Tölerans</th>
+                <th>@ViewBag.beden - Yıkama Öncesi</th>
+                <th>Yıkama Öncesi Fark</th>
+                <th>Yıkama Öncesi Ölçülen</th>
+                <th>Çekme</th>
+                <th>Yıkama Sonrası Ölçülen</th>
+                <th>Yıkama Sonrası Fark</th>
+                <th>@ViewBag.beden - Yıkama Sonrası</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td tabindex="1">BEL</td>
+                <td tabindex="1">35,5</td>
+                <td tabindex="1">1</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+            </tr>
+            <tr>
+                <td tabindex="1">BASEN</td>
+                <td tabindex="1">56</td>
+                <td tabindex="1">2</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+            </tr>
+            <tr>
+                <td tabindex="1">BALDIR</td>
+                <td tabindex="1">17</td>
+                <td tabindex="1">3</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+                <td tabindex="1">0</td>
+            </tr>
+        </tbody>
+    </table>
+    <input style="position: absolute; display: none;">
+</div>
+
+<div style=" position:absolute; right:3%; top:90%;">
+    <a href="#" class="btn btn-info"><span style="color:white;">Kaydet</span></a>
+</div>
+
+<script src="~/editable-table-master/mindmup-editabletable.js"></script>
+<script src="~/editable-table-master/numeric-input-example.js"></script>
+
+<script>
+        $('.mainTable').editableTableWidget();
+</script>

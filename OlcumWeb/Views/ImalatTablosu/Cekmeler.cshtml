@@ -1,0 +1,22 @@
+﻿@model List<string>
+
+<div class="row">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        <div class="pretty p-icon p-smooth" style=" margin-left:50px" id="MyDiv">
+            <input type="checkbox" name="cekmeler" value="@Model[i]" data-id="@Model[i]">
+            <div class="state p-success">
+                <i class="icon fa fa-check"></i>
+                <label style=" padding-right:35%;">@Model[i]</label>
+            </div>
+        </div>
+
+    }
+</div>
+
+
+
+
+<script>
+
+</script>

@@ -1,0 +1,37 @@
+﻿@model Tuple<string, List<List<OlcumWeb.Models.DTO.DTOImalatTabloGoster>>>
+
+<h4>Lütfen ana kalıp için En/Boy çekme giriniz.</h4>
+
+<div class="col-4" style="margin-top: 5%">
+    <div class="form-group">
+        <label>En/Boy Çekme:</label>
+        <div class="input-group">
+            @Html.TextBox("enBoyCekme", null, new { @class = "form-control", @id = "enBoyCekme" })
+        </div>
+    </div>
+</div>
+
+<div class="row"><button type="button" class="btn btn-primary" id="btnKaydet45" onclick="CekmeBelirle()">Kaydet</button></div>
+
+<script>
+    function CekmeBelirle() {
+        var enBoyCekme = $('#enBoyCekme').val();
+        var anaBeden = @Html.Raw(Json.Encode(Model.Item1));
+        var previousTablo = @Html.Raw(Json.Encode(Model.Item2.ToList()));
+                        YukleniyorOnOff();
+
+        $.post("/ImalatTablosu/YikamaOncesiTablo", { 'orderID': $("#orderNo").val(), 'olcuTuruID': $("#olcuTuruAd").val(), 'checkExist': 1, 'anaBeden': anaBeden, 'previousTablo': yOlist2_0, 'cekmeler': [enBoyCekme] }, function (deger) {
+                $('#yikamaOncesiContent').html(deger);
+                $.post("/ImalatTablosu/KalipOlcusuGoster", { 'orderID': $("#orderNo").val(), 'olcuTuruID': $("#olcuTuruAd").val(), 'checkExist': 1, 'anaBeden': anaBeden, 'previousTablo': yOlist2_0, 'cekmeler': [enBoyCekme] }, function (deger2) {
+                    $('#kalipOlcusuContent').html(deger2);
+                    YukleniyorOnOff();
+
+                }).fail(function (response) {
+                    alert('Error : ' + response.responseText);
+                });
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+            $('#enBoyCekmeModal').modal('toggle');
+    }
+</script>

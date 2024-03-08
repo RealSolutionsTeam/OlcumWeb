@@ -1,0 +1,164 @@
+﻿@model List<OlcumWeb.Models.DTO.KumasKarakteriDto>
+<div class="table-responsive">
+    <table class="table table-bordered table-md" id="kumasListTable">
+        <thead>
+            <tr>
+                <th>Kumaş Adı</th>
+                <th>Kumaş Eni</th>
+                <th>Kumaş Elastikiyeti</th>
+                <th>Kumaş En Çekmesi</th>
+                <th>Kumaş Boy Çekmesi</th>
+                <th>Kumaş Konstrüksiyonu</th>
+                <th>Benzerlik Oranı</th>
+                <th>
+                    <div>
+                        <input id="selectAllCheckBox" type="checkbox" style="margin-left:1%;margin-top:-1%" checked="checked">
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var baslangicBenzerlik = 100;
+                double gelenOrtalamaEn = (ViewBag.kumasDetail.kumasEnMin + ViewBag.kumasDetail.kumasEniMax) / 2;
+
+                double gelenOrtalamaElastikiyet = (ViewBag.kumasDetail.kumasStrechMin + ViewBag.kumasDetail.kumasStrechMax) / 2;
+
+                double gelenOrtalamaEnCekme = (ViewBag.kumasDetail.kumasEnCekmeMin + ViewBag.kumasDetail.kumasEnCekmeMax) / 2;
+
+                double gelenOrtalamaBoyCekme = (ViewBag.kumasDetail.kumasBoyCekmeMin + ViewBag.kumasDetail.kumasBoyCekmeMax) / 2;
+
+                double enBenzerligi = 0;
+                double strechBenzerligi = 0;
+
+                double enCekmeBenzerligi = 0;
+                double boyCekmeBenzerligi = 0;
+
+                double benzerlikOranı = 0;
+
+                if (gelenOrtalamaEn != 0 && item.kesilebilirEnOrtalama != 0)
+                {
+                    enBenzerligi = (gelenOrtalamaEn - (double)item.kesilebilirEnOrtalama) * 20;
+
+                    enBenzerligi = enBenzerligi < 0 ? enBenzerligi * -1 : enBenzerligi;
+
+                    enBenzerligi = baslangicBenzerlik - enBenzerligi;
+                }
+
+                if (gelenOrtalamaElastikiyet != 0 && item.elastikiyetAtkiOrtalama != 0)
+                {
+                    strechBenzerligi = (gelenOrtalamaElastikiyet - (double)item.elastikiyetAtkiOrtalama) * 20;
+
+                    strechBenzerligi = strechBenzerligi < 0 ? strechBenzerligi * -1 : strechBenzerligi;
+
+                    strechBenzerligi = baslangicBenzerlik - strechBenzerligi;
+                }
+
+                if (gelenOrtalamaEnCekme != 0 && item.kumasEnCekmeOrtalama != 0)
+                {
+                    enCekmeBenzerligi = (gelenOrtalamaEnCekme - (double)item.kumasEnCekmeOrtalama) * 50;
+
+                    enCekmeBenzerligi = enCekmeBenzerligi < 0 ? enCekmeBenzerligi * -1 : enCekmeBenzerligi;
+
+                    enCekmeBenzerligi = baslangicBenzerlik - enCekmeBenzerligi;
+                }
+
+                if (gelenOrtalamaBoyCekme != 0 && item.kumasBoyCekmeOrtalama != 0)
+                {
+                    boyCekmeBenzerligi = (gelenOrtalamaBoyCekme - (double)item.kumasBoyCekmeOrtalama) * 50;
+
+                    boyCekmeBenzerligi = boyCekmeBenzerligi < 0 ? boyCekmeBenzerligi * -1 : boyCekmeBenzerligi;
+
+                    boyCekmeBenzerligi = baslangicBenzerlik - boyCekmeBenzerligi;
+                }
+
+
+
+                if (gelenOrtalamaEn == 0)
+                {
+                    enBenzerligi = 100;
+                }
+
+                if (gelenOrtalamaElastikiyet == 0)
+                {
+                    strechBenzerligi = 100;
+                }
+
+                if (strechBenzerligi != 0 || enBenzerligi != 0)
+                {
+                    benzerlikOranı = Math.Round((strechBenzerligi + enBenzerligi + enCekmeBenzerligi + boyCekmeBenzerligi) / 4, 0, MidpointRounding.AwayFromZero);
+                }
+
+                <tr>
+                    @if (item.isExistOnOrderTable == 0)
+                    {
+                        <td style="color:red">@item.kumasAdı</td>
+                        <td style="color:red">@item.kesilebilirEnOrtalama</td>
+                        <td style="color:red">@item.elastikiyetAtkiOrtalama</td>
+                        <td style="color:red">@item.kumasEnCekmeOrtalama</td>
+                        <td style="color:red">@item.kumasBoyCekmeOrtalama</td>
+                        <td style="color:red">@item.konstrüksiyon</td>
+                        <td>
+                            <span>@(benzerlikOranı == 0 ? "Eksik veri yüzünden benzerlik bulunamadı" : benzerlikOranı.ToString())</span>
+                        </td>
+                        <td>
+                            <label>Kumaşa ait Order bulunamadı</label>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@item.kumasAdı</td>
+                        <td>@item.kesilebilirEnOrtalama</td>
+                        <td>@item.elastikiyetAtkiOrtalama</td>
+                        <td>@item.kumasEnCekmeOrtalama</td>
+                        <td>@item.kumasBoyCekmeOrtalama</td>
+                        <td>@item.konstrüksiyon</td>
+
+                        <td>
+                            <span>@(benzerlikOranı == 0 ? "Eksik veri yüzünden benzerlik bulunamadı" : benzerlikOranı.ToString())</span>
+                        </td>
+                        <td>
+                            <div>
+                                <input type="checkbox" data-kumasad="@item.kumasAdı" style="margin-left:1%;" value="" id="@item.kumasAdı.Trim()" @(benzerlikOranı == 100 ? "checked ='checked'" : "")>
+                            </div>
+                        </td>
+                    }
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#kumasListTable').DataTable({
+            "paging": true,
+            "pageLength": 10,
+            "order": [[6, "desc"]]
+        });
+    });
+
+    $('#selectAllCheckBox').on('change', function () {
+        var isChecked = $('#selectAllCheckBox').prop('checked');
+        var dataTable = $('#kumasListTable').dataTable();
+
+        $(dataTable.fnGetNodes()).each(function () {
+            if (isChecked) {
+                if ($(this).find(':last-child').find('input').eq(0).prop('checked') == false) {
+                    $(this).find(':last-child').find('input').eq(0).prop('checked', true);
+                }
+            }
+            else {
+                if ($(this).find(':last-child').find('input').eq(0).prop('checked') == true) {
+                    $(this).find(':last-child').find('input').eq(0).prop('checked', false);
+                }
+            }
+        });
+    });
+
+</script>
+

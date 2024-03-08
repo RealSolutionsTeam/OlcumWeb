@@ -1,0 +1,133 @@
+﻿@model  Tuple<OlcumWeb.Models.DTO.DTOImalatTabloDetay, List<OlcumWeb.Models.DTO.DTOImalatTabloGoster>>
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="table-responsive" id="tableForm_@ViewBag.index">
+            <table id="mainTable" class="table table-striped" style="cursor: pointer;">
+                <thead>
+                    <tr id="tableHead_0">
+                        <th>Ölçü Noktası</th>
+
+
+                        @for (int j = 0; j < Model.Item2[0].beden.Count; j++)
+                        {
+                            <th id="column_0_@(j + 1)">@Model.Item2[0].beden[j]</th>
+                        }
+
+                        <th> Tölerans</th>
+
+                        <th>
+                            Çekme
+                        </th>
+
+                        <th>
+                            Oran
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody_0">
+                    @{ int rowIndex2 = 0;}
+                    @{ string anaBeden = Model.Item1.anaBeden;}
+
+                    @for (int j = 0; j < Model.Item2.Count; j++)
+                    {
+                        if (j == 0)
+                        {
+                            <tr id="satir_@rowIndex2">
+                                <td data-editable="false" id="cell_@(ViewBag.index + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item2[j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(ViewBag.index + "_" +rowIndex2)">
+                                    @Model.Item2[j].olcuNoktasi
+                                </td>
+
+                                @for (int z = 0; z < Model.Item2[j].deger.Count(); z++)
+                                {
+                                    if (anaBeden == Model.Item2[0].beden[z])
+                                    {
+                                        <td tabindex="1" id="cell_@(ViewBag.index + "_" + rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(ViewBag.index + "_" + z+1)" data-rowIndex="@(ViewBag.index + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                            @Model.Item2.Where(x => x.olcuNoktasi == Model.Item2[j].olcuNoktasi && x.beden == Model.Item2[j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td tabindex="1" id="cell_@(ViewBag.index + "_" + rowIndex2 + "_" + (z+1))" data-columnIndex="@(ViewBag.index + "_" + z+1)" data-rowIndex="@(ViewBag.index + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                            @Model.Item2.Where(x => x.olcuNoktasi == Model.Item2[j].olcuNoktasi && x.beden == Model.Item2[j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                        </td>
+                                    }
+
+                                }
+
+                                <td>
+                                    @Model.Item2.Where(x => x.olcuNoktasi == Model.Item2[j].olcuNoktasi).Select(x => x.tolerans).FirstOrDefault()
+
+                                </td>
+
+                                <td>
+                                    @Model.Item2.Where(x => x.olcuNoktasi == Model.Item2[j].olcuNoktasi).Select(x => x.cekme).FirstOrDefault()
+
+                                </td>
+                                <td>
+                                    @Model.Item2.Where(x => x.olcuNoktasi == Model.Item2[j].olcuNoktasi).Select(x => x.oran).FirstOrDefault()
+
+                                </td>
+                            </tr>
+                            rowIndex2++;
+                        }
+                        else
+                        {
+                            if (@Model.Item2[j].olcuNoktasi != @Model.Item2[j - 1].olcuNoktasi)
+                            {
+                                <tr id="satir_@rowIndex2">
+                                    <td data-editable="false" id="cell_@(ViewBag.index + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@Model.Item2[j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(ViewBag.index + "_" +rowIndex2)">
+                                        @Model.Item2[j].olcuNoktasi
+                                    </td>
+
+                                    @for (int z = 0; z < Model.Item2[j].deger.Count(); z++)
+                                    {
+                                        if (anaBeden == Model.Item2[0].beden[z])
+                                        {
+                                            <td tabindex="1" id="cell_@(ViewBag.index + "_" + rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(ViewBag.index + "_" + z+1)" data-rowIndex="@(ViewBag.index + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                                @Model.Item2.Where(x => x.olcuNoktasi == Model.Item2[j].olcuNoktasi && x.beden == Model.Item2[j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td tabindex="1" id="cell_@(ViewBag.index + "_" + rowIndex2 + "_" + (z+1))" data-columnIndex="@(ViewBag.index + "_" + z+1)" data-rowIndex="@(ViewBag.index + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                                @Model.Item2.Where(x => x.olcuNoktasi == Model.Item2[j].olcuNoktasi && x.beden == Model.Item2[j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                            </td>
+                                        }
+                                    }
+
+                                    <td>
+                                        @Model.Item2.Where(x => x.olcuNoktasi == Model.Item2[j].olcuNoktasi).Select(x => x.tolerans).FirstOrDefault()
+
+                                    </td>
+
+                                    <td>
+                                        @Model.Item2.Where(x => x.olcuNoktasi == Model.Item2[j].olcuNoktasi).Select(x => x.cekme).FirstOrDefault()
+
+                                    </td>
+                                    <td>
+                                        @Model.Item2.Where(x => x.olcuNoktasi == Model.Item2[j].olcuNoktasi).Select(x => x.oran).FirstOrDefault()
+
+                                    </td>
+                                </tr>
+                                rowIndex2++;
+                            }
+
+                        }
+                    }
+
+                </tbody>
+            </table>
+            <input style="position: absolute; display: none;">
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    var yoList2_@(ViewBag.index) = @Html.Raw(Json.Encode(Model.Item2));
+
+    yOlist2_0.push(yoList2_@(ViewBag.index));
+</script>

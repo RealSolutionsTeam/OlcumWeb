@@ -1,0 +1,287 @@
+﻿@model List<OlcumWeb.Controllers.PrintModalDataModel>
+
+
+@if (Model[0].raporTuru == 0)
+{
+    var kazantablolari = Model.Where(x => x.tur == 0).OrderBy(x => x.id).ToList();
+
+    <p style="text-align:center;font-weight:bold;color:black">Ölçüler</p>
+    <div class="table-responsive">
+        <table class="table table-bordered table-md">
+            <tbody>
+                <tr>
+                    <th>#</th>
+                    <th>Order No</th>
+                    <th>Ölçü Türü</th>
+                    <th>Tablo Türü</th>
+                    <th>En/Boy Çekme</th>
+                    <th>Açıklama</th>
+                    <th>Tarih</th>
+                    <th>Kullanıcı Adı</th>
+                </tr>
+                @foreach (var item in kazantablolari)
+                {
+                    <tr>
+                        <td>
+                            <div class="pretty p-default p-round p-thick">
+                                <input checked="checked" type="checkbox" class="printModalCheckBox" data-id="@item.id" data-tur="@item.tur">
+                            </div>
+                        </td>
+
+                        <td>
+                            <a class="btn btn-icon btn-info" data-id="@item.id" data-tur="@item.tur" data-orderno="@item.kazanDetay.Order.orderNo" onclick="TabloyaGit(this)"><span style="color:white;line-height:11px">@item.kazanDetay.Order.orderNo</span></a>
+                        </td>
+                        <td>
+                            @item.kazanDetay.OlcuTurleri.olcuTuruAd
+                        </td>
+                        @if (item.kazanDetay.tabloTuru == 0)
+                        {
+                            <td>Yıkama Öncesi</td>
+                        }
+                        else
+                        {
+                            <td>Yıkama Sonrası</td>
+                        }
+                        <td>
+                            @item.enBoyCekme
+                        </td>
+                        <td>
+                            @item.kazanDetay.aciklama
+                        </td>
+                        <td>
+                            @item.kazanDetay.tarih
+                        </td>
+                        <td>
+                            @item.kazanDetay.PersonelTablo.personelAd
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+    <hr />
+
+    var olcuTablolari = Model.Where(x => x.tur == 1).OrderBy(x => x.id).ToList();
+
+    <p style="text-align:center;font-weight:bold;color:black">Ölçü Tabloları</p>
+    <div class="table-responsive">
+        <table class="table table-bordered table-md">
+            <tbody>
+                <tr>
+                    <th>#</th>
+                    <th>Order No</th>
+                    <th>Ölçü Türü</th>
+                    <th>Tablo Türü</th>
+                    <th>En/Boy Çekme</th>
+                    <th>Açıklama</th>
+                    <th>Tarih</th>
+                    <th>Kullanıcı Adı</th>
+                </tr>
+                @foreach (var item in olcuTablolari)
+                {
+                    <tr>
+                        <td>
+                            <div class="pretty p-default p-round p-thick">
+                                <input checked="checked" type="checkbox" class="printModalCheckBox" data-id="@item.id" data-tur="@item.tur">
+                            </div>
+                        </td>
+
+                        <td>
+                            <a class="btn btn-icon btn-info" data-id="@item.id" data-tur="@item.tur" data-orderno="@item.olcuTabloDetay.Order.orderNo" onclick="TabloyaGit(this)"><span style="color:white;line-height:11px">@item.olcuTabloDetay.Order.orderNo</span></a>
+                        </td>
+                        <td>
+                            @item.olcuTabloDetay.OlcuTurleri.olcuTuruAd
+                        </td>
+                        @if (item.olcuTabloDetay.tabloTuru == 0)
+                        {
+                            <td>Yıkama Öncesi</td>
+                        }
+                        else
+                        {
+                            <td>Yıkama Sonrası</td>
+                        }
+                        <td>
+                            @item.olcuTabloDetay.enBoyCekme
+                        </td>
+                        <td>
+                            @item.olcuTabloDetay.aciklama
+                        </td>
+                        <td>
+                            @item.olcuTabloDetay.tarih
+                        </td>
+                        <td>
+                            @item.olcuTabloDetay.PersonelTablo.personelAd
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    var numuneTablolari = Model.ToList();
+
+    <p style="text-align:center;font-weight:bold;color:black">Ölçüler</p>
+    <div class="table-responsive">
+        <table class="table table-bordered table-md">
+            <tbody>
+                <tr>
+                    <th>#</th>
+                    <th>Order No</th>
+                    <th>Ölçü Türü</th>
+                    <th>Tablo Türü</th>
+                    <th>Beden</th>
+                    <th>En/Boy Çekme</th>
+                    <th>Açıklama</th>
+                    <th>Tarih</th>
+                    <th>Kullanıcı Adı</th>
+                </tr>
+                @foreach (var item in numuneTablolari)
+                {
+                    <tr>
+                        <td>
+                            <div class="pretty p-default p-round p-thick">
+                                <input checked="checked" type="checkbox" class="printModalCheckBox" data-id="@item.id" data-tur="@item.tur" data-bedenad="@item.bedenAd">
+                            </div>
+                        </td>
+
+                        <td>
+                            <a class="btn btn-icon btn-info" data-id="@item.id" data-tur="@item.tur" data-orderno="@item.numuneDetay.Order.orderNo" data-bedenad="@item.bedenAd" onclick="TabloyaGit(this)"><span style="color:white;line-height:11px">@item.numuneDetay.Order.orderNo</span></a>
+                        </td>
+                        <td>
+                            @item.numuneDetay.OlcuTurleri.olcuTuruAd
+                        </td>
+                        @if (item.numuneDetay.tabloTuru == 0)
+                        {
+                            <td>Yıkama Öncesi</td>
+                        }
+                        else
+                        {
+                            <td>Yıkama Sonrası</td>
+                        }
+                        <td>@item.bedenAd Beden</td>
+                        <td>
+                            @item.enBoyCekme
+                        </td>
+                        <td>
+                            @item.numuneDetay.aciklama
+                        </td>
+                        <td>
+                            @item.numuneDetay.tarih
+                        </td>
+                        <td>
+                            @item.numuneDetay.PersonelTablo.personelAd
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+}
+
+<hr />
+<a class="btn btn-icon btn-success" onclick="PrintModalYazdir()"><span style="color:white;line-height:11px">Yazdır</span></a>
+
+<script>
+    var printListDeneme = [];
+    $(document).ready(function () {
+
+        var model = @Html.Raw(Json.Encode(Model.Select(x=> new { x.id,x.tur,x.bedenAd}).OrderBy(x=>x.tur)));
+
+        for (var i = 0; i < model.length; i++) {
+            printListDeneme.push({ id: model[i].id, tur: model[i].tur, bedenAd: model[i].bedenAd });
+        }
+    });
+
+    function PrintModalYazdir() {
+        YukleniyorOnOff();
+        printListDeneme.sort((a, b) => parseFloat(b.id) - parseFloat(a.id));
+        var idList = [];
+        var turList = [];
+        var bedenList = [];
+
+        for (var i = 0; i < printListDeneme.length; i++) {
+            idList.push(printListDeneme[i].id);
+            turList.push(printListDeneme[i].tur);
+            bedenList.push(printListDeneme[i].bedenAd)
+        }
+
+
+        var someJSONdata = [];
+        var propertiesList = [];
+
+
+        $.post("/Raporlama/TablePrint", { 'id': idList, 'tur': turList, 'beden': bedenList }, function (printSucc) {
+            printJS({
+                printable: someJSONdata,
+                properties: propertiesList,
+                header: printSucc,
+                //style: '.printTable { width: 100%;  border-collapse: collapse;} .printTable td { border: 1px solid grey; padding: 1px;  }  table td { border: 1px solid grey; padding: 1px;  } ',
+                type: 'json',
+                gridStyle: 'border: 1px solid grey; padding: 1px; ',
+                gridHeaderStyle: 'border: 1px solid grey; padding: 1px;'
+            });
+            YukleniyorOnOff();
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+            YukleniyorOnOff();
+        });
+    }
+
+    function TabloyaGit(elem) {
+        var id = $(elem).data('id');
+
+        var tur = $(elem).data('tur');
+
+        if (tur != 0) {
+
+            var bedenAd = $(elem).data('bedenad');
+            window.open(window.location.origin + '/Raporlama/TabloGoster?id=' + id + '&tur=' + tur + '&bedenad=' + bedenAd);
+
+        }
+        else {
+            window.open(window.location.origin + '/Raporlama/TabloGoster?id=' + id + '&tur=' + tur);
+        }
+    }
+
+    $(".printModalCheckBox").change(function () {
+        if (this.checked) {
+            var id = $(this).data('id');
+            var tur = $(this).data('tur');
+            var beden = $(this).data('bedenad');
+            printListDeneme.push({ id: id, tur: tur, bedenAd: beden });
+        }
+        else {
+            var id = $(this).data('id');
+
+            var tur = $(this).data('tur');
+
+            for (var i = 0; i < printListDeneme.length; i++) {
+
+                if (tur != 0) {
+                    var bedenad = $(this).data('bedenad');
+                    if (printListDeneme[i].id == id && printListDeneme[i].bedenAd == bedenad) {
+                        printListDeneme.splice(i, 1);
+                        break;
+                    }
+                }
+                else {
+                    if (printListDeneme[i].id == id) {
+                        printListDeneme.splice(i, 1);
+                        break;
+                    }
+                }
+ 
+            }
+
+
+        }
+    });
+
+</script>
+

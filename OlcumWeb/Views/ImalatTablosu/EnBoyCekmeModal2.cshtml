@@ -1,0 +1,95 @@
+﻿@model Tuple<string, List<List<OlcumWeb.Models.DTO.DTOImalatTabloGoster>>>
+
+<h4>Lütfen istenen kalıp için En/Boy çekme giriniz.</h4>
+
+<div class="col-4" style="margin-top: 5%">
+    <div class="form-group">
+        <label>En/Boy Çekme:</label>
+        <div class="input-group">
+            @Html.TextBox("enBoyCekme", null, new { @class = "form-control", @id = "enBoyCekme2" })
+        </div>
+    </div>
+</div>
+
+<div class="row"><button type="button" class="btn btn-primary" id="btnKaydet46" onclick="CekmeBelirle()">Kaydet</button></div>
+
+<script>
+    var cekmeler = @Html.Raw(Json.Encode(ViewBag.cekmeisimLeri));
+    var enBoyCekme2 = "";
+    function CekmeBelirle() {
+        enBoyCekme2 = $('#enBoyCekme2').val();
+        var anaBeden = @Html.Raw(Json.Encode(Model.Item1));
+        var previousTablo = @Html.Raw(Json.Encode(Model.Item2.ToList()));
+
+
+        var cekmeCount = $('#myTab_Yo li').length - 2;
+
+        //$('#cekmeTab_' + Number(cekmeCount) + '> a').html(enBoyCekme2);
+
+        //var ysRowCount = $('#tableBody_0 tr').length;
+        //var ysColumnCount = $('#tableHead_0 th').length - 4;
+        //var ysList = [];
+
+        //for (var i = 0; i < ysRowCount; i++) {
+        //    var olcuNoktasi = $("#cell_0_" + i + "_0").html().trim();
+
+        //    var degerList = [];
+
+        //    var bedenList = [];
+        //    for (var j = 1; j < ysColumnCount; j++) {
+        //         degerList.push($("#cell_" + i + "_" + j).html().replace(',', '.'));
+        //         bedenList.push($("#column_0_" + j).data('beden'));
+        //    }
+
+        //    ysList.push({ 'olcuNoktasi': olcuNoktasi, 'beden': bedenList, 'deger': degerList });
+        //}
+
+        //        console.log(ysList);
+
+        var anaBeden = 0;
+        for (var i = 1; i < columnCount; i++) {
+            if ($('#cell_0_' + i).css("background-color") == 'rgb(135, 206, 250)') {
+                var columnIndex = $('#cell_0_' + i).data('columnindex');
+
+                anaBeden = $('#column_0_' + columnIndex).data('beden');
+            }
+        }
+
+        var detayObjectYo = {};
+
+        detayObjectYo = {
+            'orderID': $("#orderNo").val(),
+            'olcuTuruID': $("#olcuTuruAd").val(),
+            'anaBeden': anaBeden,
+            'tabloTuru': 0,
+            'aciklama': $('#aciklamaTa').val(),
+            'enBoycekme': enBoyCekme2,
+            'kullaniciID': JSON.parse(localStorage.getItem('personel')).id
+        };
+
+
+        cekmeler.push(enBoyCekme2);
+
+        YukleniyorOnOff();
+        $.post("/ImalatTablosu/YikamaOncesiEkle", { 'checkExist': 1, 'anaBeden': anaBeden, 'previousTablo': previousTablo, 'cekmeler': cekmeler, detayTablo: detayObjectYo }, function (deger) {
+            $('#yikamaOncesiContent').html(deger);
+            $.post("/ImalatTablosu/KalipOlcusuEkle", { 'checkExist': 1, 'anaBeden': anaBeden, 'previousTablo': previousTablo, 'cekmeler': cekmeler }, function (deger2) {
+                $('#kalipOlcusuContent').html(deger2);
+                YukleniyorOnOff();
+            }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+            });
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+        $('#enBoyCekmeModal2').modal('toggle');
+
+    }
+
+    function CloseModal() {
+        var cekmeCount = $('#myTabCekme li').length - 2;
+        $('#cekmeTab_' + cekmeCount).before().remove();
+        $('#cekme_' + Number(cekmeCount)).remove();
+    }
+</script>

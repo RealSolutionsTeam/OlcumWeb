@@ -1,0 +1,442 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<title>Numune Kesim Formu</title>
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<div style="margin-top:2%">
+    <div class="topSide">
+        <ul id="breadcrumb">
+            <li><a href="@Url.Action("Index", "AnaSayfa",new { id = ViewBag.personel.id})"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+            <li><a href="@Url.Action("Index", "KesimFisi", new { id = ViewBag.personel.id})"><span class="icon icon-double-angle-right"></span>Kesim Fişi Girişi</a></li>
+        </ul>
+    </div>
+    <div class="bottomSide">
+        <div class="card">
+            <div class="card-header">
+                <h4>Kesim Fişi Giriş</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Order No:</label>
+                            <div class="input-group">
+                                <select id="orderNo" class="select2" multiple style="width:100%"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Tarih:</label>
+                            <div class="input-group">
+                                <input type="text" id="datepicker" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Modelist Ad:</label>
+                            <div class="input-group">
+                                @{ string adSoyad = ViewBag.personel.personelAd + " " + ViewBag.personel.personelSoyad;}
+                                @Html.TextBox("modelistAd", adSoyad, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Müşteri:</label>
+                            <div class="input-group">
+                                @Html.TextBox("musteri", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Model No:</label>
+                            <div class="input-group">
+                                @Html.TextBox("modelNo", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Model Adı:</label>
+                            <div class="input-group">
+                                @Html.TextBox("modelAd", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Cinsi:</label>
+                            <div class="input-group">
+                                @Html.DropDownList("giysiTuru", new SelectList(ViewBag.giysiTurleri, "id", "giysiTuruAd"), new { @class = "form-control select2", @id = "giysiTuru" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Dikim Nedeni:</label>
+                            <div class="input-group">
+                                @Html.TextBox("dikimNedeni", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Kumaş:</label>
+                            <div class="input-group">
+                                @Html.TextBox("kumas", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Çekme:</label>
+                            <div class="input-group">
+                                @Html.TextBox("cekme", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Kumaş Eni:</label>
+                            <div class="input-group">
+                                @Html.TextBox("kumasEni", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Top No:</label>
+                            <div class="input-group">
+                                @Html.TextBox("topNo", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Garni:</label>
+                            <div class="input-group">
+                                @Html.TextBox("garni1", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Garni:</label>
+                            <div class="input-group">
+                                @Html.TextBox("garni2", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Garni:</label>
+                            <div class="input-group">
+                                @Html.TextBox("garni3", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Tela:</label>
+                            <div class="input-group">
+                                @Html.TextBox("tela", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Baskı:</label>
+                            <div class="input-group">
+                                @Html.TextBox("baski", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>Nakış:</label>
+                            <div class="input-group">
+                                @Html.TextBox("nakis", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+                <div class="row">
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label>Boylar:</label>
+                            <div class="input-group">
+                                @Html.DropDownList("boylar", new SelectList(ViewBag.boylar, "Id", "BoyAd"), new { @class = "form-control select2", @id = "boylar" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label>Bedenler:</label>
+                            <div class="input-group">
+                                @Html.DropDownList("bedenler", new SelectList(ViewBag.bedenler, "ID", "beden"), new { @class = "form-control select2", @id = "bedenler" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label>Adet:</label>
+                            <div class="input-group">
+                                @Html.TextBox("adet", null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <a href="#" class="btn btn-icon btn-info" onclick="AddKonstruksiyon()" style="margin-top:6%;width:20%;height:45%"><i class="fas fa-plus  fa-10x" style="color:white"></i></a>
+                    </div>
+                </div>
+                <hr />
+
+                <div class="table-responsive">
+                    <table id="mainTable" class="table table-striped mainTable" style="cursor: pointer;">
+                        <thead>
+                            <tr id="tableHead">
+                                <th>Ölçü Noktası</th>
+                            </tr>
+                            <tr id="boyBedenAciklama">
+                                <th>Açıklama</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr>
+                                <td data-editable="false">
+                                    @Html.DropDownList("olcuNoktasi1", new SelectList(ViewBag.olcuNoktalari, "id", "olcuNoktasi"), new { @class = "form-control select2", @id = "olcuNoktasi1" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-editable="false">
+                                    @Html.DropDownList("olcuNoktasi2", new SelectList(ViewBag.olcuNoktalari, "id", "olcuNoktasi"), new { @class = "form-control select2", @id = "olcuNoktasi2" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-editable="false">
+                                    @Html.DropDownList("olcuNoktasi3", new SelectList(ViewBag.olcuNoktalari, "id", "olcuNoktasi"), new { @class = "form-control select2", @id = "olcuNoktasi3" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-editable="false">
+                                    @Html.DropDownList("olcuNoktasi4", new SelectList(ViewBag.olcuNoktalari, "id", "olcuNoktasi"), new { @class = "form-control select2", @id = "olcuNoktasi4" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-editable="false">
+                                    @Html.DropDownList("olcuNoktasi5", new SelectList(ViewBag.olcuNoktalari, "id", "olcuNoktasi"), new { @class = "form-control select2", @id = "olcuNoktasi5" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td data-editable="false">
+                                    @Html.DropDownList("olcuNoktasi6", new SelectList(ViewBag.olcuNoktalari, "id", "olcuNoktasi"), new { @class = "form-control select2", @id = "olcuNoktasi6" })
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="kesimFisiListModal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document" style="max-width:75%">
+            <div class="modal-content">
+                <div class="modal-header" style="display:block">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="kesimFisiList_Modal"></div>
+                </div>
+                <div class="modal-footer" style="display:none">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+    <script src="~/editable-table-master/mindmup-editabletable.js"></script>
+    <script src="~/editable-table-master/numeric-input-example.js"></script>
+
+    <script>
+        if (jQuery().select2) {
+            $(".select2").select2({
+                width: '100%',
+            });
+
+            $('#orderNo').select2({
+                minimumInputLength: 4,
+                language: {
+                    inputTooShort: function (args) {
+
+                        return "En az 4 karakter girmelisiniz";
+                    },
+                    noResults: function () {
+                        return "Bulunamadı";
+                    },
+                    searching: function () {
+                        return "Aranıyor";
+                    }
+                },
+                formatInputTooShort: function (input, min) { return "Start typing to search"; },
+                ajax: {
+                    url: ('/Raporlama/SearchOrders'),
+                    dataType: 'json',
+                    data: function (term) {
+                        return {
+                            term: term.term
+                        };
+                    },
+                    type: "POST",
+                    processResults: function (response) {
+                        return {
+                            results: $.map(response, function (item) {
+                                return {
+                                    text: item.orderNo,
+                                    id: item.orderID
+                                }
+                            })
+                        };
+                    }
+                },
+
+            });
+        };
+
+        $('#olcuNoktasi1').val('1').trigger('change');
+
+        $('#olcuNoktasi2').val('368').trigger('change');
+
+        $('#olcuNoktasi3').val('391').trigger('change');
+
+        $('#olcuNoktasi4').val('424').trigger('change');
+
+        $('#olcuNoktasi5').val('433').trigger('change');
+
+        $('#olcuNoktasi6').val('461').trigger('change');
+
+        $(function () {
+            $("#datepicker").datepicker({
+                dateFormat: "dd-mm-yy",
+                altFormat: "yy-mm-dd",
+                altField: "#tarih-db",
+                monthNames: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+                dayNamesMin: ["Pa", "Pt", "Sl", "Ça", "Pe", "Cu", "Ct"],
+            });
+
+            $("#datepicker").datepicker('setDate', new Date());
+        });
+
+        $("#mainTable").editableTableWidget();
+
+        $('#orderNo').on('change', function () {
+            var orderId = $('#orderNo').val();
+            var orderText = $('#orderNo').text();
+
+            $.post("/KesimFisi/GetKesimFisiDto", { 'orderId': orderId, 'orderNo': orderText }, function (success) {
+                if (success[0].id === undefined) {
+                }
+                else {
+                    $.post("/KesimFisi/KesimFisiListModal", { kesimFisiDtos: success }, function (data) {
+                        $('#kesimFisiList_Modal').html(data);
+
+                        $('#kesimFisiListModal').modal('show');
+                    }).fail(function (response) {
+                        alert('Error : ' + response.responseText);
+                    });
+                }
+
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+
+        });
+
+        $('#giysiTuru').on('change', function () {
+
+            var giysiTuruText = $('#giysiTuru option:selected').text();
+
+            if (giysiTuruText == "CEKET" || giysiTuruText == "GÖMLEK" || giysiTuruText == "ELBİSE" || giysiTuruText == "YELEK") {
+
+                $("#olcuNoktasi1").val(1363).trigger('change');
+
+                $('#select2-olcuNoktasi1-container').html("ETEK ENİ");
+                $('#select2-olcuNoktasi1-container').attr("title","ETEK ENİ");
+
+                $('#olcuNoktasi2').val(461).trigger('change');
+
+                $('#select2-olcuNoktasi2-container').html("FERMUAR BOYU");
+                $('#select2-olcuNoktasi2-container').attr("title", "FERMUAR BOYU");
+
+                for (var i = $('#tableBody tr').length; i > 1; i--) {
+                    $('#tableBody tr').eq(i).remove();
+                }
+
+            }
+            else {
+
+
+
+                $('#olcuNoktasi1').val('1').trigger('change');
+
+                $('#select2-olcuNoktasi1-container').html("BEL");
+                $('#select2-olcuNoktasi1-container').attr("title", "ETEK ENİ");
+
+                $('#olcuNoktasi2').val('368').trigger('change');
+
+                $('#olcuNoktasi3').val('391').trigger('change');
+
+                $('#olcuNoktasi4').val('424').trigger('change');
+
+                $('#olcuNoktasi5').val('433').trigger('change');
+
+                $('#olcuNoktasi6').val('461').trigger('change');
+            }
+
+        });
+
+
+    </script>
+
+

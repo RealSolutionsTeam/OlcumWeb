@@ -1,0 +1,239 @@
+﻿@model OlcumWeb.Models.DTO.DTONumuneTablo
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<div class="card card-success">
+    <div class="card-header">
+        <h4>Cogaltma Olcum Formu </h4>
+        <div class=" card-header-action">
+            <div id="buttonEklemek">
+                <button class="btn btn-success" style="visibility:hidden" id="yazdirButton" onclick="Print()"><i class="fas fa-print" style="color:white"></i> <span style="color:white">Yazdır</span></button>
+            </div>
+        </div>
+    </div>
+    <div class="collapse show" id="mycard-collapse" style="">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Ölçü Türleri:</label>
+                        <div class="input-group">
+                            @Html.DropDownList("olcuTuru", new SelectList(ViewBag.olcuTurleri, "id", "olcuTuruAd"), "Seçiniz...", new { @class = "form-control select2", @id = "olcuTuruAd" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Giysi Turu:</label>
+                        <div class="input-group">
+                            @Html.DropDownList("giysiTuru", new SelectList(ViewBag.giysiTurleri, "id", "giysiTuruAd"), "Seçiniz...", new { @class = "form-control select2", @id = "giysiTuruAd" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Order No:</label>
+                        <div class="input-group">
+                            @Html.DropDownList("orderNo", new SelectList(ViewBag.order, "id", "orderNo"), "Seçiniz...", new { @class = "form-control select2", @id = "orderNo" })
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <hr />
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Model Adı:</label>
+                        <div class="input-group">
+                            @Html.TextBoxFor(x => x.modelAd, null, new { @class = "form-control", @id = "modelAd" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group" style="margin-right: 20px">
+                        <label>Top Numarası:</label>
+                        <div class="input-group">
+                            @Html.TextBoxFor(x => x.topNo, null, new { @class = "form-control", @id = "topNo" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Kumaş:</label>
+                        <div class="input-group">
+                            @Html.TextBoxFor(x => x.kumas, null, new { @class = "form-control", @id = "kumas" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Müşteri:</label>
+                        <div class="input-group">
+                            @Html.TextBoxFor(x => x.musteri, null, new { @class = "form-control", @id = "musteri" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group" style="margin-right: 20px">
+                        <label>Atölye:</label>
+                        <div class="input-group">
+                            @Html.DropDownList("atolyeAd", new SelectList(ViewBag.atolyeler, "Id", "AtolyeAd", 65), "Seçiniz...", new { @class = "form-control select2", @id = "atolyeAd" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group">
+                        <label>Kalıp Adı:</label>
+                        <div class="input-group">
+                            @Html.TextBoxFor(x => x.kalipAdi, null, new { @class = "form-control", @id = "kalipAdi" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <div class="col-4">
+                    <div class="form-group" style="margin-right: 20px">
+                        <label>Yıkamaya Gidiş:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control datepicker" id="yikamayaGidis">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group" style="margin-right: 20px">
+                        <label>Yıkamadan Geliş:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control datepicker" id="yikamadanGelis">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="form-group" style="margin-right: 20px">
+                        <label>Kesime Gidiş:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control datepicker" id="kesimeGidis">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group" style="margin-right: 20px">
+                        <label>Dikime Gidiş:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control datepicker" id="dikimeGidis">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+
+    if (jQuery().select2) {
+        $(".select2").select2();
+    };
+
+    $(function () {
+        $(".datepicker").datepicker({
+            dateFormat: "dd-mm-yy",
+            altFormat: "yy-mm-dd",
+            altField: "#tarih-db",
+            monthNames: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+            dayNamesMin: ["Pa", "Pt", "Sl", "Ça", "Pe", "Cu", "Ct"],
+        });
+
+        $("#datepicker").datepicker('setDate', new Date());
+    });
+
+    $("#orderNo").change(function () {
+        var selectedOrder = $("#orderNo").val();
+        var orderAd = $('#orderNo option:selected').text();
+        var orderID = $('#orderNo').val();
+
+        var selectedOlcuTuru = $("#olcuTuruAd").val();
+        var selectedGiysiTuru = $('#giysiTuruAd').val();
+
+
+        if (selectedOlcuTuru == '' || selectedGiysiTuru == '' || selectedOrder == '') {
+            AlertHata("Lütfen \"Ölçü Türleri\", \"Giysi Türleri\" ve \"Order No\" kısımlarını boş bırakmayın!");
+            $("#orderNo").prop('selectedIndex', 0);
+
+        }
+        else {
+            $('#breadcrumb').append('<li><a href="#" class="details" onclick="deneme()"><span class="icon icon-double-angle-right"></span>' + orderAd + '</a></li>');
+            $('#orderContent').hide();
+
+            $.getJSON("/CogaltmaFormu/CheckExist", { 'orderNo': selectedOrder, 'olcuTuru': selectedOlcuTuru },
+                function (data) {
+                    if (data.id == 0) {
+                        document.getElementById('kumas').value = data.kumas;
+                        document.getElementById('modelAd').value = data.modelAd;
+                        document.getElementById('musteri').value = data.musteri;
+
+                        $.post("/CogaltmaFormu/HazirTabloModal", { 'orderID': orderID }, function (deger) {
+                            $('#hazirTablo_Modal').html(deger);
+                        }).fail(function (response) {
+                            alert('Error : ' + response.responseText);
+                        });
+
+                        $('#hazirTabloModal').modal('show');
+                    }
+                    else {
+                        document.getElementById('modelAd').value = data.modelAd;
+                        document.getElementById('topNo').value = data.topNo;
+                        $('#atolyeAd').val(data.atolyeID);
+                        document.getElementById('kumas').value = data.kumas;
+                        document.getElementById('kalipAdi').value = data.kalipAdi;
+                        var yikamayaGidisDate = new Date(parseInt(data.yikamayaGidis.substr(6)));
+                        document.getElementById('yikamayaGidis').value = $.datepicker.formatDate('dd-mm-yy', yikamayaGidisDate);
+
+                        var yikamadanGelisDate = new Date(parseInt(data.yikamadanGelis.substr(6)));
+                        document.getElementById('yikamadanGelis').value = $.datepicker.formatDate('dd-mm-yy', yikamadanGelisDate);
+
+                        var kesimeGidisDate = new Date(parseInt(data.kesimeGidis.substr(6)));
+                        document.getElementById('kesimeGidis').value = $.datepicker.formatDate('dd-mm-yy', kesimeGidisDate);
+
+                        var dikimeGidisDate = new Date(parseInt(data.dikimeGidis.substr(6)));
+                        document.getElementById('dikimeGidis').value = $.datepicker.formatDate('dd-mm-yy', dikimeGidisDate);
+
+                        document.getElementById('musteri').value = data.musteri;
+
+
+                        $('#yazdirButton').css('visibility', 'visible');
+
+                        $.post("/CogaltmaFormu/TabloVar", { 'orderID': selectedOrder, 'olcuTuru': selectedOlcuTuru, 'giysiTuru': selectedGiysiTuru }, function (deger) {
+                            $('#tableContent').html(deger);
+                        }).fail(function (response) {
+                            alert('Error : ' + response.responseText);
+                        });
+
+                    }
+                });
+        }
+
+    });
+
+</script>
+

@@ -1,0 +1,114 @@
+﻿<style>
+    .block2 {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+    }
+</style>
+
+
+<div class="card card-success">
+    <div class="card-header">
+        <h4>Ölçü Formları - </h4>
+        <span>Lütfen ölçüsünü girmek istediğiniz tablo türünü seçiniz.</span>
+        <div class="card-header-action block2">
+            <a href="#" class="btn btn-info"><span style="color:white" onclick="ListeGorunumu()">Liste Görünümü</span></a>
+        </div>
+
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4  olcuTurucard" data-id="1">
+                <div class="card card-secondary" style="border-radius:25px; border-top:7px solid; cursor:pointer; height:250px;">
+                    <div class="card-header">
+                        <h4>Numune Olcu Formu</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><code>Tasarım, Proto, Karşıt </code> vb. ölçülerin girildiği bölüm. </p>
+                    </div>
+                    <div class="card-footer">
+                        Form Adeti: 0
+                    </div>
+                </div>
+            </div>
+
+            @Html.Hidden("NumuneFormu", Url.Action("Index", "NumuneFormu"))
+
+
+            <div class="col-md-4 olcuTurucard" data-id="3">
+                <div class="card card-danger" style="border-radius:25px; border-top:7px solid #fc544b;  cursor:pointer; height:250px;">
+                    <div class="card-header">
+                        <h4>Kazan Olcu Formu</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><code>Kazan, Parti, Ütü-Paket Sevk</code> vb. ölçülerin girildiği bölüm.</p>
+                    </div>
+                    <div class="card-footer">
+                        Form Adeti: 0
+                    </div>
+                </div>
+            </div>
+
+            @Html.Hidden("KazanFormu", Url.Action("Index", "KazanFormu"))
+
+
+            <div class="col-md-4 olcuTurucard" data-id="4">
+                <div class="card card-info" style="border-radius:25px; border-top:7px solid #3abaf4;  cursor:pointer; height:250px;">
+                    <div class="card-header">
+                        <h4>Fason Ham Olcu</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><code>Fasona</code> giden malların ölçüldüğü bölüm.</p>
+                    </div>
+                    <div class="card-footer">
+                        Form Adeti: 0
+                    </div>
+                </div>
+            </div>
+
+            @Html.Hidden("FasonFormu", Url.Action("Index", "Fason"))
+
+        </div>
+    </div>
+</div>
+
+<script>
+         var userID = @(ViewBag.id);
+    $('.olcuTurucard').click(function () {
+        var id = $(this).data('id');
+        console.log(userID);
+
+        if (id == 1) {
+            var url = $("#NumuneFormu").val();
+            location.href = url + "/Index?id=" + userID + "&fromModelist=0";
+        }
+        else if (id == 2) {
+            var url = $("#CogaltmaFormu").val();
+            location.href = url + "/Index/" + userID;
+        }
+        else if (id == 3) {
+            var url = $("#KazanFormu").val();
+            location.href = url;
+        }
+        else if (id == 4) {
+            var url = $("#FasonFormu").val();
+            location.href = url;
+        }
+    });
+
+    function ListeGorunumu() {
+        $.ajax({
+            url: '/OlcuFormu/ListeGorunumu',
+            type: 'GET',
+            dataType: 'html',
+            success: function (result) {
+                $('#listeGorunumu').html(result);
+                $('#listeGorunumu').show();
+                $('#hucreGorunumu').hide();
+            },
+            error: function (xhr, status) {
+                alert(status);
+            }
+        });
+    }
+</script>

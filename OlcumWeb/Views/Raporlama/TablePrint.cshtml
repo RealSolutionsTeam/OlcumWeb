@@ -1,0 +1,794 @@
+﻿@model List<OlcumWeb.Controllers.TabloDTOModel>
+
+@{ int i = 0;}
+@foreach (var item in Model)
+{
+    double solUstTop = (i * 100);
+    double solUstOrta = (i * 100) + -1;
+    double solUstSag = (i * 100);
+    double table = (i * 100) + 5.5;
+    double aciklama = -(i * 100) - 0;
+    if (item.tur == 0)
+    {
+        <style>
+            .printTable {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+                .printTable td {
+                    border: 1px solid grey;
+                    padding: 1px;
+                }
+
+                .printTable th {
+                    border: 1px solid grey;
+                    padding: 1px;
+                    text-align: center;
+                }
+
+            .sayfaSon {
+                page-break-after: always;
+            }
+        </style>
+
+        <div style="position:absolute;top:@(solUstTop.ToString().Replace(',','.'))%;">
+            <table class="printTable">
+                <tbody>
+                    <tr>
+                        <td colspan="2"><b>Tarih: </b><label style="color: cadetblue">@item.kazanDetay.tarih.ToShortDateString()</label></td>
+                        <td colspan="2" rowspan="4" style="text-align:center"><b><label style="color:cadetblue">@item.kazanDetay.OlcuTurleri.olcuTuruAd  @(item.kazanDetay.tabloTuru == 0 ? "Yıkama Öncesi" : "Yıkama Sonrası") Raporu</label></b></td>
+                        <td colspan="2"><b>Model: </b> <label style="color:cadetblue">@ViewBag.model   -   @ViewBag.artikel</label></td>
+                        <td colspan="1"><b>Döküman Kodu</b></td>
+                        <td colspan="1"><b>ÜRT. FR. 11</b></td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2"><b>Order No: </b><label style="color:cadetblue">@item.kazanDetay.Order.orderNo</label></td>
+                        <td colspan="2">
+                            <b>Dikim Atölyesi: </b><label style="color:cadetblue">@item.atolyeAdList</label>
+                            @if (item.utuPaketAdList != "")
+                            {
+                                <br />
+                                <b>Ütü/Paket: </b><label style="color:cadetblue">@item.utuPaketAdList</label>
+                            }
+
+                        </td>
+                        <td colspan="1"><b>İlk Yürürlülük Tarihi</b></td>
+                        <td colspan="1"><b>08.01.2018</b></td>
+                    </tr>
+
+
+                    <tr>
+                        <td colspan="2" rowspan="2"><b>Müşteri: </b> <label style="color:cadetblue">@item.kazanDetay.Order.musteri </label>   </td>
+                        <td colspan="2" rowspan="2"><b>Yıkama Yeri: </b><label style="color:cadetblue">@item.kazanDetay.yikamaYeri</label>   <b>Yıkama Sorumlusu: </b><label style="color:cadetblue">@item.kazanDetay.yikamaSorumlu</label></td>
+
+                        <td colspan="1" rowspan="1"><b>Revizyon Tarihi</b></td>
+
+                        <td colspan="1" rowspan="1"> </td>
+
+                    </tr>
+
+
+                    <tr>
+                        <td colspan="1" rowspan="1"><b>Revizyon No</b></td>
+                        <td colspan="1" rowspan="1"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <br />
+
+            @if (item.fasonMuList)
+            {
+                <table class="printTable">
+                    <thead>
+                        <tr>
+                            <th>Ölçü Noktası</th>
+
+                            @foreach (var item2 in item.headerList)
+                            {
+                                <th>@item2.Bedenler.beden</th>
+                            }
+
+
+                            @if (item.kazanDetay.tabloTuru == 0)
+                            {
+                                <th>Ortalama Deger</th>
+                                <th>Gerçekleşen Tölerans</th>
+                                <th>Uygulanan Tölerans</th>
+                            }
+                            else
+                            {
+                                <th>Ortalama Deger</th>
+                                <th>Gerçekleşen Çekme</th>
+                                <th>Uygulanan Çekme</th>
+                            }
+
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item2 in item.dbKazanAraList.GroupBy(x => x.OlcuNoktalari).Select(y => y.Key))
+                        {
+                            <tr>
+                                <td> @item2.olcuNoktasi </td>
+
+                                @foreach (var itemheader in item.headerList)
+                                {
+
+                                    double? deger = item.dbKazanAraList.Where(x => x.bedenID == itemheader.bedenID && x.enBoyCekme == itemheader.enBoyCekme && x.olcuNoktaID == item2.id && x.pantNo == itemheader.pantNo).FirstOrDefault().deger;
+
+                                    if (deger > 1 || deger <= -1)
+                                    {
+                                        <td style="color:red; text-align:center">@deger</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="color:green;text-align:center">@deger</td>
+                                    }
+                                }
+
+                                @if (item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).Count() != 0)
+                                {
+                                    if (item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().ortalamaDeger <= -1 || item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().ortalamaDeger >= 1)
+                                    {
+                                        <td style="color:red;text-align:center;">@item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().ortalamaDeger</td>
+
+                                    }
+                                    else
+                                    {
+                                        <td style="color:green;text-align:center;">@item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().ortalamaDeger</td>
+
+                                    }
+
+                                    <td style="text-align:center;">@item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().gerceklesenTolCekme</td>
+
+
+                                    <td style="text-align:center;">@item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().uygulananTolCekme</td>
+
+                                }
+                                else
+                                {
+                                    <td></td>
+                                    <td></td>
+                                }
+
+                                @*<td>@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().gerceklesenTolCekme</td>
+                                    <td>@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().uygulananTolCekme</td>*@
+
+                            </tr>
+                        }
+
+                        <tr>
+                            <td>Çekme</td>
+
+                            @foreach (var item2 in item.headerList)
+                            {
+                                <td style="text-align:center;">@item2.enBoyCekme</td>
+                            }
+                        </tr>
+
+                        <tr>
+                            <td>PNo</td>
+
+                            @foreach (var item2 in item.headerList)
+                            {
+                                <td style="text-align:center;">@item2.pantNo</td>
+                            }
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            }
+            else
+            {
+                <table class="printTable">
+                    <thead>
+                        <tr>
+                            <th>Ölçü Noktası</th>
+
+                            @foreach (var item2 in item.headerList)
+                            {
+                                <th> @item2.Bedenler.beden  -  @item2.bpantNo</th>
+                            }
+
+
+                            @if (item.kazanDetay.tabloTuru == 0)
+                            {
+                                <th>Ortalama Deger</th>
+                                <th>Gerçekleşen Tölerans</th>
+                                <th>Uygulanan Tölerans</th>
+                            }
+                            else
+                            {
+                                <th>Ortalama Deger</th>
+                                <th>Gerçekleşen Çekme</th>
+                                <th>Uygulanan Çekme</th>
+                            }
+
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item2 in item.dbKazanAraList.GroupBy(x => x.OlcuNoktalari).Select(y => y.Key))
+                        {
+                            <tr>
+                                <td> @item2.olcuNoktasi </td>
+
+                                @foreach (var itemheader in item.headerList)
+                                {
+
+                                    double? deger = item.dbKazanAraList.Where(x => x.bedenID == itemheader.bedenID && x.enBoyCekme == itemheader.enBoyCekme && x.olcuNoktaID == item2.id && x.pantNo == itemheader.pantNo).FirstOrDefault().deger;
+
+                                    if (deger > 1 || deger <= -1)
+                                    {
+                                        <td style="color:red; text-align:center">@deger</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="color:green;text-align:center">@deger</td>
+                                    }
+                                }
+
+                                @if (item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).Count() != 0)
+                                {
+                                    if (item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().ortalamaDeger <= -1 || item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().ortalamaDeger >= 1)
+                                    {
+                                        <td style="color:red;text-align:center;">@item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().ortalamaDeger</td>
+
+                                    }
+                                    else
+                                    {
+                                        <td style="color:green;text-align:center;">@item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().ortalamaDeger</td>
+
+                                    }
+
+                                    <td style="text-align:center;">@item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().gerceklesenTolCekme</td>
+
+
+                                    <td style="text-align:center;">@item.GerceklesenUygulananCekmeTol.Where(x => x.olcuNoktasiID == item2.id).FirstOrDefault().uygulananTolCekme</td>
+
+                                }
+                                else
+                                {
+                                    <td></td>
+                                    <td></td>
+                                }
+
+                                @*<td>@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().gerceklesenTolCekme</td>
+                                    <td>@Model.Item3.Where(x => x.olcuNoktasiID == item.id).FirstOrDefault().uygulananTolCekme</td>*@
+
+                            </tr>
+                        }
+
+                        <tr>
+                            <td>
+                                Çekmeler
+                            </td>
+
+                            @foreach (var item2 in item.headerList)
+                            {
+                                <td>@item2.enBoyCekme</td>
+                            }
+                        </tr>
+                    </tbody>
+
+                </table>
+
+            }
+
+
+
+            <br />
+            <p><b>Not: </b>  @item.kazanDetay.aciklama</p>
+            <br />
+
+            <div class="sayfaSon"></div>
+        </div>
+    }
+    else if (item.tur == 1)
+    {
+        int rowCount = item.dtoAra.Count;
+        string pixel = "";
+        string line_height = "";
+        if (rowCount > 42)
+        {
+            pixel = "12px";
+            line_height = "12.7px";
+        }
+        else
+        {
+            pixel = "14px";
+            line_height = "13.7px";
+        }
+
+
+
+
+        <style type="text/css">
+    .tg {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+        .tg td {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            overflow: hidden;
+            padding: 5px 5px;
+            word-break: normal;
+            font-weight: bold;
+        }
+
+        .tg th {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 30px;
+            font-weight: normal;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+
+        .tg .tg-0pky {
+            border-color: inherit;
+            text-align: left;
+            vertical-align: top
+        }
+
+
+    .tablo {
+        border: solid #000 !important;
+        border-width: 1px 1px !important;
+        border-collapse: collapse;
+        overflow: visible;
+    }
+
+        .tablo tbody tr {
+            line-height: @(line_height);
+        }
+
+        .tablo th {
+            border: solid #000 !important;
+            border-width: 1px 1px !important;
+            font-size: 11px;
+            font-weight: bold;
+            background-color:lightskyblue;
+        }
+
+        .tablo td {
+            border: solid #000 !important;
+            border-width: 1px 1px !important;
+            font-size: @(pixel);
+            font-weight: bold;
+        }
+
+            .tablo td:first-child {
+                width: 25%;
+            }
+
+        .td3 {
+            border: solid #000 !important;
+            border-width: 1px 1px !important;
+            font-size: 10px !important;
+            font-weight: bold;
+        }
+
+
+    .tg2 {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+
+        .tg2 td {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            overflow: hidden;
+            padding: 5px 5px;
+            word-break: normal;
+            font-weight: bold;
+        }
+
+        .tg2 th {
+            border-color: black;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 30px;
+            font-weight: normal;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+
+        .tg2 .tg-0pky {
+            border-color: inherit;
+            text-align: left;
+            vertical-align: top
+        }
+
+
+
+
+    .sayfaSon {
+        page-break-after: always;
+    }
+        </style>
+
+        if (item.dtoDetay[0].tabloTuru == 1 || item.dtoDetay[0].tabloTuru == 0)
+        {
+            <div id="yikamaSonrasi">
+                <div>
+                    <div class="col-4" style="position:absolute; left:0.8%; top:@(solUstTop.ToString().Replace(',','.'))%;">
+                        <table class="tg2">
+                            <tbody>
+                                <tr>
+                                    <td class="tg-0lax">Müşteri:</td>
+                                    <td>@item.dtoDetay[0].musteri</td>
+                                    <td class="tg-0lax">Kumaş:</td>
+                                    <td>@item.dtoDetay[0].kumas</td>
+                                </tr>
+                                <tr>
+                                    <td class="tg-0lax">Artikel:</td>
+                                    <td>@item.dtoDetay[0].artikel</td>
+                                    <td class="tg-0lax">Modelist:</td>
+                                    <td>@item.kullanıcıAdSoyadList</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                    <div class="col-4" style="position:absolute; left:50%; top:@(solUstOrta)%;">
+                        <p style="font-size:11px; font-weight:bold">@item.dtoDetay[0].orderNo - @item.dtoDetay[0].olcuTUru @(item.dtoDetay[0].tabloTuru == 0 ? "Yıkama Öncesi Tablosu" : "Yıkama Sonrası Tablosu")</p>
+                        <p style="font-size:11px; font-weight:bold; color:blue">Tarih: @item.dtoDetay[0].tarih.ToShortDateString() @(item.dtoDetay[0].tabloTuru == 0 ? "- " + @item.dtoDetay[0].enBoyCekme : "") </p>
+
+                    </div>
+
+                    <div class="col-4" style="position:absolute;right:1%; top:@(solUstSag.ToString().Replace(',','.'))%;">
+                        <table class="tg2">
+                            <tbody>
+                                <tr>
+                                    <td style="color:blue">Döküman Kodu:</td>
+                                    <td style="color:black">FRM-204</td>
+                                    <td style="color:blue">REVİZYON TARİHİ:</td>
+                                    <td style="color:black"></td>
+                                </tr>
+                                <tr>
+                                    <td style="color:blue">İLK YÜRÜRLÜLÜK TARİHİ:</td>
+                                    <td style="color:black">01.11.2018</td>
+                                    <td style="color:blue">REVİZYON NO:</td>
+                                    <td style="color:black"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="ys_Table" style="position:absolute; width:98%; top: @(table.ToString().Replace(',','.'))%">
+                    <table id="mainTable" class="tablo" style="cursor: pointer; width:100%;">
+                        <thead style="width:100%">
+                            <tr id="tableHead_0">
+                                <th>Ölçü Noktası</th>
+
+
+
+                                @for (int j = 0; j < item.dtoAra[0][0].beden.Count; j++)
+                                {
+                                    <th id="column_0_@(j + 1)">@item.dtoAra[0][0].beden[j]</th>
+                                }
+
+                                @if (item.dtoDetay[0].tabloTuru == 0)
+                                {
+                                    <th>
+                                        Tölerans
+                                    </th>
+                                    <th>
+                                        Çekme
+                                    </th>
+                                    <th>
+                                        Oran
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody_0">
+                            @{ string anaBeden = item.dtoDetay[0].anaBeden;}
+
+                            @{ int rowIndex2 = 0;}
+                            @for (int j = 0; j < item.dtoAra[0].Count; j++)
+                            {
+                                if (j == 0)
+                                {
+                                    <tr id="satir_@rowIndex2">
+                                        <td class="td3" data-editable="false" id="cell_@(0 + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@item.dtoAra[0][j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(0 + "_" +rowIndex2)">
+                                            @item.dtoAra[0][j].olcuNoktasi
+                                        </td>
+
+                                        @for (int z = 0; z < item.dtoAra[0][j].deger.Count(); z++)
+                                        {
+                                            if (anaBeden == item.dtoAra[0][j].beden[z])
+                                            {
+                                                <td tabindex="1" id="cell_@(0 + "_" + rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(0 + "_" + z+1)" data-rowIndex="@(0 + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                                    @item.dtoAra[0].Where(x => x.olcuNoktasi == item.dtoAra[0][j].olcuNoktasi && x.beden == item.dtoAra[0][j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td tabindex="1" id="cell_@(0 + "_" + rowIndex2 + "_" + (z+1))" data-columnIndex="@(0 + "_" + z+1)" data-rowIndex="@(0 + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                                    @item.dtoAra[0].Where(x => x.olcuNoktasi == item.dtoAra[0][j].olcuNoktasi && x.beden == item.dtoAra[0][j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                                </td>
+                                            }
+                                        }
+
+                                        @if (item.dtoDetay[0].tabloTuru == 0)
+                                        {
+                                            <td style="background-color:lightskyblue">
+                                                @item.dtoAra[0][j].tolerans
+                                            </td>
+                                            <td style="background-color:lightskyblue">
+                                                @item.dtoAra[0][j].cekme
+                                            </td>
+                                            <td style="background-color:lightskyblue">
+                                                @item.dtoAra[0][j].oran
+                                            </td>
+                                        }
+                                    </tr>
+                                    rowIndex2++;
+                                }
+                                else
+                                {
+                                    if (item.dtoAra[0][j].olcuNoktasi != item.dtoAra[0][j - 1].olcuNoktasi)
+                                    {
+                                        <tr id="satir_@rowIndex2">
+                                            <td class="td3" data-editable="false" id="cell_@(0 + "_" +rowIndex2 + "_0")" data-olcuNoktasi="@item.dtoAra[0][j].olcuNoktasi" data-columnIndex="0" data-rowIndex="@(0 + "_" +rowIndex2)">
+                                                @item.dtoAra[0][j].olcuNoktasi
+                                            </td>
+
+                                            @for (int z = 0; z < item.dtoAra[0][j].deger.Count(); z++)
+                                            {
+                                                if (anaBeden == item.dtoAra[0][j].beden[z])
+                                                {
+                                                    <td tabindex="1" id="cell_@(0 + "_" + rowIndex2 + "_" + (z+1))" style="background-color:lightskyblue" data-columnIndex="@(0 + "_" + z+1)" data-rowIndex="@(0 + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                                        @item.dtoAra[0].Where(x => x.olcuNoktasi == item.dtoAra[0][j].olcuNoktasi && x.beden == item.dtoAra[0][j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td tabindex="1" id="cell_@(0 + "_" + rowIndex2 + "_" + (z+1))" data-columnIndex="@(0 + "_" + z+1)" data-rowIndex="@(0 + "_" +rowIndex2)" onfocus="ChangeColumnIndex(this)">
+                                                        @item.dtoAra[0].Where(x => x.olcuNoktasi == item.dtoAra[0][j].olcuNoktasi && x.beden == item.dtoAra[0][j].beden).Select(x => x.deger[z]).FirstOrDefault()
+                                                    </td>
+                                                }
+                                            }
+
+                                            @if (item.dtoDetay[0].tabloTuru == 0)
+                                            {
+                                                <td style="background-color:lightskyblue">
+                                                    @item.dtoAra[0][j].tolerans
+                                                </td>
+                                                <td style="background-color:lightskyblue">
+                                                    @item.dtoAra[0][j].cekme
+                                                </td>
+                                                <td style="background-color:lightskyblue">
+                                                    @item.dtoAra[0][j].oran
+                                                </td>
+                                            }
+                                        </tr>
+                                        rowIndex2++;
+                                    }
+
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+
+            <div class="row" style="position:absolute; bottom:@(aciklama.ToString().Replace(',','.'))%;">
+                <p style="color:red;font-size:9px;">@item.dtoDetay[0].aciklama</p>
+            </div>
+
+            <div class="sayfaSon"></div>
+        }
+    }
+    else if (item.tur == 2)
+    {
+
+        <style>
+            #topInfoSection {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+                #topInfoSection tr {
+                    line-height: 18px;
+                }
+
+                #topInfoSection td {
+                    white-space: nowrap;
+                    border: 1px solid black;
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+
+                #topInfoSection td, #topInfoSection th, #topInfoSection tr {
+                    border: 1px solid black;
+                }
+
+            #bottomInfoSection {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+                #bottomInfoSection td {
+                    border: 1px solid black;
+                    font-size: 16px;
+                    font-weight: bold;
+                    line-height: 30px;
+                }
+
+                    #bottomInfoSection td:first-child {
+                        font-size: 18px;
+                    }
+
+                    #bottomInfoSection td:not(:first-child) {
+                        text-align: center;
+                    }
+
+                #bottomInfoSection th:not(:first-child) {
+                    min-width: 70px;
+                }
+
+                #bottomInfoSection td:first-child {
+                    min-width: 400px;
+                }
+
+                #bottomInfoSection th {
+                    border: 1px solid black;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+
+                    #bottomInfoSection th:nth-child(2n+3), #bottomInfoSection td:nth-child(2n+3) {
+                        color: red;
+                    }
+
+            .sayfaSon {
+                page-break-after: always;
+            }
+        </style>
+
+        <div class="numunePage">
+            <table id="topInfoSection">
+                <tbody>
+                    <tr>
+                        <td colspan="2">ORDER NO: <span style="color:red">@item.DtoNumuneDetay.OrderNo</span></td>
+                        <td colspan="2">KALIP ADI:  <span style="color:red">@item.DtoNumuneDetay.KalipAdi</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">MODEL NO: <span style="color:red">@item.DtoNumuneDetay.ModelAd</span></td>
+                        <td colspan="2">TOP NO:  <span style="color:red">@item.DtoNumuneDetay.TopNo</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">MÜŞTERİ: <span style="color:red">@item.DtoNumuneDetay.Musteri</span></td>
+                        <td colspan="2">50*50(LİSTEDE):  <span style="color:red">@item.DtoNumuneDetay.ElliListe</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">KUMAŞ: <span style="color:red">@item.DtoNumuneDetay.Kumas</span></td>
+                        <td colspan="2">50*50(NUMUNE):  <span style="color:red">@item.DtoNumuneDetay.ElliNumune</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">YIKAMAYA GİDİŞ: <span style="color:red">@item.DtoNumuneDetay.YikamayaGidis</span></td>
+                        <td colspan="2">DİKİM NEDENİ:  <span style="color:red">@item.DtoNumuneDetay.DikimNedeni</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">YIKAMADAN GELİŞ: <span style="color:red">@item.DtoNumuneDetay.YikamadanGelis</span></td>
+                        <td colspan="1">REÇETE KODU:  <span style="color:red">@item.DtoNumuneDetay.ReceteKod</span></td>
+                        <td colspan="1">KID:  <span style="color:red">@item.DtoNumuneDetay.KID</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <table id="bottomInfoSection">
+                <thead>
+                    <tr>
+                        <th>
+                            Ölçü Noktaları
+                        </th>
+                        <th>
+                            Kalıp Ölçüsü
+                        </th>
+                        <th>
+                            Gerçekleşen Tölerans
+                        </th>
+                        <th>
+                            @item.dtoNumuneAraList.FirstOrDefault().BedenAd - Yıkama Öncesi Tablo
+                        </th>
+                        <th>
+                            Yıkama Öncesi Fark
+                        </th>
+                        <th>
+                            Yıkama Öncesi Ölçülen
+                        </th>
+                        <th>
+                            Gerçekleşen Çekme
+                        </th>
+                        <th>
+                            Yıkama Sonrası Ölçülen
+                        </th>
+                        <th>
+                            Yıkama Sonrası Fark
+                        </th>
+                        <th>
+                            @item.dtoNumuneAraList.FirstOrDefault().BedenAd - Yıkama Sonrası Tablo
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var items in item.dtoNumuneAraList.ToList())
+                    {
+                        <tr>
+                            <td>
+                                @items.OlcuNoktaAd
+                            </td>
+                            <td>
+                                @((items.KalipOlcusu == 0) ? "" : items.KalipOlcusu.ToString())
+                            </td>
+                            <td>
+                                @((items.KalipOlcusu == 0 || items.YikamaOncesiOlculen == 0) ?  ""  : items.GerceklesenTolerans.ToString())
+                            </td>
+                            <td>
+                                @((items.YikamaOncesiTablo == 0) ? "" : items.YikamaOncesiTablo.ToString())
+                            </td>
+                            <td>
+                                @((items.YikamaOncesiOlculen == 0 || items.YikamaOncesiTablo == 0) ? "": items.YikamaOncesiFark.ToString())
+                            </td>
+                            <td>
+                                @((items.YikamaOncesiOlculen == 0) ? "" : items.YikamaOncesiOlculen.ToString())
+                            </td>
+                            <td>
+                                @((items.YikamaOncesiOlculen == 0 || items.YikamaSonrasiOlculen == 0) ? "" : items.GerceklesenCekme.ToString())
+                            </td>
+                            <td>
+                                @((items.YikamaSonrasiOlculen == 0) ? "" : items.YikamaSonrasiOlculen.ToString())
+                            </td>
+                            <td>
+                                @((items.YikamaSonrasiOlculen == 0 || items.YikamaOncesiTablo == 0) ? "" : items.YikamaSonrasiFark.ToString())
+                            </td>
+                            <td>
+                                @((items.YikamaSonrasiTablo == 0) ? "" : items.YikamaSonrasiTablo.ToString())
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        if (i < Model.Count - 1)
+        {
+            <div class="sayfaSon"></div>
+        }
+
+    }
+    i++;
+}

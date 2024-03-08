@@ -1,0 +1,201 @@
+﻿@model List<OlcumWeb.Controllers.KazanDetayModel>
+
+<style>
+</style>
+
+@if (Model != null)
+{
+    <div class="row">
+        <div class="col-9" style="float:left;display:inline-block;">
+            <div class="row" id="seciliListeler">
+                @foreach (var item in Model)
+                {
+                    <div class="card card-info" data-id="@item.kazanDetayID" style="width:18.5%; margin-right:1%;margin-top:-2% ">
+                        <div class="card-body">
+                            @item.orderNo
+                            <button data-dismiss="" class="btn btn-icon btn-danger" onclick="RemoveFromLocalStorage(@item.kazanDetayID)"><i class="fas fa-times" style="color:white"></i></button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+
+
+        <div class="col-3">
+            @*@if (ViewBag.tabloTuru == 0)
+                {
+
+
+                }
+                else
+                {
+
+                }*@
+            <button class="btn btn-lg btn-success" id="toleransKarsilastir" style="min-width:100%;margin-bottom:2%;" onclick="AddOrder()"><span style="color:white">Order Ekle</span></button>
+            <button class="btn btn-lg btn-success" style="min-width:100%" onclick="CleanList()"><span style="color:white">Temizle</span></button>
+
+        </div>
+    </div>
+
+
+
+
+    <script>
+
+    var model = @Html.Raw(Json.Encode(Model.Select(x=>x.kazanDetayID).ToList()));
+
+    var model2 =  @Html.Raw(Json.Encode(Model.Select(x=>x.orderNo).ToList()));
+
+    function AddOrder()
+    {
+        var liste = new Array();
+        for (var i = 0; i < localStorage.length; i++) {
+            var localStorageItemKey = localStorage.key(i);
+            var localStorageItem = JSON.parse(localStorage.getItem(localStorageItemKey));
+
+            if (localStorage.key(i) != 'personel' && localStorageItem.arsivMi == 1) {
+
+                liste.push(localStorage.key(i));
+            }
+        }
+
+        var getDataObjectFromController = {};
+
+        var firstKazanDetayId = $('#save-stage48 th').eq(2).data('kazanid');
+        YukleniyorOnOff();
+        $.post("/Raporlama/GetKazanDetayValues", { 'kazanDetayId': liste, 'firstKazanDetayId': firstKazanDetayId }, function (data) {
+            getDataObjectFromController = data;
+            AddColumns(getDataObjectFromController);
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+    }
+
+        function AddColumns(data) {
+            //Datadan gelen verileri sırayla sütun olarak ekleyeceğim
+            //Önce th olarak ekliyorum.
+
+            var tableList = data.araList;
+            var hesaplamaList = data.hesaplamaList;
+            $.post("/Raporlama/AddColumn", { 'data': tableList }, function (data) {
+                $('#save-stage48 th').eq(-4).after(data);
+
+                //sonra tdleri eklemeye başlıyorum
+
+                for (var i = 0; i < hesaplamaList.length; i++) {
+                    for (var j = 0; j < hesaplamaList[i].length; j++) {
+
+                        var uygulananCekmeToleransTdHtml = "<td style='min-width:25px;'>" + hesaplamaList[i][j].uygulananCekmeTolerans + "</td>";
+                        var gerceklesenCekmeToleransTdHtml = "<td style='min-width:25px;'>" + hesaplamaList[i][j].gerceklesenCekmeTolerans + "</td>";
+                        var ortalamaDegerTdHtml = "<td style='min-width:25px;'>" + hesaplamaList[i][j].ortalamaDeger + "</td>";
+
+                        console.log($('#save-stage48 tbody tr').eq(j * 3).find('td:eq(-3)').html());
+
+                        $('#save-stage48 tbody tr').eq(j * 3).find('td:eq(-3)').after(uygulananCekmeToleransTdHtml);
+                        $('#save-stage48 tbody tr').eq((j * 3) + 1).find('td:eq(-3)').after(gerceklesenCekmeToleransTdHtml);
+                        $('#save-stage48 tbody tr').eq((j * 3) + 2).find('td:eq(-3)').after(ortalamaDegerTdHtml);
+
+                    }
+                }
+
+                CalculateTable();
+                YukleniyorOnOff();
+                $('#orderEkleModal').modal('toggle');
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+        }
+
+    function RemoveFromLocalStorage(id) {
+        localStorage.removeItem(id);
+
+            var liste = new Array();
+            for (var i = 0; i < localStorage.length; i++) {
+                var localStorageItemKey = localStorage.key(i);
+                var localStorageItem = JSON.parse(localStorage.getItem(localStorageItemKey));
+
+                if (localStorage.key(i) != 'personel' && localStorageItem.arsivMi == 1) {
+
+                    liste.push(localStorage.key(i));
+                }
+
+            }
+
+        $('#' + id).prop('checked', false);
+
+                  $.post("/Raporlama/SelectedListArsiv", { 'id': liste }, function (data) {
+                $('#selectedList').html(data);
+
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+        }
+
+        function CleanList() {
+            var personel = localStorage.getItem('personel');
+
+            var silinmeyecekListe = [];
+            for (var i = 0; i < localStorage.length; i++) {
+                var localStorageItemKey = localStorage.key(i);
+                var localStorageItem = JSON.parse(localStorage.getItem(localStorageItemKey));
+                console.log(localStorageItem + " " + localStorageItemKey + " " + localStorage.length);
+                if (localStorage.key(i) != 'personel' && localStorageItem.arsivMi != 1) {
+
+                    silinmeyecekListe.push(localStorage.getItem(localStorage.key(i)));
+                }
+
+            }
+
+            localStorage.clear();
+
+            for (var i = 0; i < silinmeyecekListe.length; i++) {
+                localStorage.setItem(silinmeyecekListe[i], silinmeyecekListe[i]);
+            }
+
+            localStorage.setItem('personel', personel);
+
+
+
+            $.post("/Raporlama/SelectedListArsiv", { }, function (data) {
+                $('#selectedListArsiv').html(data);
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+        var orderNo = $('#orderNo').val();
+        var modelNo = $('#modelNo').val();
+        var kumas = $('#kumas').val();
+        var musteri = $('#musteri').val();
+        var atolyeAd = $('#atolyeAd').val();
+        var modelAd = $('#modelAd').val();
+        var yikamaYeri = $('#yikamaYeri').val();
+            var tabloTuru;
+
+        if ($('#yikamaOncesi').is(":checked")) {
+            tabloTuru = 0;
+        }
+        if ($('#yikamaSonrasi').is(":checked")) {
+            tabloTuru = 1;
+        }
+
+        var tarih1 = $('#tarih1').val();
+        var tarih2 = $('#tarih2').val();
+
+
+        YukleniyorOnOff();
+            $.post("/Raporlama/AddOrderToArsivTable", { 'orderNo': orderNo, modelNo: modelNo, kumasAdi: kumas, musteri: musteri, atolye: atolyeAd, modelAdi: modelAd, yikamaYeri: yikamaYeri, tabloTuru: tabloTuru, tarih1: tarih1, tarih2: tarih2 }, function (data) {
+            $('#tablePartArsiv').html(data);
+            YukleniyorOnOff();
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+
+        }
+    </script>
+
+}

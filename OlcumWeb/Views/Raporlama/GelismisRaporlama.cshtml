@@ -1,0 +1,162 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<script>
+    window.onload = function () {
+        window.printList = [];
+    };
+</script>
+
+<style>
+
+</style>
+<div style="margin-top:2%">
+    <div class="card card-success">
+        <div class="card-body">
+            <ul class="nav nav-pills" id="myTab3" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab3" data-toggle="tab" href="#gelismisraporlama" role="tab" aria-controls="home" aria-selected="true">Gelişmiş Raporlama</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab3" data-toggle="tab" href="#arsiv" role="tab" aria-controls="profile" aria-selected="false">Arşiv</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent2">
+                <div class="tab-pane fade active show" id="gelismisraporlama" role="tabpanel" aria-labelledby="home-tab3">
+
+                </div>
+                <div class="tab-pane fade" id="arsiv" role="tabpanel" aria-labelledby="profile-tab3">
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@*<div class="modal fade" id="kumasDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="min-width:80%">
+        <div class="modal-content">
+            <div class="modal-header" style="display:block">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="kumasDetail_Modal">
+
+                </div>
+            </div>
+            <div class="modal-footer" style="display:none">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<div class="modal fade" id="receteDetailModal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Reçete Adımları</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="receteDetail_Modal">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-info" onclick="ReceteDetailSave()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="kumasDetailModal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle"  style="text-align:center">Kumaş Karakteri</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="kumasDetail_Modal">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-info"  onclick="KumasDetailSearch()">Ara</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="kumasListModal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle" style="text-align:center">Kumaş Listesi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="kumasList_Modal">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-info" onclick="KumasListGet()">Seç</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        YukleniyorOnOff();
+        $.post("/Raporlama/GelismisRaporlamaIndex", {}, function (data) {
+            $('#gelismisraporlama').html(data);
+            $.post("/Raporlama/ArsivRaporlamaIndex", {}, function (data) {
+                $('#arsiv').html(data);
+                YukleniyorOnOff();
+
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    });
+
+    $(function () {
+        $(".datepicker").datepicker({
+            dateFormat: "dd-mm-yy",
+            altFormat: "yy-mm-dd",
+            altField: "#tarih-db",
+            monthNames: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+            dayNamesMin: ["Pa", "Pt", "Sl", "Ça", "Pe", "Cu", "Ct"],
+        });
+
+        $(".datepicker").datepicker('setDate', new Date());
+    });
+
+</script>

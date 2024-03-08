@@ -1,0 +1,37 @@
+﻿
+<h4>Lütfen çekme adını giriniz.</h4>
+
+<div class="col-4" style="margin-top: 5%">
+    <div class="form-group">
+        <label>En/Boy Çekme:</label>
+        <div class="input-group">
+            @Html.TextBox("enBoyCekme3", null, new { @class = "form-control", @id = "enBoyCekme3" })
+        </div>
+    </div>
+</div>
+
+<div class="row"><button type="button" class="btn btn-primary" id="btnKaydet" onclick="CekmeDuzenle()">Kaydet</button></div>
+
+<script>
+    function CekmeDuzenle() {
+        var index = @Html.Raw(Json.Encode(ViewBag.index));
+        var enBoyCekmeGelen = @Html.Raw(Json.Encode(ViewBag.enBoyCekme));
+
+        var enBoyCekme = $('#enBoyCekme3').val();
+
+        $('#myCekme_' + index).html(enBoyCekme);
+        $('#myCekme_' + index).attr('data-enboycekme', enBoyCekme);
+
+        $('#myCekmeKalip_' + index).html(enBoyCekme);
+        $('#myCekmeKalip_' + index).attr('data-enboycekme', enBoyCekme);
+
+        var elementIndex = cekmeler.indexOf(enBoyCekmeGelen);
+
+        cekmeler[elementIndex] = enBoyCekme;
+        window.cekme[index] = enBoyCekme;
+
+        $('#cekmeDegistir').modal('toggle');
+
+
+    }
+</script>

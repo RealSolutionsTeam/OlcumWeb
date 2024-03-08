@@ -1,0 +1,1229 @@
+﻿@model Tuple<List<OlcumWeb.dbOlcum.OlcuNoktalari>>
+
+<style>
+    .col-2 {
+        margin: auto;
+    }
+
+    .col-3 {
+        margin: auto;
+    }
+
+    .row {
+        margin: 0;
+    }
+
+    .rakamTable td, .rakamTable th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        height: 66px;
+    }
+
+    .rakamTable {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    input:focus, textarea:focus {
+        border: 3px solid #3abaf4 !important;
+    }
+
+    .uyariSpan {
+        font-weight: 700;
+        color: #ffffff;
+        font-size: 15px;
+        font-family: serif;
+        letter-spacing: 1.5px;
+        margin: auto;
+        background: #000000;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+</style>
+
+<link rel="stylesheet" href="~/CSS/customCk/style.css">
+<link rel="stylesheet" href="~/CSS/customSettings.css">
+
+
+<div class="row">
+    <div class="col-7" style="padding-left: 4px; padding-right: 0px;">
+        <div class="row">
+
+            <div class="col-2 p-0">
+                <div class="row h-100">
+                    <button class="btn p-0 m-auto font-23 w-100" onclick="olcuNokEkleCikart()"><i class="fas fa-minus-circle ml-2 mr-2"></i> <i class="fas fa-plus-circle ml-2 mr-2"></i> </button>
+                </div>
+            </div>
+
+
+            @if (Convert.ToBoolean(ViewBag.isYikamaOncesi))
+            {
+                <div class="col-2">
+                    <div class="row h-100">
+                        <p style="margin: auto; font-size: 20px;"> Çekme</p>
+                    </div>
+                </div>
+
+                <div class="col-2">
+                    <div class="row h-100">
+
+                        <div class="form-group mt-auto mb-auto w-100">
+                            @Html.DropDownList("CekmeSelect", new SelectList(ViewBag.cekmeList), "Seçiniz...", new { @class = "form-control form-control-sm select2", @id = "CekmeSelect", @onchange = "cekmeSecim(this.value)" })
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+            <div class="col-2">
+                <div class="row h-100">
+                    <p style="margin: auto; font-size: 20px;"> Beden</p>
+                </div>
+            </div>
+
+            <div class="col-2">
+                <div class="row h-100">
+
+                    <div class="form-group mt-auto mb-auto w-100">
+                        @Html.DropDownList("BedenSelect", new SelectList(ViewBag.bedenList, "ID", "beden"), "Seçiniz...", new { @class = "form-control form-control-sm select2", @id = "bedenSelect", @onchange = "bedenSecim(this.value)" })
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-2">
+                <div class="row h-100">
+                    <button class="btn btn-primary m-auto font-18" style="background-color:#6777ef" onclick="DegerleriGetir()">Ekle</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row mt-2">
+            <span class="uyariSpan">Uyarı : En az 3 farklı bedende ikişer üründen toplamdan 6 ürün kontrol edilmek zorundadır</span>
+        </div>
+
+        @if (ViewBag.kazanOlcuTurId == 26 || ViewBag.kazanOlcuTurId == 33 || ViewBag.kazanOlcuTurId == 34 || ViewBag.kazanOlcuTurId == 35)
+        {
+            <div class="row mt-1">
+                <span class="uyariSpan">@(ViewBag.kazanOlcuTurId == 26 ? "Dikim" : "Yıkama") aşamasında farklı bedenler ölçülemiyor ise 1 bedenden 10 adet ürün bakılmalıdır</span>
+            </div>
+        }
+
+        <div class="row w-100" id="printDiv">
+            <div class="row w-100">
+                <div id="istenilenPartial" style="width: 100%; margin-top: 1%;"> </div>
+            </div>
+
+            <div class="row w-100" style="margin-top: 3%;">
+                <textarea id="aciklamaInput" class="form-control" style="margin-top: 0px; margin-bottom: 0px; height: unset !important;  border: 3px solid #3abaf4 !important; background-color: #e9edf1 !important;" placeholder="İsteğe bağlı not yazılabilir"></textarea>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-5 pr-0">
+        <div style="position:sticky; top: 1%;">
+            <ul class="nav nav-pills" id="NumpadTab" role="tablist">
+                <li class="nav-item m-auto" style="margin-right: 1% !important;">
+                    <a class="nav-link disabled" data-toggle="tab" href="#" role="tab" id="orderStr" style="color:black; font-weight: bold;"
+                       aria-selected="true"></a>
+                </li>
+                <li class="nav-item m-auto" style="margin-right: 1% !important;">
+                    <a class="nav-link" id="rakam-NumpadTab" data-toggle="tab" href="#rakamT" role="tab"
+                       aria-controls="rakam" aria-selected="false">Rakam Dizilim</a>
+                </li>
+                <li class="nav-item m-auto" style="margin-left: 1% !important;">
+                    <a class="nav-link active" id="sayi-NumpadTab" data-toggle="tab" href="#sayiT" role="tab"
+                       aria-controls="sayi" aria-selected="true">Sayı Dizilim</a>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="NumpadTabContent">
+                <div class="tab-pane fade" id="rakamT" role="tabpanel" aria-labelledby="rakam-NumpadTab">
+                    <table class="rakamTable">
+                        <tr style="height: 45px;">
+                            <th colspan="4" style="text-align: center !important; height: auto !important; font-size: 24px;">
+                                <span id="rakamSpan"></span>  @* <input type="number" id="rakamSpan" class="form-control form-control-sm">  *@
+                            </th>
+                        </tr>
+                        <tr>
+                            <td rowspan="2">
+                                <button disabled id="rakamSecBtn" class="btn btn-success w-100 font-24 h-100" onclick="setValue(1, false)"> Seç </button>
+                            </td>
+
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('7')"> 7 </button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('8')"> 8 </button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('9')"> 9 </button> </td>
+                        </tr>
+
+                        <tr>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('4')"> 4 </button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('5')"> 5 </button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('6')"> 6 </button> </td>
+                        </tr>
+
+                        <tr>
+                            <td rowspan="2">  <button class="btn btn-outline-success w-100 font-24 h-100" onclick="setValue(null, true)"> Geç</button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('1')"> 1 </button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('2')"> 2 </button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('3')"> 3 </button> </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="1">
+                                <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('0')"> 0 </button>
+                            </td>
+
+                            <td colspan="1">
+                                <button class="btn btn-info w-100 font-24 h-100" onclick="setRakamSpan('.')"> . </button>
+                            </td>
+
+                            <td colspan="1">
+                                <button disabled id="rakamDelBtn" class="btn btn-info w-100 font-24 h-100 p-0" onclick="setRakamSpan('del')"> <i class="fas fa-backspace"></i> </button>
+                            </td>
+
+                        </tr>
+
+                        <tr>
+                            <td colspan="4" style="height: auto !important;"> </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4" style="height: auto !important;"> </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4">
+                                <div class="row m-0">
+                                    <div class="col-6">
+                                        <button disabled id="kaydet_btn_rakam_devam" class="btn btn-warning w-100 font-24 h-100" onclick="minBedenBakilmismi(false)" style="box-shadow: 0 2px 6px #FFCA28; background-color: #FFCA28; border-color: #FFCA28; height:70px;"> Duraklat </button>
+                                    </div>
+
+                                    <div class="col-6">
+                                        <button disabled id="kaydet_btn_rakam_bitir" class="btn btn-warning w-100 font-24 h-100" onclick="minBedenBakilmismi(true)" style="box-shadow: 0 2px 6px #FFCA28; background-color: #FFCA28; border-color: #FFCA28; height:70px;"> Bitir </button>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+
+
+                    </table>
+                </div>
+                <div class="tab-pane fade show active" id="sayiT" role="tabpanel" aria-labelledby="sayi-NumpadTab">
+                    <table class="rakamTable">
+
+                        <tr>
+                            <td rowspan="3"> <button class="btn btn-success w-100 font-24 h-100" onclick="setValue(0, true)"> 0 </button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setValue(-0.3, true)"> - 0, 3</button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setValue(-0.5, true)"> - 0, 5</button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setValue(-0.8, true)"> - 0, 8</button> </td>
+                        </tr>
+
+                        <tr>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setValue(-1.0, true)"> - 1, 0</button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setValue(-1.2, true)"> - 1, 2</button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setValue(-1.5, true)"> - 1, 5</button> </td>
+                        </tr>
+
+                        <tr>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setValue(-1.8, true)"> - 1, 8</button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setValue(-2.0, true)"> - 2, 0</button> </td>
+                            <td> <button class="btn btn-info w-100 font-24 h-100" onclick="setValue(-2.5, true)"> - 2, 5</button> </td>
+                        </tr>
+
+                        <tr>
+                            <td rowspan="3"> <button class="btn btn-outline-success w-100 font-24 h-100" onclick="setValue(null, true)"> Geç</button> </td>
+                            <td> <button class="btn btn-warning w-100 font-24 h-100" onclick="setValue(0.3, true)"> + 0, 3</button> </td>
+                            <td> <button class="btn btn-warning w-100 font-24 h-100" onclick="setValue(0.5, true)"> + 0, 5</button> </td>
+                            <td> <button class="btn btn-warning w-100 font-24 h-100" onclick="setValue(0.8, true)"> + 0, 8</button> </td>
+                        </tr>
+
+                        <tr>
+                            <td> <button class="btn btn-warning w-100 font-24 h-100" onclick="setValue(1.0, true)"> + 1, 0</button> </td>
+                            <td> <button class="btn btn-warning w-100 font-24 h-100" onclick="setValue(1.2, true)"> + 1, 2</button> </td>
+                            <td> <button class="btn btn-warning w-100 font-24 h-100" onclick="setValue(1.5, true)"> + 1, 5</button> </td>
+                        </tr>
+
+                        <tr>
+                            <td> <button class="btn btn-warning w-100 font-24 h-100" onclick="setValue(1.8, true)"> + 1, 8</button> </td>
+                            <td> <button class="btn btn-warning w-100 font-24 h-100" onclick="setValue(2.0, true)"> + 2, 0</button> </td>
+                            <td> <button class="btn btn-warning w-100 font-24 h-100" onclick="setValue(2.5, true)"> + 2, 5</button> </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4"> <input id="ozelDegereInput" type="number" class="form-control" placeholder="Özel Değer Gir" style="border-color: black;"> </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4" style="height: auto !important;"> </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4" style="height: auto !important;"> </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4">
+                                <div class="row m-0">
+                                    <div class="col-6">
+                                        <button disabled id="kaydet_btn_devam" class="btn btn-warning w-100 font-24 h-100" onclick="minBedenBakilmismi(false)" style="box-shadow: 0 2px 6px #FFCA28; background-color: #FFCA28; border-color: #FFCA28; height:70px;"> Duraklat </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <button disabled id="kaydet_btn_bitir" class="btn btn-warning w-100 font-24 h-100" onclick="minBedenBakilmismi(true)" style="box-shadow: 0 2px 6px #FFCA28; background-color: #FFCA28; border-color: #FFCA28; height:70px;"> Bitir </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<div class="settingSidebar">
+    <a href="javascript:void(0)" class="settingPanelToggle">
+        <i class="fa fa-spin fa-cog"></i>
+    </a>
+    <div class="settingSidebar-body ps-container ps-theme-default">
+        <div class=" fade show active">
+            <div class="setting-panel-header" style="text-align: center; font-weight: bold;">
+                Ölçüm Yerleri
+            </div>
+            <div class="p-15 border-bottom" id="olcuyerleriDiv" style="height: 530px; overflow: auto;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="olcuNoktalariSecimModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="olcuNoktalariSecimModal" data-backdrop="false" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:none !important;">
+        <div class="modal-content">
+            <div class="modal-header" style="padding-top:0.5% !important">
+                <h5 class="modal-title m-auto" id="myLargeModalLabel" style="font-size:25px;"> Lütfen Ölçüm Yapacagınız Noktaları Sırasıyla Seçiniz</h5>
+            </div>
+            <div class="modal-body">
+
+                <div class="row lists">
+                    @foreach (var item in Model.Item1)
+                    {
+                        <div class="col-4 list-standard">
+                            <label id="lbl-@item.id" class="checkbox">
+                                @item.olcuNoktasi
+                                <input name="olcuNokInput" id="OlcuNok-@item.id" data-olcunokid="@item.id" type="checkbox">
+                                <i id="i-@item.id" class="far fa-square"> </i>
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-info btn-lg font-17 mr-auto" onclick="tumSec()">Tümünü Seç</button>
+
+                <button type="button" class="btn btn-info btn-lg font-17 ml-auto" onclick="OlcuNokSec()">Bitir</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="kayitResponseModal" class="modal fade  bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="kayitResponseModal" data-backdrop="false" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered" style="max-width:60% !important;">
+        <div class="modal-content">
+
+            <div class="modal-header" style="padding-top:1% !important">
+                <button data-dismiss="modal" type="button" aria-label="Close" class="btn btn-icon btn-sm btn-outline-danger pull-right ml-auto">✘</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <i class="fas fa-check-circle font-50 btn-outline-success my-auto ml-auto mr-2"></i>  <h5 class="mr-auto my-auto ml-2 font-25" style="font-family: sans-serif;"> Kayıt Başarılı </h5>
+                </div>
+                <br />
+                <br />
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button" class="btn blackBackground btn-lg font-17 mr-auto" onclick="goUrl(1)">Yeni Ölçüme Başla</button>
+
+                <button type="button" class="btn blueBackground btn-lg font-17 m-auto" onclick="goUrl(2)">Kalite Sistemine Git</button>
+
+                <button type="button" class="btn btn-info btn-lg font-17 ml-auto" onclick="Yazdir()">Yazdır</button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src='https://pro.fontawesome.com/releases/v5.1.0/js/all.js'></script>
+<script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/1580009/highlight.pack.js'></script>
+<script src="~/CSS/customCk/script.js"></script>
+
+
+<script>
+
+    var firstOlcuNoktasiSecim = true;
+
+    var olcuNoktaList = @Html.Raw(Json.Encode(Model.Item1.ToList().Select(x => x.id).ToList()));
+
+    if (findDuplicates(olcuNoktaList).length != 0) {
+        swal({
+            title: "Aynı ölçü noktasından birden fazla var. İşlemlere devam edemezsiniz. Lütfen sistem yöneticisi ile iletişime geçiniz",
+            button: true,
+            dangerMode: true,
+            closeOnClickOutside: false
+        }).then((response) => {
+            console.log(response);
+            window.location.reload(false);
+        });
+    }
+
+    var seciliOlcuNokIdList = []; //{ olcunokid: int, sirano: int}
+    var oldSeciliOlcuNokIdList = []; //{ olcunokid: int, sirano: int}
+
+    var olcuYerleriList = [];
+    var isYikamaOncesi = @Html.Raw(Json.Encode(ViewBag.isYikamaOncesi));
+    var musteriModel = @Html.Raw(Json.Encode(ViewBag.MusteriModel));
+
+    var kazanOlcuTurId = @Html.Raw(Json.Encode(ViewBag.kazanOlcuTurId));//26 : Fason Ham Ölçü, 31:Ütü Paket Ön Final, 32 : Ütü Paket Son Final, 19 : Ütü Paket Sevk, 33: Zemin, 34: Random, 35: Nötr
+    console.log(kazanOlcuTurId);
+
+    $('#orderStr').html(orderNo);
+    var tabloGirilenList = []; // {bedenad: string, bedenid: Number, cekme: string, olcunokid: Number, pno: Number, deger: string, bpantno: number}
+
+
+    document.title = orderNo + " - " + olcuTuruAd + " - " + new Date(Date.now()).toLocaleDateString();
+
+
+
+    var devamMi = @Html.Raw(Json.Encode(ViewBag.devamMi));
+    if (devamMi) {
+
+        try {
+
+            KayitYapiliyorOnOff();
+            $.post("/Fason/setVeriGirisTablosu", {
+                kazanDetayId: kazanDetayId, olcuTaloDetayId: olcuTaloDetayId
+            }, function (responseSuccess) {
+                KayitYapiliyorOnOff();
+                $('#istenilenPartial').html(responseSuccess);
+
+                if ($('#kaydet_btn_devam').prop('disabled')) {
+
+                    $('#kaydet_btn_devam').prop('disabled', false);
+                    $('#kaydet_btn_bitir').prop('disabled', false);
+                    $('#kaydet_btn_rakam_devam').prop('disabled', false);
+                    $('#kaydet_btn_rakam_bitir').prop('disabled', false);
+
+                }
+
+                $('#aciklamaInput').val(@Html.Raw(Json.Encode(ViewBag.aciklama)));
+
+
+            }).fail(function (responseError) {
+                KayitYapiliyorOnOff();
+                console.log(responseError);
+                alert('Error : ' + responseError.responseText);
+
+            });
+
+
+        } catch (error) {
+            KayitYapiliyorOnOff();
+            console.error(error);
+            iziToast.error({ title: 'Bir hata Oluştu', message: error.toString(), position: 'bottomRight' });
+            alert('Error : ' + error);
+        }
+
+    } else {
+        $('#olcuNoktalariSecimModal').modal('show');
+    }
+
+    var secilenCekme = "";
+    var secilenBedenId = 0;
+    var tabloCekmeBedenOlmasiGerekenList = []; //{cekme: string, bedenId: number, bedenAd: string, olcuNokId: Number, olcuNokAd: string, deger: double }
+    var pantolonList = []; // { cekme: string, bedenad: string, pno: Number, bedenid:number, bpantno:number }
+
+
+    $(".settingPanelToggle").on("click", function () {
+        $(".settingSidebar").toggleClass("showSettingPanel");
+    })
+
+    $(".page-wrapper").on("click", function () {
+        $(".settingSidebar").removeClass("showSettingPanel");
+    });
+
+    if (jQuery().select2) { $("#bedenSelect").select2({ placeholder: "Seçiniz", minimumResultsForSearch: -1 }); $("#CekmeSelect").select2({ placeholder: "Seçiniz", minimumResultsForSearch: -1 }); };
+
+    $("#ozelDegereInput").on('keyup', function (e) {
+        if (e.keyCode === 13) { setValue($("#ozelDegereInput").val(), true); $("#ozelDegereInput").val(""); $("#ozelDegereInput").blur(); }
+    });
+
+    $('input[name=olcuNokInput]').change(function () {
+
+        console.log("ölcu Noktası seçildi : " + $(this).attr("data-olcunokid"));
+
+        if ($(this).is(':checked')) {
+            seciliOlcuNokIdList.push({ olcunokid: Number($(this).attr("data-olcunokid")), sirano: seciliOlcuNokIdList.length + 1 });
+        } else {
+            var siraNo = seciliOlcuNokIdList.find(x => x.olcunokid == $(this).attr("data-olcunokid")).sirano;
+
+            var index = seciliOlcuNokIdList.findIndex(x => x.olcunokid == $(this).attr("data-olcunokid"));
+            seciliOlcuNokIdList.splice(index, 1);
+
+            $.each(seciliOlcuNokIdList.filter(x => x.sirano > siraNo), function (index, value) {
+                value.sirano = value.sirano - 1;
+            });
+        }
+    });
+
+
+    function tumSec() {
+        var elementList = $("[name='olcuNokInput']");
+
+        $.each(elementList, function (index, value) {
+            if (value.checked) {
+                value.checked = false;
+
+                var siraNo = seciliOlcuNokIdList.find(x => x.olcunokid == value.dataset.olcunokid).sirano;
+
+                var index = seciliOlcuNokIdList.findIndex(x => x.olcunokid == value.dataset.olcunokid);
+                seciliOlcuNokIdList.splice(index, 1);
+
+                $.each(seciliOlcuNokIdList.filter(x => x.sirano > siraNo), function (index, value) {
+                    value.sirano = value.sirano - 1;
+                });
+
+            } else {
+                value.checked = true;
+                seciliOlcuNokIdList.push({ olcunokid: Number(value.dataset.olcunokid), sirano: seciliOlcuNokIdList.length + 1 });
+            }
+
+            $("#" + value.labels[0].id).toggleClass("checked");
+            $("#" + value.nextElementSibling.id).toggleClass("fa-square");
+            $("#" + value.nextElementSibling.id).toggleClass("fa-check-square");
+        });
+
+    }
+
+    function cekmeSecim(secim) {
+        if (secim != "") {
+            secilenCekme = secim;
+            $("#bedenSelect").select2("open");
+        }
+    }
+
+    function bedenSecim(secim) {
+        if (secim != "") { secilenBedenId = secim; }
+    }
+
+    function DegerleriGetir() {
+
+        if (isYikamaOncesi) {
+            if (secilenBedenId == 0 || secilenCekme == "") {
+                iziToast.error({ title: "Çekme veya Beden seçiminde hata var.Lütfen tekrar seçiniz", message: '', position: 'bottomRight' }); return;
+            }
+        } else {
+            if (secilenBedenId == 0) {
+                iziToast.error({ title: "Beden seçiminde hata var.Lütfen tekrar seçiniz", message: '', position: 'bottomRight' }); return;
+            }
+        }
+
+
+        try {
+
+            KayitYapiliyorOnOff();
+            $.post("/Fason/getVeriGirisTablosu", {
+                orderId: orderId, olcuTabloOlcuTurId: olcuTabloOlcuTurId, kazanDetayId: kazanDetayId, silinenPno: 0,
+                cekme: secilenCekme, bedenId: secilenBedenId, secilenNoktalar: seciliOlcuNokIdList, pantolonList: pantolonList, degerler: tabloGirilenList,
+                silindiMi: false, olmasiGerekenList: tabloCekmeBedenOlmasiGerekenList, returnYeriList: olcuYerleriList, isYikamaOncesi: isYikamaOncesi
+            }, function (responseSuccess) {
+                KayitYapiliyorOnOff();
+                $('#istenilenPartial').html(responseSuccess);
+
+            }).fail(function (responseError) {
+                KayitYapiliyorOnOff();
+                console.log(responseError);
+                alert('Error : ' + responseError.responseText);
+            });
+
+
+        } catch (error) {
+            KayitYapiliyorOnOff();
+            console.error(error);
+            iziToast.error({ title: 'Bir hata Oluştu', message: error.toString(), position: 'bottomRight' });
+            alert('Error : ' + error);
+        }
+
+
+
+
+
+    }
+
+    function setValue(secim, sayiMi) {
+
+        if ($(".neonFocus").hasClass("neonFocus") && $(".seciliHucre").hasClass("seciliHucre")) {
+
+            var NeonElement = $(".neonFocus");
+            var SeciliElement = $(".seciliHucre");
+
+            if (!sayiMi && secim != null) {
+                var RakamSpanString = $("#rakamSpan").html();
+
+                var number = Number(RakamSpanString);
+
+                $("#rakamSpan").html(number.toString());
+
+                var deger = Number($("#tdDeger-" + NeonElement[0].dataset.olcunokid.toString()).html().replace(",", "."));
+
+                var sonuc = (number - deger);
+
+                if (sonuc % 1 === 0) {
+                    sonuc = sonuc.toFixed(0);
+                } else {
+                    sonuc = sonuc.toFixed(1);
+                }
+
+                secim = sonuc;
+            }
+
+            if (secim != null) {
+                secim = secim.toString().replace(".", ",");
+            }
+
+            try {
+                KayitYapiliyorOnOff();
+                $.post("/Fason/SetKazanAra", { bedenID: SeciliElement.data("bedenid"), kazanDetayID: kazanDetayId, olcuNoktaID: SeciliElement.data("olcunokid"), deger: secim, pantNo: SeciliElement.data("pno"), enBoyCekme: SeciliElement.data("cekme"), bpantNo: SeciliElement.data("bpantno") }, function (result) {
+                    KayitYapiliyorOnOff();
+
+                    if (!sayiMi) {
+                        $("#rakamSpan").html("");
+                        $('#rakamSecBtn').prop('disabled', true);
+                        $('#rakamDelBtn').prop('disabled', true);
+                    }
+
+                    SeciliElement.html(secim);
+
+                    let cekme = SeciliElement.data("cekme") == "" ? null : SeciliElement.data("cekme");
+
+                    if (tabloGirilenList.findIndex(x => x.bedenid == Number(SeciliElement.data("bedenid")) && x.cekme == cekme && x.olcunokid == Number(SeciliElement.data("olcunokid")) && x.pno == Number(SeciliElement.data("pno"))) != -1) {
+                        let index = tabloGirilenList.findIndex(x => x.bedenid == Number(SeciliElement.data("bedenid")) && x.cekme == cekme && x.olcunokid == Number(SeciliElement.data("olcunokid")) && x.pno == Number(SeciliElement.data("pno")));
+                        tabloGirilenList[index].deger = secim;
+                    } else {
+                        tabloGirilenList.push({ bedenad: SeciliElement.data("bedenad").toString(), bedenid: Number(SeciliElement.data("bedenid")), cekme: cekme, olcunokid: Number(SeciliElement.data("olcunokid")), pno: Number(SeciliElement.data("pno")), deger: secim, bpantno: Number(SeciliElement.data("bpantno")) });
+                    }
+
+
+                    console.log("tabloGirilenList");
+                    console.log(tabloGirilenList);
+
+                    if ($('#kaydet_btn_devam').prop('disabled')) {
+
+                        $('#kaydet_btn_devam').prop('disabled', false);
+                        $('#kaydet_btn_bitir').prop('disabled', false);
+                        $('#kaydet_btn_rakam_devam').prop('disabled', false);
+                        $('#kaydet_btn_rakam_bitir').prop('disabled', false);
+
+                    }
+
+                    $("#tdDeger-" + SeciliElement.data("olcunokid")).toggleClass("deger-active");
+                    NeonElement.toggleClass("neonFocus");
+                    SeciliElement.toggleClass("seciliHucre");
+
+                    if ($("#tr-" + (Number(NeonElement[0].dataset.satirid) + 1).toString()).length != 0) {
+                        $("#tr-" + (Number(NeonElement[0].dataset.satirid) + 1).toString()).toggleClass("neonFocus");
+                        var olcuNokId = $(".neonFocus")[0].dataset.olcunokid;
+                        $("#tdG-" + olcuNokId + "-" + SeciliElement[0].dataset.pno).toggleClass("seciliHucre");
+                        $("#tdDeger-" + olcuNokId).toggleClass("deger-active");
+
+                    } else {
+                        $("#headerBeden-" + SeciliElement.data("pno")).toggleClass("bedenHeader-active");
+                    }
+
+
+                    if (tabloGirilenList.filter(x => x.deger).length == 1) {
+                        minBedenBakilmismi(false);
+                    } else {
+                        iziToast.success({ title: 'Kayıt basarılı', message: '', position: 'bottomRight' });
+                    }
+
+                }).fail(function (error) {
+                    KayitYapiliyorOnOff();
+                    console.log(error);
+                    alert('Error : ' + error.responseText);
+                    iziToast.error({ title: 'Kayıt basarız !', message: error.responseText, position: 'bottomRight' });
+                });
+
+            } catch (e) {
+                KayitYapiliyorOnOff();
+                console.error(e);
+                iziToast.error({ title: 'Bir hata Oluştu', message: e.toString(), position: 'bottomRight' });
+                alert('Error : ' + e);
+            }
+
+
+        } else {
+            iziToast.error({ title: 'Hücre seçili değil', message: '', position: 'bottomRight' });
+        }
+
+    }
+
+    function setRakamSpan(rakam) {
+        var RakamSpan = $("#rakamSpan");
+
+        if (rakam != 'del') {
+
+            if (rakam == '.') {
+
+                if (RakamSpan.html().length != 0 && !RakamSpan.html().includes('.')) {
+
+                    RakamSpan.html(RakamSpan.html() + rakam);
+
+                    if ($('#rakamSecBtn').prop('disabled')) {
+                        $('#rakamSecBtn').prop('disabled', false);
+                        $('#rakamDelBtn').prop('disabled', false);
+                    }
+
+                }
+
+
+            } else {
+                RakamSpan.html(RakamSpan.html() + rakam);
+                if ($('#rakamSecBtn').prop('disabled')) {
+                    $('#rakamSecBtn').prop('disabled', false);
+                    $('#rakamDelBtn').prop('disabled', false);
+                }
+            }
+
+        } else {
+            RakamSpan.html(RakamSpan.html().slice(0, -1));
+
+            if (RakamSpan.html().length == 0) {
+                $('#rakamSecBtn').prop('disabled', true);
+                $('#rakamDelBtn').prop('disabled', true);
+            }
+        }
+
+    }
+
+    function HucreyiSec(element) {
+
+        if ($(".neonFocus").hasClass("neonFocus") && $(".seciliHucre").hasClass("seciliHucre")) {
+
+            $(".neonFocus").toggleClass("neonFocus");
+            $(".seciliHucre").toggleClass("seciliHucre");
+
+        }
+
+        if ($(".bedenHeader-active").hasClass("bedenHeader-active")) {
+            let aktiveheaderPno = Number($(".bedenHeader-active").data('pno'));
+
+            if (aktiveheaderPno != Number(element.dataset.pno)) {
+                $("#headerBeden-" + aktiveheaderPno).toggleClass("bedenHeader-active");
+                $("#headerBeden-" + element.dataset.pno).toggleClass("bedenHeader-active");
+            }
+        } else {
+            $("#headerBeden-" + element.dataset.pno).toggleClass("bedenHeader-active");
+        }
+
+
+        if ($(".deger-active").hasClass("deger-active")) {
+
+            let aktiveDegerOlcuNokId = Number($(".deger-active").data('olcunokid'));
+
+            if (aktiveDegerOlcuNokId != Number(element.dataset.olcunokid)) {
+                $("#tdDeger-" + aktiveDegerOlcuNokId).toggleClass("deger-active");
+                $("#tdDeger-" + element.dataset.olcunokid).toggleClass("deger-active");
+            }
+        } else {
+            $("#tdDeger-" + element.dataset.olcunokid).toggleClass("deger-active");
+        }
+
+
+
+        $("#tr-" + element.dataset.satirid.toString()).toggleClass("neonFocus");
+
+        $("#" + element.id).toggleClass("seciliHucre");
+
+        $.each($(".istenilenTable tr td"), function (index, value) {
+
+            if (value.id.includes("tdDeger")) {
+                $("#" + value.id).html(tabloCekmeBedenOlmasiGerekenList.find(x => x.bedenAd == element.dataset.bedenad && x.cekme == element.dataset.cekme && x.olcuNokId == value.dataset.olcunokid).deger);
+            }
+
+        });
+
+        setOlcuYeri();
+    }
+
+    function Psil(pno) {
+
+
+        try {
+
+            KayitYapiliyorOnOff();
+            $.post("/Fason/getVeriGirisTablosu", {
+                orderId: orderId, olcuTabloOlcuTurId: olcuTabloOlcuTurId, kazanDetayId: kazanDetayId, silinenPno: pno,
+                cekme: secilenCekme, bedenId: secilenBedenId, secilenNoktalar: seciliOlcuNokIdList, pantolonList: pantolonList, degerler: tabloGirilenList,
+                silindiMi: true, olmasiGerekenList: tabloCekmeBedenOlmasiGerekenList, returnYeriList: olcuYerleriList, isYikamaOncesi: isYikamaOncesi
+
+            }, function (responseSuccess) {
+                KayitYapiliyorOnOff();
+                $('#istenilenPartial').html(responseSuccess);
+
+                if ($('#kaydet_btn_devam').prop('disabled')) {
+
+                    $('#kaydet_btn_devam').prop('disabled', false);
+                    $('#kaydet_btn_bitir').prop('disabled', false);
+                    $('#kaydet_btn_rakam_devam').prop('disabled', false);
+                    $('#kaydet_btn_rakam_bitir').prop('disabled', false);
+
+                }
+
+            }).fail(function (responseError) {
+                KayitYapiliyorOnOff();
+                console.log(responseError);
+                alert('Error : ' + responseError.responseText);
+                iziToast.error({ title: 'Bir hata Oluştu', message: responseError.toString(), position: 'bottomRight' });
+            });
+
+
+        } catch (e) {
+            KayitYapiliyorOnOff();
+            console.error(e);
+            iziToast.error({ title: 'Bir hata Oluştu', message: e.toString(), position: 'bottomRight' });
+            alert('Error : ' + e);
+        }
+
+    }
+
+    function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+
+    function minBedenBakilmismi(durum) {
+        // pantolonList : { cekme: string, bedenad: string, pno: Number, bedenid:number, bpantno:number }
+        // tabloGirilenList : {bedenad: string, bedenid: Number, cekme: string, olcunokid: Number, pno: Number, deger: string, bpantno: number}
+
+        if (durum) {
+            var uniqueBedenId = pantolonList.map(x => x.bedenid).filter(onlyUnique);
+            console.log(uniqueBedenId);
+
+
+            if (kazanOlcuTurId != 26 && kazanOlcuTurId != 33 && kazanOlcuTurId != 34 && kazanOlcuTurId != 35) { // 26: Fason Ham Ölçü, 33: Zemin, 34: Random, 35: Nötr
+                if (uniqueBedenId.length > 2) {
+                    let uyariEksikBedenStr = "";
+                    let uyariEksikDataStr = "";
+
+                    $.each(uniqueBedenId, function (index, uniqBedenId) {
+
+                        if (pantolonList.filter(x => x.bedenid == uniqBedenId).length < 2) {
+                            uyariEksikBedenStr += "Beden : " + pantolonList.find(x => x.bedenid == uniqBedenId).bedenad + ", ";
+                        } else {
+
+                            $.each(pantolonList.filter(x => x.bedenid == uniqBedenId), function (index, ItemPantolon) {
+                                console.log(ItemPantolon);
+                                if (tabloGirilenList.filter(x => x.pno == ItemPantolon.pno && x.deger != null).length == 0) {
+                                    uyariEksikDataStr += "Beden : " + ItemPantolon.bedenad + " - Pantolon No : " + ItemPantolon.pno + " hiç veri girisi yapılmamıs \n"
+                                }
+
+                            });
+                        }
+
+                    });
+
+                    if (uyariEksikBedenStr.length != 0 || uyariEksikDataStr.length != 0) {
+                        if (uyariEksikBedenStr.length != 0) {
+                            uyariEksikBedenStr += "  bendenlerine en az 1 ürün daha kontrol edilmeli \n"
+                        }
+
+                        swal({
+                            text: uyariEksikBedenStr + uyariEksikDataStr,
+                            dangerMode: true,
+                            closeOnClickOutside: false
+                        });
+
+                    } else {
+                        bosVarmi(durum);
+                    }
+
+                } else {
+                    swal({
+                        title: 'En az 3 farklı beden bakılması zorunludur',
+                        dangerMode: true,
+                        closeOnClickOutside: false
+                    });
+                }
+            } else {
+
+                if (kazanOlcuTurId == 33 || kazanOlcuTurId == 34 || kazanOlcuTurId == 35) {
+                    if (pantolonList.length > 2) {
+                        bosVarmi(durum);
+                    } else {
+                        swal({
+                            title: 'En az 3 ürün bakılması zorunludur',
+                            dangerMode: true,
+                            closeOnClickOutside: false
+                        });
+                    }
+                } else {
+
+                    if (uniqueBedenId.length <= 2) {
+
+                        if (pantolonList.length < 10) {
+                            swal({
+                                text: "Tek veya Çift bedende toplamda en az 10 pantolon bakılması zorunludur",
+                                dangerMode: true,
+                                closeOnClickOutside: false
+                            });
+                        } else {
+                            let FasonUyariEksikDataStr = "";
+
+                            $.each(pantolonList, function (index, ItemPantolon) {
+                                console.log(ItemPantolon);
+                                if (tabloGirilenList.filter(x => x.pno == ItemPantolon.pno && x.deger != null).length == 0) {
+                                    FasonUyariEksikDataStr += "Beden : " + ItemPantolon.bedenad + " - Pantolon No : " + ItemPantolon.pno + " hiç veri girisi yapılmamıs \n"
+                                }
+
+                            });
+
+
+                            if (FasonUyariEksikDataStr.length != 0) {
+                                swal({
+                                    text: FasonUyariEksikDataStr,
+                                    dangerMode: true,
+                                    closeOnClickOutside: false
+                                });
+                            } else {
+                                bosVarmi(durum);
+                            }
+
+
+                        }
+
+                    } else {
+
+                        let uyariEksikBedenStr = "";
+                        let uyariEksikDataStr = "";
+
+                        $.each(uniqueBedenId, function (index, uniqBedenId) {
+
+                            if (pantolonList.filter(x => x.bedenid == uniqBedenId).length < 2) {
+                                uyariEksikBedenStr += "Beden : " + pantolonList.find(x => x.bedenid == uniqBedenId).bedenad + ", ";
+                            } else {
+
+                                $.each(pantolonList.filter(x => x.bedenid == uniqBedenId), function (index, ItemPantolon) {
+                                    console.log(ItemPantolon);
+                                    if (tabloGirilenList.filter(x => x.pno == ItemPantolon.pno && x.deger != null).length == 0) {
+                                        uyariEksikDataStr += "Beden : " + ItemPantolon.bedenad + " - Pantolon No : " + ItemPantolon.pno + " hiç veri girisi yapılmamıs \n"
+                                    }
+
+                                });
+                            }
+
+                        });
+
+                        if (uyariEksikBedenStr.length != 0 || uyariEksikDataStr.length != 0) {
+                            if (uyariEksikBedenStr.length != 0) {
+                                uyariEksikBedenStr += "  bendenlerine en az 1 ürün daha kontrol edilmeli \n"
+                            }
+
+                            swal({
+                                text: uyariEksikBedenStr + uyariEksikDataStr,
+                                dangerMode: true,
+                                closeOnClickOutside: false
+                            });
+
+                        } else {
+                            bosVarmi(durum);
+                        }
+                    }
+
+                }
+            }
+
+        } else {
+            bosVarmi(durum);
+        }
+    }
+
+    function bosVarmi(durum) {
+
+        if (durum) {
+            if (tabloGirilenList.length != 0) {
+
+                if (tabloGirilenList.filter(x => x.deger == "" || x.deger == null).length > 10) {
+                    swal({
+                        title: "10'dan fazla boş bırakılan hücre var. Yine de kayıt edilsin mi ?",
+                        buttons: true,
+                        dangerMode: true,
+                        closeOnClickOutside: false
+                    }).then((willYes) => {
+                        if (willYes) {
+                            kaydet(durum);
+                        }
+                    });
+
+                } else {
+                    kaydet(durum);
+                }
+            } else {
+                iziToast.error({ title: 'Veri girisi yapılmamıs', message: '', position: 'bottomRight' });
+            }
+        } else {
+            kaydet(durum);
+        }
+
+    }
+
+    function kaydet(durum) {
+        try {
+            var aciklama = $("#aciklamaInput").val();
+
+            KayitYapiliyorOnOff();
+            $.post("/Fason/kaydet", { aciklama: aciklama, kazanDetayId: kazanDetayId, durum: durum, atolyeAd: atolyeAd, utuPaketAd: utuPaketAd }, function (responseSuccess) {
+                console.log(responseSuccess);
+
+                $.post("/KazanFormu/kazanPrint", { kazanDetayId: kazanDetayId }, function (printSucc) {
+
+                    var html = printSucc.toString();
+
+                    $.post("/KazanFormu/saveHtmlPrint", { kazanDetayId: kazanDetayId, printHtml: html }, function (printSaveSucc) {
+
+                        if (responseSuccess.message == "Kayıt Başarılı") {
+                            KayitYapiliyorOnOff();
+
+                            $('#kayitResponseModal').modal('show');
+
+
+
+                            //swal({
+                            //    title: responseSuccess.message,
+                            //    dangerMode: true,
+                            //    closeOnClickOutside: false,
+                            //    buttons: {
+                            //        confirm: {
+                            //            text: "Yeni Ölçüme Başla",
+                            //            value: "goOlcum",
+                            //            visible: true,
+                            //            className: "blueBackground",
+                            //            closeModal: true
+                            //        },
+                            //        goKalite: {
+                            //            text: "Kalite Sistemine Git",
+                            //            value: "goKalite",
+                            //            visible: true,
+                            //            className: "",
+                            //            closeModal: true
+                            //        },
+                            //        yazdir: {
+                            //            text: "Yazdır",
+                            //            value: "goYazdir",
+                            //            visible: true,
+                            //            className: "blueBackground",
+                            //            closeModal: true
+                            //        }
+
+                            //    }
+                            //}).then((response) => {
+                            //    console.log(response);
+                            //    if (response == "goKalite") {
+                            //        var personel = JSON.parse(localStorage.getItem('personel'));
+                            //        $.get("Fason/goKalite/?personelId=" + personel.id, function (data) {
+                            //            window.location.href = "https://atolye.realkom.com/Home?user=" + data.pAd + "&password=" + data.pSif;
+                            //        });
+                            //    } else if (response == "goOlcum") {
+                            //        console.log("yeni olcum");
+                            //        location.reload();
+                            //    } else {
+                            //        swal({
+                            //            title: responseSuccess.message,
+                            //            dangerMode: true,
+                            //            closeOnClickOutside: false,
+                            //            buttons: {
+                            //                confirm: {
+                            //                    text: "Yeni Ölçüme Başla",
+                            //                    value: "goOlcum",
+                            //                    visible: true,
+                            //                    className: "blueBackground",
+                            //                    closeModal: true
+                            //                },
+                            //                goKalite: {
+                            //                    text: "Kalite Sistemine Git",
+                            //                    value: "goKalite",
+                            //                    visible: true,
+                            //                    className: "",
+                            //                    closeModal: true
+                            //                },
+                            //                yazdir: {
+                            //                    text: "Yazdır",
+                            //                    value: "goYazdir",
+                            //                    visible: true,
+                            //                    className: "blueBackground",
+                            //                    closeModal: false
+                            //                }
+
+                            //            }
+                            //        }).then((response) => {
+                            //            console.log(response);
+                            //            if (response == "goKalite") {
+                            //                var personel = JSON.parse(localStorage.getItem('personel'));
+                            //                $.get("Fason/goKalite/?personelId=" + personel.id, function (data) {
+                            //                    window.location.href = "https://atolye.realkom.com/Home?user=" + data.pAd + "&password=" + data.pSif;
+                            //                });
+                            //            } else if (response == "goOlcum") {
+                            //                console.log("yeni olcum");
+                            //                location.reload();
+                            //            } else {
+                            //                Yazdir();
+                            //            }
+                            //        });
+                            //        Yazdir();
+                            //    }
+                            //});
+
+
+
+
+
+
+
+                        } else {
+                            KayitYapiliyorOnOff();
+                            console.log(responseSuccess);
+                            alert('Error : ' + responseSuccess.hata);
+                            iziToast.error({ title: 'Bir hata Oluştu', message: responseSuccess.hata, position: 'bottomRight' });
+                        }
+
+                    }).fail(function (printSaveError) {
+                        KayitYapiliyorOnOff();
+                        console.log(printSaveError);
+                        alert('Error : ' + printSaveError.responseText);
+                        iziToast.error({ title: 'Bir hata Oluştu', message: printSaveError.responseText.toString(), position: 'bottomRight' });
+
+                    });
+
+
+                }).fail(function (printError) {
+                    KayitYapiliyorOnOff();
+                    console.log(printError);
+                    alert('Error : ' + printError.responseText);
+                    iziToast.error({ title: 'Bir hata Oluştu', message: printError.responseText.toString(), position: 'bottomRight' });
+
+                });
+
+
+
+            }).fail(function (responseError) {
+                KayitYapiliyorOnOff();
+                console.log(responseError);
+                alert('Error : ' + responseError.responseText);
+                iziToast.error({ title: 'Bir hata Oluştu', message: responseError.responseText.toString(), position: 'bottomRight' });
+
+            });
+        } catch (e) {
+            KayitYapiliyorOnOff();
+            console.error(e);
+            alert('Error : ' + e);
+            iziToast.error({ title: 'Bir hata Oluştu', message: e.toString(), position: 'bottomRight' });
+        }
+
+
+    }
+
+    function setOlcuYeri() {
+
+        try {
+            if ($(".seciliHucre").hasClass("seciliHucre")) {
+
+                var seciliHucre = $(".seciliHucre");
+
+                $.post("/Fason/getOlcuYerleri", {
+                    cekme: seciliHucre[0].dataset.cekme, bedenId: seciliHucre[0].dataset.bedenid, olcuYerleriList: olcuYerleriList
+                }, function (responseSuccess) {
+                    $('#olcuyerleriDiv').html(responseSuccess);
+                }).fail(function (responseError) {
+                    console.log(responseError);
+                    alert('Error : ' + responseError.responseText);
+                    iziToast.error({ title: 'Bir hata Oluştu', message: e.toString(), position: 'bottomRight' });
+
+                });
+            }
+        }
+        catch (e) {
+            console.error(e);
+            alert('Error : ' + e);
+            iziToast.error({ title: 'Bir hata Oluştu', message: e.toString(), position: 'bottomRight' });
+        }
+    }
+
+    function Yazdir() {
+
+
+
+        var someJSONdata = [];
+        var propertiesList = [];
+        $.post("/KazanFormu/kazanPrint", { kazanDetayId: kazanDetayId }, function (printSucc) {
+            printJS({
+                printable: someJSONdata,
+                properties: propertiesList,
+                header: printSucc,
+                //style: '.printTable { width: 100%;  border-collapse: collapse;} .printTable td { border: 1px solid grey; padding: 1px;  }  table td { border: 1px solid grey; padding: 1px;  } ',
+                type: 'json',
+                gridStyle: 'border: 1px solid grey; padding: 1px; ',
+                gridHeaderStyle: 'border: 1px solid grey; padding: 1px;'
+            });
+
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+    }
+
+    function goUrl(urlTur) {
+
+        if (urlTur == 1) {
+            location.reload();
+
+        } else if (urlTur == 2) {
+            var personel = JSON.parse(localStorage.getItem('personel'));
+            window.location.href = "https://atolye.realkom.com/Home?user=" + personel.personelkAdi + "&password=" + personel.personelSifre;
+
+        } else {
+            iziToast.error({ title: 'Yonlendirme yapilacak URL alinamadi', message: e.toString(), position: 'bottomRight' });
+        }
+    }
+
+    function olcuNokEkleCikart() {
+        $('#olcuNoktalariSecimModal').modal('show');
+
+        oldSeciliOlcuNokIdList = [];
+
+        $.each(seciliOlcuNokIdList, function (index, value) {
+            oldSeciliOlcuNokIdList.push(value);
+        });
+
+        firstOlcuNoktasiSecim = false;
+
+
+    }
+
+</script>

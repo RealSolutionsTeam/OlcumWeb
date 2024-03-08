@@ -1,0 +1,35 @@
+﻿
+
+
+<td data-editable="false" class="setvisible">
+    <a class="btn btn-icon btn-sm btn-danger" id="btn_sil_@ViewBag.index" data-index="@ViewBag.index" onclick="SatirSil(this)"><i class="fas fa-times" style="color:white"></i></a>
+</td>
+<td data-editable="false" class="setvisible">
+    <a class="btn btn-icon btn-sm btn-primary" id="btn_duzenle_@ViewBag.index" data-index="@ViewBag.index" onclick="SatirDuzenle(this)"><i class="far fa-edit" style="color:white"></i></a>
+</td>
+<td data-editable="false" class="setvisible">
+    <a class="btn btn-icon btn-sm btn-info" id="btn_ekle_@ViewBag.index" data-index="@ViewBag.index" onclick="SatirEkle(this)"><i class="fas fa-plus-square" style="color:white;"></i></a>
+</td>
+
+<td data-editable="false" id="cell_@(ViewBag.index + "_0")" data-olcuNoktasi="" data-columnindex="0" data-rowIndex="@ViewBag.index">@Html.DropDownList("olcuNoktalari", new SelectList(ViewBag.olcuNoktalari, "id", "olcuNoktasi"), "Seçiniz...", new { @class = "form-control select2", @id = "olcuTuruAd_" + ViewBag.index, @style = "width:75%" })</td>
+
+
+@for (int i = 0; i < ViewBag.columnCount; i++)
+{
+    <td tabindex="1" class="tdCell" id="cell_@(ViewBag.index + "_" + (i+1))" data-columnIndex="@(i+1)" data-rowIndex="@ViewBag.index" onfocus="ChangeColumnIndex(this)" onchange="DegerDegisYS(this)">0</td>
+}
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2();
+    };
+
+    $("#olcuTuruAd_" + @ViewBag.index).change(function () {
+        $("#oldOlcuNokta_" + @ViewBag.index).val($('#olcuTuruAd_' + @ViewBag.index).val());
+        var index = @ViewBag.index;
+        $("#cell_" + index + "_0").attr('data-olcunoktasi', $('#olcuTuruAd_' + @ViewBag.index).val());
+    });
+</script>

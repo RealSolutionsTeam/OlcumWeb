@@ -1,0 +1,329 @@
+﻿@model  Tuple<List<OlcumWeb.Models.DTO.DTOOlcuNoktalari>, int>
+<style>
+    .modal-backdrop {
+        position: inherit;
+        top: 0;
+        left: 0;
+        z-index: 1040;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+    }
+
+    .modal {
+        position: absolute;
+    }
+
+    .badge {
+        font-family: none;
+    }
+
+    .satir {
+        display: -ms-flexbox;
+        display: -webkit-box;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        /* flex-wrap: wrap; */
+        margin-top: 5px;
+    }
+
+    .pretty {
+        position: relative;
+        display: inline-block;
+        margin-right: 0em !important;
+        white-space: nowrap;
+        line-height: 1;
+    }
+
+    .container {
+        margin: 2%;
+    }
+
+    .divider {
+        width: 5px;
+        height: auto;
+        display: inline-block;
+    }
+</style>
+
+<link rel="stylesheet" href="~/Tema/Chips/Chips.css">
+<link rel="stylesheet" href="~/Tema/assets/bundles/pretty-checkbox/pretty-checkbox.min.css">
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<div class="card card-success">
+    <div class="card-header">
+        <h4>Tablo Özellikleri - </h4> <span>Lütfen tabloyla ilgili bilgileri sırasıyla seçiniz.</span>
+    </div>
+    <div class="card-body">
+        <div class="form-group col-4">
+            @*  <div class="col-2">*@
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="row">
+                        <button id="Ekstra" onclick="EkstraModalAc()" type="button" class="btn btn-primary btn-sm">Bedenleri Düzenle</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer" id="cardFooterID" style="display:none">
+        <div class="card">
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Yıkama Sonrası</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <div class="table-responsive" id="tableForm">
+                            <table id="mainTable" class="table table-striped" style="cursor: pointer;">
+                                <thead>
+
+                                    <tr id="tableHead">
+                                        <th width="5px">Satır Ekle</th>
+
+                                        <th>Ölçü Noktası</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    @{ var sayi = 0;}
+                                    @for (int i = 0; i < Model.Item1.Count; i++)
+                                    {
+                                        if (Model.Item1[i].anaNoktami == true)
+                                        {
+                                            <tr id="satir_@sayi">
+                                                <td data-editable="false"><button class="btn btn-icon btn-sm btn-info" id="btn_@sayi" data-tabanID="@Model.Item1[i].tabanID" data-olcuNoktasiID="@Model.Item1[i].id" onclick="satirEkle(this)"><i class="fas fa-plus-square" style="color:white;"></i></button></td>
+                                                <td data-editable="false">
+                                                    <input type="checkbox" class="aktifOlcuNoktasi" data-id="@i" id="chk_@sayi" />
+                                                    @Model.Item1[i].olcuNoktasi
+                                                    <div class="olcuNoktasiDropDownList" id="olcuNoktasi_@i" style="display:none; margin-left:10px;">
+                                                        @Html.DropDownList("olcuNoktasi" + sayi, new SelectList(Model.Item1.Where(x => x.tabanID == Model.Item1[i].tabanID && x.anaNoktami == false).Select(x => x.olcuNoktasi).ToList()), "...", new { @class = "form-control select2", @id = "dropDown" + sayi, @style = "display:none; width:250px; height:20px;" })
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            sayi++;
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                            <input style="position: absolute; display: none;">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer"> <button id="Ekstra" onclick="TabloKaydet()" type="button" class="btn btn-primary btn-sm">Kaydet</button></div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+<script src="~/editable-table-master/mindmup-editabletable.js"></script>
+<script src="~/editable-table-master/numeric-input-example.js"></script>
+
+<script>
+    var yuklenenlerList = [];
+    var bedenList = [];
+    var olcuNoktasiList = @Html.Raw(Json.Encode(Model.Item1.ToList()));
+    var modelID = @Html.Raw(Json.Encode(Model.Item2));
+
+    $(document).ready(function modalShow() {
+        $.post("/TanimlamaEkrani/Bedenler", { bedenSistemi: 0, selectedIndex: 0 }, function (deger) {
+            $('#beden_Modal').html(deger);
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    });
+
+
+    if (jQuery().select2) {
+        $(".select2").select2();
+    };
+
+    $('#mainTable').editableTableWidget();
+
+    $('#mainTable td.uneditable').on('change', function (evt, newValue) {
+        return false;
+    });
+
+    function EkstraModalAc() {
+        $('#bedenModal').modal('show');
+    }
+
+    function OlcuNoktasiEkle() {
+        var selectedIndex = $('#olcuNoktasi').prop('selectedIndex');
+        if (selectedIndex == 0) {
+            var string = "Lütfen bir ölçüm noktası seçiniz!";
+            AlertHata(string);
+        }
+        else {
+            var selectedString = $('#olcuNoktasi').prop('value');
+            $('#tableBody').append("<tr><td tabIndex = '1'>" + selectedString + "</td></tr>");
+        }
+    }
+
+    $(":checkbox").change(function () {
+
+        var id = $(this).data("id");
+        var index = $(this).attr("id").substr($(this).attr("id").indexOf("_") + 1);;
+        if (this.checked) {
+            $('#olcuNoktasi_' + id).css("display", "inline");
+        }
+        else {
+            $('#olcuNoktasi_' + id).css("display", "none");
+
+        }
+    });
+
+    function satirEkle(elem) {
+        var buttonID = $(elem).attr("id");
+        var tabanID = $(elem).data("tabanid");
+        var id = buttonID.substr(buttonID.indexOf("_") + 1);
+        var rowCount = $('#tableBody tr').length;
+        var columnCount = $("#tableHead").find("th").length - 2;
+        //var closesttd = $('#' + buttonID).parent().next('td').find("div").find("span").find("span").find("span").find("span").attr("title");
+        //console.log(closesttd);
+        //var secilenOlcuNoktası = $("#" + closesttd).val();
+
+        var secilenOlcuNoktası = $('#' + buttonID).parent().next('td').find("div").find("span").find("span").find("span").find("span").attr("title");
+
+        var secilenOlcuNoktasiID = olcuNoktasiList.find(x => x.olcuNoktasi == secilenOlcuNoktası).id;
+
+        if (secilenOlcuNoktası == "..." || secilenOlcuNoktası == "") {
+            AlertHata("Lütfen bir ölçü noktası seçiniz!");
+        }
+        else {
+            var checkExist = false;
+            for (var i = 0; i < yuklenenlerList.length; i++) {
+                if (yuklenenlerList[i].olcuNoktasi == secilenOlcuNoktası) {
+                    checkExist = true;
+                }
+                else {
+                    checkExist = false;
+                }
+            }
+
+            if (checkExist) {
+                AlertHata("Aynı isimde eklenmiş bir ölçü zaten var!");
+            }
+            else {
+                yuklenenlerList.push({ 'olcuNoktasi': secilenOlcuNoktası, 'tabanID': tabanID });
+
+                for (var i = rowCount - 1; i > id; i--) {
+                    $('#satir_' + i).attr('id', 'satir_' + (Number(i) + 1));
+                    $('#btn_' + i).attr('id', 'btn_' + (Number(i) + 1));
+                    $('#dropDown' + i).attr('id', 'dropDown' + (Number(i) + 1));
+                     $('#select2-dropDown' + i + '-container').attr('id', 'select2-dropDown' + (Number(i) + 1) + '-container');
+                    $('#chk_' + i).attr('id', 'chk_' + (Number(i) + 1));
+
+                    for (var j = 0; j < columnCount; j++) {
+                        $('#cell_' + i + '_' + j).attr('id', 'cell_' + (Number(i) + 1) + '_' + j);
+                    }
+                }
+
+
+                var html = "  <tr id= 'satir_" + (Number(id) + 1) + "'><td data-editable='false'><button class='btn btn-icon btn-sm btn-danger' data-tabanid = '" + tabanID + "' data-olcuNoktasiAd ='" + secilenOlcuNoktası + "' data-olcuNoktasiID = '" + secilenOlcuNoktasiID + "' id='btn_" + (Number(id) + 1) + "' onclick='satirSil(this)'><i class='fas fa-minus-square' style='color:white;'></i></button></td><td data-editable='false'>" +
+                    "<input type='checkbox' class='aktifOlcuNoktasi' data-id='" + (Number(id) + 1) + "' id = 'chk_"+ (Number(id) + 1)+"' checked/> " +
+                    secilenOlcuNoktası + "</td>" +
+                    "</tr>";
+                $('#satir_' + id).after(html);
+
+                for (var i = 0; i < columnCount; i++) {
+                    $('#satir_' + (Number(id) + 1)).append("<td tabIndex = '1' id = 'cell_"+(Number(id) + 1)+"_"+i+"'>0</td>");
+                    $('#cell_' + (Number(id)) + '_' + i).attr("data-editable", false);
+                    $('#cell_' + (Number(id)) + '_' + i).removeAttr("tabindex");
+                    $('#cell_' + (Number(id)) + '_' + i).html("");
+                }
+            }
+
+        }
+
+    }
+
+    function satirSil(elem) {
+        var rowCount = $('#tableBody tr').length;
+        var buttonID = $(elem).attr("id");
+        var id = buttonID.substr(buttonID.indexOf("_") + 1);
+        var olcuNoktasi = $(elem).data("olcunoktasiad");
+        var tabanID = $(elem).data("tabanid");
+        var columnCount = $("#tableHead").find("th").length - 2;
+
+
+        yuklenenlerList.splice($.inArray(olcuNoktasi, yuklenenlerList), 1);
+        $('tbody#tableBody tr#satir_' + id).remove();
+
+        for (var i = rowCount - 1; i > id; i--) {
+            $('#satir_' + i).attr('id', 'satir_' + (Number(i) - 1));
+            $('#btn_' + i).attr('id', 'btn_' + (Number(i) - 1));
+            $('#dropDown' + i).attr('id', 'dropDown' + (Number(i) - 1));
+            $('#select2-dropDown' + i + '-container').attr('id', 'select2-dropDown' + (Number(i) - 1) + '-container');
+            $('#chk_' + i).attr('id', 'chk_' + (Number(i) - 1));
+
+            for (var j = 0; j < columnCount; j++) {
+                $('#cell_' + i + '_' + j).attr('id', 'cell_' + Number(i - 1) + '_' + j);
+            }
+        }
+
+        var checkAny = -1;
+
+        checkAny = yuklenenlerList.findIndex(x => x.tabanID == tabanID)
+        if (checkAny < 0) {
+            for (var i = 0; i < columnCount; i++) {
+                $('#cell_' + (Number(id) - 1) + '_' + i).attr("tabindex", "1");
+                $('#cell_' + (Number(id) - 1) + '_' + i).removeAttr("data-editable");
+                $('#cell_' + (Number(id) - 1) + '_' + i).html("0");
+            }
+        }
+    }
+
+    function TabloKaydet() {
+        var rowCount = $('#tableBody tr').length;
+        var columnCount = $("#tableHead").find("th").length - 2;
+        var tableList = [];
+        KayitYapiliyorOnOff();
+
+        for (var i = 0; i < rowCount; i++) {
+            for (var j = 0; j < columnCount; j++) {
+
+                if ($('#chk_' + i).is(':checked')) {
+                    if ($('#cell_' + i + "_" + j).html() != "") {
+                        var olcuNoktaID = $('#btn_' + i).data("olcunoktasiid");
+                        var bedenID = $('#beden_' + j).data("tableid");
+                        tableList.push({ 'olcuNoktaID': olcuNoktaID, 'bedenID': bedenID, 'deger': $('#cell_' + i + "_" + j).html() });
+                    }
+                }
+
+            }
+        }
+
+
+        $.post("/TanimlamaEkrani/TabloKaydet", { modelID: modelID, tablo: tableList }, function (gelenCagri) {
+            if (gelenCagri == 1) {
+                KayitYapiliyorOnOff();
+                swal({
+                title: "Başarılı",
+                text: "Tablonuz başarıyla kaydedildi.",
+                icon: "success",
+                button: "Tamam",
+                });
+            }
+            else {
+                KayitYapiliyorOnOff();
+               swal({
+                title: "Başarısız",
+                text: "Tablo kaydı yapılırken bir hatayla karşılaşıldı!",
+                icon: "error",
+                button: "Tamam",
+                });
+            }
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+</script>
+
+

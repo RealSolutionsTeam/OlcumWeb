@@ -1,0 +1,82 @@
+﻿@model List<OlcumWeb.dbOlcum.Bedenler>
+
+<style>
+    .checkBoxAddSize {
+        width: 20px;
+        height: 20px;
+    }
+</style>
+
+<div style="text-align:center">
+    <h2 class="swal2-title">
+        <br />
+        Lütfen işlem yapmak istediğiniz Bedenleri seçiniz.
+    </h2>
+</div>
+<hr />
+
+<div id="addSizeTab">
+    @{
+        var t = 0;
+        var i = 1;
+        List<string> bedenList = ViewBag.olanBedenler;
+
+        int bedenSistemi = (int)Model.Select(x => x.bedenSistemi).FirstOrDefault();
+
+        int müdahaleMi = 0;
+
+        if (ViewBag.isFromModelist == 0)
+        {
+            müdahaleMi = 1;
+        }
+        else
+        {
+            müdahaleMi = 0;
+        }
+
+        List<OlcumWeb.dbOlcum.Bedenler> data = new List<OlcumWeb.dbOlcum.Bedenler>();
+
+        if (bedenSistemi == 0)
+        {
+            data = Model.Where(x => x.bedenSistemi == bedenSistemi && x.beden != "Hata").ToList();
+
+        }
+        else
+        {
+            data = Model.Where(x => x.bedenSistemi == bedenSistemi).OrderBy(x => x.beden).ToList();
+
+        }
+    }
+    <div class="tab-@t row" id="tab_@(t)">
+        @foreach (var item in data)
+        {
+
+
+            <div class="col-3">
+                <div class="checkbox">
+                    <div class="row">
+                        <label>
+                            @if (bedenList.Contains(item.beden))
+                            {
+                                <input type="checkbox" class="checkBoxAddSize" id="checkBox_@i" data-index="@i" value="" checked data-mudahalemi="@müdahaleMi" data-bedenid="@item.ID"><span style="margin-left:4px;font-weight:bold;color:black;font-size:15px;">@(item.beden + (müdahaleMi == 0 ? "" : "-Müdahale"))</span>
+                            }
+                            else
+                            {
+                                <input type="checkbox" class="checkBoxAddSize" id="checkBox_@i" data-index="@i" value="" data-mudahalemi="@müdahaleMi" data-bedenid="@item.ID"><span style="margin-left:4px;font-weight:bold;color:black;font-size:15px;">@(item.beden + (müdahaleMi == 0 ? "" : "-Müdahale"))</span>
+                            }
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            if (i % 4 == 0)
+            {
+                t++;
+            @:</div><div class="tab-@t row" id="tab_@(t)" style="margin-top:1%">
+            }
+            i++;
+        }
+    </div>
+</div>
+

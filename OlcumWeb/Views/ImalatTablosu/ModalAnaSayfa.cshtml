@@ -1,0 +1,38 @@
+﻿@model int
+
+<p style="text-align:center">Hazır Tablo Seçme Ekranı</p>
+<hr />
+<div class="row" style="text-align:center">
+    <div class="col-6">
+        <button class="btn btn-icon btn-lg btn-success" onclick="RPTTabloGetir()">Geçmiş Tablodan Getir</button>
+    </div>
+    <div class="col-6">
+        <button class="btn btn-icon btn-lg btn-success" data-orderid="@Model" onclick="HazirTabloSec(this)">Hazır Tablodan Seç</button>
+    </div>
+</div>
+
+<script>
+    function RPTTabloGetir() {
+        YukleniyorOnOff();
+        $.post("/ImalatTablosu/OncekiTablodanGetirModal", {}, function (deger) {
+            $('#hazirTablo_Modal').html(deger);
+        YukleniyorOnOff();
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+
+    function HazirTabloSec(elem) {
+        var orderid = $(elem).data('orderid');
+        YukleniyorOnOff();
+
+        $.post("/ImalatTablosu/HazirTabloModal", { 'orderID': orderid }, function (deger) {
+            $('#hazirTablo_Modal').html(deger);
+        YukleniyorOnOff();
+
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+    }
+</script>

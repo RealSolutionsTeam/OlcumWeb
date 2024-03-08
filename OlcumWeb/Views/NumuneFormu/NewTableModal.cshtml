@@ -1,0 +1,91 @@
+﻿
+<style>
+
+    .progress {
+        background: red;
+        display: block;
+        height: 20px;
+        text-align: center;
+        transition: width .3s;
+        width: 0;
+    }
+
+        .progress.hide {
+            opacity: 0;
+            transition: opacity 1.3s;
+        }
+</style>
+
+
+<div style="text-align:center">
+    <br />
+    <h2 class="swal2-title">
+        @if (ViewBag.tabloTuru == 0)
+        {
+            <strong>Tölerans Belirleme</strong>
+            <br />
+            <span>Çekme belirlerken seçilen Orderlar üzerinden tölerans belirleniyor..</span>
+        }
+        else
+        {
+            <strong>Çekme Belirleme</strong>
+            <br />
+            <span>İlk olarak çekme belirlemek için Gelişmiş Raporlama menüsünü kullanın.<br />Gelişmiş Raporlama Sayfası Yükleniyor...</span>
+        }
+    </h2>
+</div>
+
+<br />
+<div class="progress"></div>
+
+<script>
+    var gelismisRaporlamaTabloTuru = @Html.Raw(Json.Encode(ViewBag.tabloTuru));
+
+    RedirectToGelismisRaporlama();
+
+    function RedirectToGelismisRaporlama() {
+        console.log(orderIdAnaSayfa);
+        $.ajax({
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function (evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+                        console.log(percentComplete);
+                        $('.progress').css({
+                            width: percentComplete * 100 + '%'
+                        });
+                        if (percentComplete === 1) {
+                            $('.progress').addClass('hide');
+                        }
+                    }
+                }, false);
+                xhr.addEventListener("progress", function (evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+                        console.log(percentComplete);
+                        $('.progress').css({
+                            width: percentComplete * 100 + '%'
+                        });
+                    }
+                }, false);
+                return xhr;
+            },
+            type: 'POST',
+            url: "/NumuneFormu/GelismisRaporlamaModal",
+            data: { orderId: orderIdAnaSayfa, toleransMi: gelismisRaporlamaTabloTuru },
+            success: function (data) {
+                $('#stepContainer').html(data);
+            }
+        });
+
+        ////Progress barın ilerlemesini sağla
+        //$.post("/NumuneFormu/GelismisRaporlamaModal", { orderId: orderIdAnaSayfa, toleransMi: gelismisRaporlamaTabloTuru }, function (deger) {
+        //    $('#stepContainer').html(deger);
+
+        //}).fail(function (response) {
+        //    alert('Error : ' + response.responseText);
+        //});
+    }
+</script>
+

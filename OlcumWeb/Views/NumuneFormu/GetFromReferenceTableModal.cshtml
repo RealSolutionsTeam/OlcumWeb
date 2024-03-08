@@ -1,0 +1,50 @@
+﻿
+<div style="text-align:center">
+    <br />
+    <br />
+    <h2 class="swal2-title">
+
+        Lütfen referans olarak kullanılacak Order'ı seçiniz.
+    </h2>
+</div>
+<br />
+<br />
+
+@{ 
+    List<OlcumWeb.Controllers.ReferenceOrderDto> orders = ViewBag.orders;
+}
+
+<select id="orderNosReference" class="form-control select2">
+    @foreach (var item in orders)
+    {
+        <option data-isnumune="@item.IsNumune" value="@item.Order.ID">@item.Order.orderNo</option>
+    }
+</select>
+
+@*@Html.DropDownList("orderNosReference", new SelectList(orders.Select(x=>x.Order).ToList(), "ID", "orderNo"), "Seçiniz...", new { @class = "form-control select2", @id = "orderNosReference" })*@
+<br />
+<br />
+
+<section id="referenceTable">
+</section>
+
+
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2({
+            dropdownParent: $("#stepsModal")
+        });
+    };
+    $('#orderNosReference').on('change', function () {
+
+        var orderId = $('#orderNosReference option:selected').val();
+
+        var isNumune = $('#orderNosReference option:selected').data('isnumune');
+        $.post("/NumuneFormu/OrderTablesModal", { orderId: orderId, isReference: 1, isNumune: isNumune }, function (orderData) {
+            $('#referenceTable').html(orderData);
+        }).fail(function (printError) {
+            alert('Error : ' + printError.responseText);
+        });
+        
+    });
+</script>

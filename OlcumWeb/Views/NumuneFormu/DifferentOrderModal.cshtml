@@ -1,0 +1,51 @@
+﻿<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+
+<select id="orderNoSwal" class="form-control"></select>
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    if (jQuery().select2) {
+        $('#orderNoSwal').select2({
+            width: "100%",
+            minimumInputLength: 4,
+            dropDownParent: $('#differentOrderModal'),
+            language: {
+                inputTooShort: function (args) {
+
+                    return "En az 4 karakter girmelisiniz";
+                },
+                noResults: function () {
+                    return "Bulunamadı";
+                },
+                searching: function () {
+                    return "Aranıyor";
+                }
+            },
+            allowClear: true,
+            formatInputTooShort: function (input, min) { return "Start typing to search"; },
+            ajax: {
+                url: ('/Raporlama/SearchOrders'),
+                dataType: 'json',
+                data: function (term) {
+                    return {
+                        term: term.term
+                    };
+                },
+                type: "POST",
+                processResults: function (response) {
+                    return {
+                        results: $.map(response, function (item) {
+                            return {
+                                text: item.orderNo,
+                                id: item.orderID
+                            }
+                        })
+                    };
+                }
+            }
+        });
+
+    }
+</script>

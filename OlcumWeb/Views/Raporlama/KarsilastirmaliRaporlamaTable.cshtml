@@ -1,0 +1,368 @@
+﻿@model List<OlcumWeb.Controllers.KazanDetayModel>
+
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/datatables.min.css">
+<link rel="stylesheet" href="~/Tema/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
+
+<style>
+
+    select[name="1_length"] {
+        height: 30px !important;
+    }
+
+    select[name="2_length"] {
+        height: 30px !important;
+    }
+
+    select[name="save-stage"] {
+        height: 30px !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+
+    .dataTables_filter label {
+        margin: 0 !important;
+    }
+
+        .dataTables_filter label input {
+            height: 30px !important;
+        }
+
+    .dataTables_paginate {
+        float: right !important;
+    }
+
+    .dataTables_length label {
+        float: right !important;
+        margin: 0 !important;
+    }
+
+    #save-stage2 th{
+        white-space:nowrap;
+    }
+
+
+</style>
+
+<div style="width:100%">
+
+    <div class="table-responsive" id="orderListesi">
+        <div id="table-1_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4 no-footer">
+            <div class="col-sm-12">
+                <table class="table table-striped dataTable no-footer" id="save-stage2" role="grid" aria-describedby="table-1_info">
+                    <thead>
+                        <tr role="row">
+                            <th>
+                                @*<div class="pretty p-default p-round p-thick">
+                        <input type="checkbox" id="selectAllchk" onclick="SelectAll()">
+                    </div>
+                    <label id="selectAlllbl">Hepsini Seç</label>*@
+                                #
+                            </th>
+
+                            <th  class="select-filter">
+                                Order No
+                            </th>
+
+                            <th  class="select-filter">
+                                Model Adı
+                            </th>
+
+                            <th  class="select-filter">
+                                Model No
+                            </th>
+
+                            <th  class="select-filter">
+                                Kumaş Adı
+                            </th>
+
+                            <th  class="select-filter"> 
+                                Müşteri
+                            </th>
+
+                            <th  class="select-filter">
+                                Atölye Adı
+
+                            </th>
+
+                            <th  class="select-filter">
+                                Yıkama Yeri
+                            </th>
+
+                            <th>
+                                Tarih
+                            </th>
+
+                            <th  class="select-filter">
+                                Ölçü Türü
+                            </th>
+
+                            <th  class="select-filter">
+                                Tablo Türü
+                            </th>
+                            <th class="select-filter">
+                                Reçete Kodu
+                            </th>
+                            <th>
+                                Reçete
+                            </th>
+                            <th>
+                                Yazdır
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            int id = item.kazanDetayID;
+                            <tr>
+                                <td>
+                                    <div class="pretty p-default p-round p-thick">
+                                        <input type="checkbox" id="@id" data-raporturu="@item.raporTuru" data-id="@item.kazanDetayID" onclick="addLocalStorrage(this)">
+                                    </div>
+                                </td>
+
+                                <td>
+                                    @item.orderNo
+                                </td>
+                                <td>
+                                    @item.modelAdi
+                                </td>
+                                <td>
+                                    @item.modelNo
+                                </td>
+                                <td>
+                                    @item.kumasAdi
+                                </td>
+                                <td>
+                                    @item.musteri
+                                </td>
+                                <td>
+                                    @item.atolyeAd
+                                </td>
+                                <td>
+                                    @item.yikamaYeri
+                                </td>
+
+                                <td>
+                                    @item.tarih.ToString("dd/MM/yyyy")
+                                </td>
+
+                                <td>
+                                    @item.olcuTuru
+                                </td>
+
+                                <td>
+                                    @item.tabloTuru
+                                </td>
+                                <td>
+                                    @item.receteKod
+                                </td>
+                                <td>
+                                    <a class="btn btn-icon btn-info" id="btn_@item.kazanDetayID" data-kazandetayid="@item.kazanDetayID" data-orderno="@item.orderNo" onclick="GetRecete(this)"><i class="far fa-file" style="color:white"></i></a>
+                                </td>
+                                <td>
+                                    <a class="btn btn-icon btn-success" data-kazandetayid="@item.kazanDetayID" data-orderno="@item.orderNo" data-raporturu="@item.raporTuru" onclick="GetPrint(this)"><i class="fa fa-print" style="color:white"></i></a>
+                                </td>
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+              
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="~/Tema/assets/bundles/datatables/datatables.min.js"></script>
+<script src="~/Tema/assets/bundles/sweetalert/sweetalert.min.js"></script>
+<script src="~/Tema/assets/js/page/sweetalert.js"></script>
+
+<script>
+    var list = [];
+    var isFromNumunePage = @Html.Raw(Json.Encode(ViewBag.isFromNumunePage));
+    var isAddingOrder =  @Html.Raw(Json.Encode(ViewBag.isAddingOrder));
+    var table = $('#save-stage2').DataTable({
+        "dom": '<"top"<"row mr-0 ml-0 mt-1 mb-1"<"col-6 m-auto"f><"col-6 m-auto"l>>>rt<"row mt-2 mr-0 mb-0 ml-0"<"col - 6 m- auto"i><"col - 6 m - auto"p>><"clear">',
+        "pageLength": 10,
+        "ordering": true,
+ 
+        "lengthMenu": [10, 20, 50, 100],
+        "language": {
+            "searchPlaceholder": "Arama",
+            "search": "",
+            //"info": "TOTAL Kayıt içerisinde START - END gösteriliyor",
+            "loadingRecords": "Yükleniyor...",
+            "zeroRecords": "Kayıt Bulunamadı",
+            "lengthMenu": "",
+            "infoEmpty": "",
+            "infoFiltered": "",
+            "paginate": {
+                "first": "İlk Sayfa",
+                "last": "Son Sayfa",
+                "next": "Sonraki Sayfa",
+                "previous": "Önceki Sayfa",
+            },
+        },
+        initComplete: function () {
+            count = 0;
+            this.api().columns('.select-filter').every(function () {
+                var title = this.header();
+
+                //replace spaces with dashes
+                title = $(title).html().replace(/[\W]/g, '-');
+                var column = this;
+                var select = $('<br /><select id="' + title + '" class="select2 filterSelect2" ></select>')
+                    .appendTo($(column.header()))
+                    .on('change', function () {
+                        //Get the "text" property from each selected data 
+                        //regex escape the value and store in array
+                        var data = $.map($(this).select2('data'), function (value, key) {
+                            return value.text ? '^' + $.fn.dataTable.util.escapeRegex(value.text) + '$' : null;
+                        });
+
+
+        
+
+                        //if no data selected use ""
+                        if (data.length === 0) {
+                            data = [""];
+                        }
+
+                        //join array into string with regex or (|)
+                        var val = data.join('|');
+
+                        //search for the option(s) selected
+                        column
+                            .search(val ? val : '', true, false)
+                            .draw();
+                    });
+
+                column.data().unique().sort().each(function (d, j) {
+                    if (d != null && d != '') {
+                        select.append('<option value="' + d + '">' + d + '</option>');
+                    }
+                });
+
+                //use column title as selector and placeholder
+                $('.filterSelect2').select2({
+                    multiple: true,
+                    theme: 'classic',
+                    //closeOnSelect: false,
+                    allowClear:true,
+                    width: '100%'
+                });
+
+                //initially clear select otherwise first option is selected
+                $('.filterSelect2').val(null).trigger('change');
+            });
+        }
+    });
+
+
+
+
+    function addLocalStorrage(elem) {
+        var element = $(elem);
+        if (elem.checked) {
+            var key = $(elem).data('id');
+            var value = $(elem).data('id');
+            var raporTuru = $(elem).data('raporturu');
+
+            localStorage.setItem(key, JSON.stringify({ 'id': value, 'raporTuru': raporTuru }));
+
+            var liste = new Array();
+            var raporTuruListe = new Array();
+            for (var i = 0; i < localStorage.length; i++) {
+                var localStorageItemKey = localStorage.key(i);
+                var localStorageItem = localStorage.getItem(localStorageItemKey);
+
+                if (localStorage.key(i) != 'personel' && localStorageItem.arsivMi != 1) {
+                    liste.push(localStorage.key(i));
+                    raporTuruListe.push(JSON.parse(localStorageItem).raporTuru)
+                }
+
+            }
+
+            $.post("/Raporlama/SelectedList", { 'id': liste, isFromNumune: isFromNumunePage, 'raporTuruListe': raporTuruListe, 'isAddingOrder': isAddingOrder }, function (data) {
+                $('#selectedList').html(data);
+
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+        }
+        else {
+
+            var key = $(elem).data('id');
+            localStorage.removeItem(key);
+            var liste = new Array();
+            var raporTuruListe = new Array();
+            for (var i = 0; i < localStorage.length; i++) {
+                var localStorageItemKey = localStorage.key(i);
+                var localStorageItem = localStorage.getItem(localStorageItemKey);
+                if (localStorage.key(i) != 'personel' && localStorageItem.arsivMi != 1) {
+                    liste.push(localStorage.key(i));
+                    raporTuruListe.push(JSON.parse(localStorageItem).raporTuru);
+                }
+            }
+
+            $.post("/Raporlama/SelectedList", { 'id': liste, isFromNumune: isFromNumunePage, 'raporTuruListe': raporTuruListe, 'isAddingOrder': isAddingOrder }, function (data) {
+                $('#selectedList').html(data);
+
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+        }
+
+    }
+
+    function GetRecete(elem) {
+        var orderNo = $(elem).data('orderno');
+        var id = 0;
+        $.getJSON("/Raporlama/goToRecipePage", { 'orderNo': orderNo }, function (data) {
+            if (data != 0) {
+                window.open("http://recete.realkom.com/Recipe/Print2/" + data);
+            } else {
+                AlertHata("Aradığınız Order'a ait reçete bulunamadı.");
+            }
+        });
+    }
+
+    function SelectAll() {
+        if ($('#selectAlllbl').html() == 'Hepsini Seç') {
+            $('#selectAlllbl').html('Seçimi Kaldır');
+        }
+        else {
+             $('#selectAlllbl').html('Hepsini Seç');
+        }
+    }
+
+    function GetPrint(elem) {
+        var orderNo = $(elem).data('orderno');
+        var kazanDetayID = $(elem).data('kazandetayid');
+        var raporTuru = $(elem).data('raporturu');
+
+        $.post("/Raporlama/PrintModal", { 'orderNo': orderNo, 'kazanDetayID': kazanDetayID, 'raporTuru': raporTuru }, function (data) {
+                $('#printRapor_Modal').html(data);
+
+            }).fail(function (response) {
+                alert('Error : ' + response.responseText);
+            });
+
+        $('#printRaporModal').modal('show');
+    }
+</script>
+

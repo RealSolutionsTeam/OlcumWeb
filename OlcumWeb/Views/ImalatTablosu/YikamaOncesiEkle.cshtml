@@ -1,0 +1,64 @@
+﻿@model Tuple<string, int, List<OlcumWeb.Models.DTO.DTOImalatTabloGoster>>
+
+<div class="table-responsive" id="yikamaOncesiForm__@(Model.Item2)">
+    <table id="yikamaOncesi_@(Model.Item2)" class="table table-striped" style="cursor: pointer;">
+        <thead>
+            <tr id="yikamaOncesiHead_@(Model.Item2)">
+                <th id="column_@(Model.Item2)_0_0">Ölçü Noktası</th>
+
+                @for (int i = 0; i < Model.Item3[0].beden.Count(); i++)
+                {
+                    <th id="column_@(Model.Item2)_0_@i">@Model.Item3[0].beden[i]</th>
+                }
+            </tr>
+        </thead>
+        <tbody id="yikamaOncesiBody_@(Model.Item2)">
+            @{ int rowIndex = 0;}
+            @for (int i = 0; i < Model.Item3.Count; i++)
+            {
+                if (i == 0)
+                {
+                    <tr id="satir_@rowIndex">
+                        <td data-editable="false" id="cell_@(Model.Item2)_@(rowIndex)_0" data-olcunoktasi="@Model.Item3[i].olcuNoktasi">
+                            @Model.Item3[i].olcuNoktasi
+                        </td>
+
+                        @for (int z = 1; z <= Model.Item3[0].beden.Count(); z++)
+                        {
+                            <td tabindex="1" id="cell_@(Model.Item2)_@(rowIndex + "_" + z)" data-tabloIndex="@i" data-rowIndex="@rowIndex" onchange="DegerDegistir(this)" data-columnIndex="@z">@Model.Item3[i].deger[z - 1]</td>
+                        }
+                    </tr>
+                    rowIndex++;
+                }
+                else
+                {
+                    if (Model.Item3[i].olcuNoktasi != Model.Item3[i - 1].olcuNoktasi)
+                    {
+                        <tr id="satir_@rowIndex">
+                            <td data-editable="false" id="cell_@(Model.Item2)_@(rowIndex)_0" data-olcunoktasi="@Model.Item3[i].olcuNoktasi">
+                                @Model.Item3[i].olcuNoktasi
+                            </td>
+
+                            @for (int z = 1; z <= Model.Item3[0].beden.Count(); z++)
+                            {
+                                <td tabindex="1" id="cell_@(Model.Item2)_@(rowIndex + "_" + z)" data-tabloIndex="@i" data-rowIndex="@rowIndex" onchange="DegerDegistir(this)" data-columnIndex="@z">@Model.Item3[i].deger[z - 1]</td>
+                            }
+                        </tr>
+                        rowIndex++;
+                    }
+                }
+
+            }
+        </tbody>
+    </table>
+    <input style="position: absolute; display: none;">
+</div>
+
+<script src="~/editable-table-master/mindmup-editabletable.js"></script>
+<script src="~/editable-table-master/numeric-input-example.js"></script>
+
+<script>
+    var tabloNo = @Html.Raw(Json.Encode(Model.Item2));
+
+    $("#yikamaOncesi_" + tabloNo).editableTableWidget();
+</script>

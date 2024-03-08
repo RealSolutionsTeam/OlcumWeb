@@ -1,0 +1,19 @@
+﻿<th id="column_0_@(ViewBag.eklenecekIndex + 1)" data-beden="">
+    @Html.DropDownList("bedenList", new SelectList(ViewBag.bedenler, "id", "beden"), new { @class = "form-control select2", @id = "bedenList" + ViewBag.eklenecekIndex, @style = "width:100%" })
+    <a style="" class="btn btn-icon btn-sm btn-info setvisible" id="btn_sutunekle_@(ViewBag.eklenecekIndex)" data-index="@(ViewBag.eklenecekIndex)" onclick="SutunEkle(this)"><i class="fas fa-plus-square" style="color:white;"></i></a> <a style="" class="btn btn-icon btn-sm btn-danger setvisible" id="btn_sutunsil_@(ViewBag.eklenecekIndex)" data-index="@(ViewBag.eklenecekIndex)" onclick="SutunSil(this)"><i class="fas fa-times" style="color:white"></i></a>
+</th>
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2();
+    };
+
+    $("#bedenList" + @ViewBag.eklenecekIndex).change(function () {
+        var index = @ViewBag.eklenecekIndex;
+        $("#cell_0_" + index).data('beden', $('#bedenList_' + @ViewBag.eklenecekIndex).val());
+    });
+
+    
+</script>

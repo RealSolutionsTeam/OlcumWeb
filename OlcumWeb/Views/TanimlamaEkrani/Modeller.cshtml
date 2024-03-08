@@ -1,0 +1,86 @@
+﻿@model Tuple<List<OlcumWeb.dbOlcum.Modeller>, List<int>>
+
+<div class="card card-success" id="modelCard">
+    <div class="card-header">
+        <h4>Modeller</h4>
+        <form class="card-header-form">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search">
+                <div class="input-group-btn">
+                    <button class="btn btn-primary btn-icon"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            @for (int i = 0; i < Model.Item1.Count; i++)
+            {
+                <div class="col-12 col-md-6 col-lg-3 modeller" style="width:400px;height:100px; cursor:pointer; margin-bottom:15px;" data-modelad="@Model.Item1[i].modelAd" data-modelid="@Model.Item1[i].id">
+                    @if (Model.Item2[i] == 0)
+                    {
+                        <div class="card card-danger">
+                            <div class="card-body">
+                                <p style="margin-top:10px; margin-left:10px;  font-weight:bold;">@Model.Item1[i].modelAd.ToString()</p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="card card-success" style="border-top:5px solid #54ca68; margin-bottom:25px;">
+                            <div class="card-body">
+                                <p style="margin-top:10px; margin-left:10px;  font-weight:bold;">@Model.Item1[i].modelAd.ToString()</p>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('.modeller').on("click", function () {
+        var buttonClicked = $(this);
+        var id = buttonClicked.attr('data-modelad');
+        var modelID = buttonClicked.attr('data-modelid');
+        var text = buttonClicked.find('p').text();
+
+        $.post("/TanimlamaEkrani/CheckTabloExist", { modelID: modelID }, function (gelenCagri) {
+            if (gelenCagri == 1) {
+                $.post("/TanimlamaEkrani/HazirTabloVar", { 'modelID': modelID },
+                    function (data) {
+                        $('#breadcrumb').append('<li><a href="#" class="details" onclick ="breadCrumbLink3(' + id + ')"><span class="icon icon-double-angle-right"></span> ' + text + '</a></li>');
+                        $('#musteriCard').hide();
+                        $('#modelCard').hide();
+                        $('#hazirtabloContent').html(data);
+                    });
+            }
+            else {
+                $.post("/TanimlamaEkrani/HazirTablo", { 'modelID': modelID },
+                    function (data) {
+                        $('#breadcrumb').append('<li><a href="#" class="details" onclick ="breadCrumbLink3(' + id + ')"><span class="icon icon-double-angle-right"></span> ' + text + '</a></li>');
+                        $('#musteriCard').hide();
+                        $('#modelCard').hide();
+                        $('#hazirtabloContent').html(data);
+                    });
+            }
+        }).fail(function (response) {
+            alert('Error : ' + response.responseText);
+        });
+
+
+    });
+
+    function breadCrumbLink3(id) {
+        $.post("/TanimlamaEkrani/Modeller", { 'musteriID': id },
+            function (data) {
+                $('#musteriCard').hide();
+                $('#tabloContent').hide();
+                $('#')
+                $('#modelContent').html(data);
+            });
+    }
+</script>

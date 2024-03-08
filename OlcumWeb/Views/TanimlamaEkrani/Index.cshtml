@@ -1,0 +1,118 @@
+﻿@{
+    ViewBag.Title = "Tanımlama Ekranı";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<title>Tanımlama Ekranı</title>
+
+
+<ul id="breadcrumb">
+    <li><a href="@Url.Action("Index", "AnaSayfa",new { id = ViewBag.id })"><span class="icon icon-home"> </span>Ana Sayfa</a></li>
+    <li><a href="@Url.Action("Index", "TanimlamaEkrani",new { id = ViewBag.id })"><span class="icon icon-double-angle-right"></span> Tanımlama Ekranı</a></li>
+</ul>
+
+<div class="row" style="position:fixed; top: 30%; left:6%" id="tanimlamaCard">
+
+
+    <div class="col-12 col-md-6 col-lg-3" style="cursor:pointer;" id="olcuTanimlama">
+        <div class="card card-primary" style="border-radius:25px; border-top:7px solid;  cursor:pointer; height:250px;">
+            <div class="card-header">
+                <h4>Ölçü Tablosu Tanımlama</h4>
+            </div>
+            <div class="card-body">
+                <p>Sisteme yeni hazır bir Ölçü Tablosu ekleyebilirsiniz.</p>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card card-secondary" style="height:250px; border-radius:25px; border-top:7px solid #ffa426;  cursor:pointer;">
+            <div class="card-header">
+                <h4>Ölçü Türü Tanımlama</h4>
+            </div>
+            <div class="card-body">
+                <p>Ölçü türü ekleyebilir veya varolan ölçü türünün özelliklerini değiştirebilirsiniz.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card card-danger" style="height:250px; border-radius:25px; border-top:7px solid #fc544b;  cursor:pointer;">
+            <div class="card-header">
+                <h4>Giysi Türü Tanımlama</h4>
+            </div>
+            <div class="card-body">
+                <p>Sisteme yeni bir giysi türü ekleyebilirsiniz.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card card-warning" style="height:250px; border-radius:25px; border-top:7px solid #3abaf4;  cursor:pointer;">
+            <div class="card-header">
+                <h4>Kullanıcı Tanımlama</h4>
+            </div>
+            <div class="card-body">
+                <p>Sisteme yeni bir kullanıcı ekleyebilir veya bilgilerini değiştirebilirsiniz.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="section" id="tableContent">
+</section>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2();
+    };
+
+    $(function () {
+        $("#datepicker").datepicker({
+            dateFormat: "dd-mm-yy",
+            altFormat: "yy-mm-dd",
+            altField: "#tarih-db",
+            monthNames: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+            dayNamesMin: ["Pa", "Pt", "Sl", "Ça", "Pe", "Cu", "Ct"],
+        });
+
+        $("#datepicker").datepicker('setDate', new Date());
+    });
+
+
+    $('#olcuTanimlama').on("click", function () {
+        $.post("/TanimlamaEkrani/TabloTanimlama", { },
+            function (data) {
+                $('#breadcrumb').append('<li><a href="#" class="details" onclick = "breadCrumbLink()"><span class="icon icon-double-angle-right"></span>Ölçü Tablosu Tanımlama</a></li>');
+                $('#tanimlamaCard').hide();
+                $('#tableContent').html(data);
+            });
+    });
+
+        $(function () {
+        $('.details').click(function () {
+            $.ajax({
+                url: '@Url.Action("Musteriler","TanimlamaEkrani")',
+                type: 'GET',
+                data: { },
+                success: function (partialView) {
+                    $('#tableContent').html(partialView);
+                    $('#tableContent').show();
+                }
+            });
+        });
+        });
+
+    function breadCrumbLink() {
+
+          $.post("/TanimlamaEkrani/TabloTanimlama", { },
+            function (data) {
+                $('#tableContent').html(data);
+            });
+        }
+
+</script>

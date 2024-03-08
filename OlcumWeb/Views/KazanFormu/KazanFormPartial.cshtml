@@ -1,0 +1,290 @@
+﻿@model OlcumWeb.dbOlcum.KazanDetay
+
+<link rel="stylesheet" href="~/Tema/assets/bundles/select2/dist/css/select2.min.css">
+
+<style>
+    .MySpan {
+        font-size: x-large;
+        font-weight: bold;
+    }
+
+    .col-5, .col-7 {
+        margin: auto 0;
+    }
+
+    .row {
+        margin: 0;
+    }
+</style>
+
+<div class="row">
+    @using (Html.BeginForm("KazanFormKaydet", "KazanFormu", FormMethod.Post, new { enctype = "multipart/form-data", @style = "width: 100%;", id = "formId" }))
+    {
+        <div class="row">
+            <div class="col-6">
+                <div class="row">
+
+                    <div class="col-5">
+                        <span class="MySpan"> Order </span>
+                    </div>
+                    <div class="col-7">
+                        <select id="OrderSelect" class="select2" onchange="SecimOrder()" style="width:100%"></select>
+
+                        @*@Html.DropDownListFor(x => x.orderID, new SelectList(ViewBag.orderlar, "orderID", "orderNo"), "Seçiniz...", new { @class = "form-control select2", @id = "OrderSelect", @onchange = "SecimOrder()" })*@
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="row">
+
+                    <div class="col-5">
+                        <span class="MySpan"> Atölye </span>
+                    </div>
+                    <div class="col-7">
+                        @Html.DropDownListFor(x => x.atolyeID, new SelectList(ViewBag.atolyeler, "Id", "AtolyeAd"), "Seçiniz...", new { @class = "form-control select2", @id = "AtolyeSelect" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 5%;">
+            <div class="col-6">
+                <div class="row">
+
+                    <div class="col-5">
+                        <span class="MySpan"> Ölçüm Türü </span>
+                    </div>
+                    <div class="col-7">
+                        @Html.DropDownListFor(x => x.olcuTuruID, new SelectList(ViewBag.olcuTurleri, "id", "olcuTuruAd"), "Seçiniz...", new { @class = "form-control select2", @id = "OlcuTurSelect" })
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-6">
+                <div class="row">
+
+                    <div class="col-5">
+                        <span class="MySpan"> Giysi Türü </span>
+                    </div>
+
+                    <div class="col-7">
+                        @Html.DropDownListFor(x => x.giysiTuruID, new SelectList(ViewBag.giysiTurleri, "id", "giysiTuruAd"), "Seçiniz...", new { @class = "form-control select2", @id = "GiysiTurSelect" })
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row" style="margin-top: 5%;">
+            <div class="col-6">
+                <div class="row">
+
+                    <div class="col-5">
+                        <span class="MySpan"> Yıkama Yeri </span>
+                    </div>
+
+                    <div class="col-7">
+                        <div class="row">
+                            @Html.TextBoxFor(x => x.yikamaYeri, new { @id = "yikamaYerInput", @style = "margin : auto; width: 100%;" })
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+            <div class="col-6">
+                <div class="row">
+
+                    <div class="col-6">
+                        <span class="MySpan"> Yıkama Sorumlusu </span>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="row">
+                            @Html.TextBoxFor(x => x.yikamaSorumlu, new { @id = "yikamaSorInput", @style = "margin : auto; width: 100%;" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="row" style="margin-top: 5%;">
+            <div class="col-6">
+                <div class="row">
+
+                    @*<div class="col-5">
+                            <span class="MySpan"> Ölçüm Türü </span>
+                        </div>
+                        <div class="col-7">
+                            @Html.DropDownListFor(x => x.olcuTuruID, new SelectList(ViewBag.olcuTurleri, "id", "olcuTuruAd"), "Seçiniz...", new { @class = "form-control select2", @id = "OlcuTurSelect" })
+                        </div>*@
+
+
+                </div>
+            </div>
+
+
+            <div class="col-6">
+                <div class="row">
+                    <button type="button" onclick="FormuKaydet()" class="btn btn-info btn-lg font-17 ml-auto">Kaydet</button>
+                </div>
+            </div>
+
+        </div>
+
+    }
+</div>
+
+@*<div class="row">
+        <button type="button" onclick="yazdir()"> yazdir </button>
+    </div>
+*@
+
+<script src="~/Tema/assets/bundles/select2/dist/js/select2.full.min.js"></script>
+
+<script>
+    if (jQuery().select2) {
+        $(".select2").select2();
+
+        $('#OrderSelect').select2({
+            minimumInputLength: 4,
+            language: {
+                inputTooShort: function (args) {
+
+                    return "En az 4 karakter girmelisiniz";
+                },
+                noResults: function () {
+                    return "Bulunamadı";
+                },
+                searching: function () {
+                    return "Aranıyor";
+                }
+            },
+            allowClear: true,
+            formatInputTooShort: function (input, min) { return "Start typing to search"; },
+            ajax: {
+                url: ('/Raporlama/SearchOrders'),
+                dataType: 'json',
+                data: function (term) {
+                    return {
+                        term: term.term
+                    };
+                },
+                type: "POST",
+                processResults: function (response) {
+                    return {
+                        results: $.map(response, function (item) {
+                            return {
+                                text: item.orderNo,
+                                id: item.orderID
+                            }
+                        })
+                    };
+                }
+            },
+
+        });
+    };
+
+    $('#yikamaSorInput').on('change', function () {
+        yikamaSor = this.value;
+    });
+
+    $('#yikamaYerInput').on('change', function () {
+        yikamaYer = this.value;
+    });
+
+    $('#OlcuTurSelect').on('change', function () {
+        olcuTuruAd = $("#OlcuTurSelect option:selected").text();
+    });
+
+    $('#AtolyeSelect').on('change', function () {
+        atolyeAd = $("#AtolyeSelect option:selected").text();
+    });
+
+    $('#OrderSelect').on('change', function () {
+        orderNo = $("#OrderSelect option:selected").text();
+    });
+
+
+    $('#GiysiTurSelect').val(1);
+
+    $("#GiysiTurSelect").change();
+
+    function SecimOrder() {
+        var OrderId = $('#OrderSelect').val();
+        console.log(OrderId);
+        if (OrderId != 0) {
+
+            $.post("/KazanFormu/getOrderRapor", { orderId: OrderId }, function (responseSuccess) {
+                console.log(responseSuccess);
+
+                if (responseSuccess.length != 0) {
+
+                    $(".loader").show();
+                    $('#KazanDevamEtModalHeader').html(orderNo + " Düzenlenebilir Raporlar")
+
+                    $.post("/KazanFormu/DevamEtModalBody", { dbKazan: responseSuccess }, function (responseListSuc) {
+                        $('#KazanDevamModalBody').html(responseListSuc);
+                        $('#KazanDevamModal').modal('show');
+                        $(".loader").fadeOut("slow");
+
+                    }).fail(function (responseListErr) {
+                        alert('Error : ' + responseListErr.responseText);
+                        $(".loader").fadeOut("slow");
+                    });
+                }
+
+            }).fail(function (responseError) {
+                alert('Error : ' + responseError.responseText);
+            });
+        }
+
+    }
+
+    function deleteOlcu(kazanDetayId, kullaniciId, olcuTurAd, tabloTur, tarih) {
+
+        if (kullaniciId != personel.id) {
+            iziToast.error({ title: 'Sadece rapor sahibi silme işlemi yapabilir', message: '', position: 'bottomRight' });
+            return;
+        }
+
+        swal({
+            title: olcuTurAd + ' - ' + (tabloTur == 0 ? 'Yıkama Öncesi' : 'Yıkama Sonrası') + ' - ' + tarih + ' tarihli rapor silinecek. Emin misiniz ?',
+            buttons: true,
+            dangerMode: true,
+            closeOnClickOutside: false
+        }).then((willYes) => {
+            if (willYes) {
+
+                console.log("yes");
+
+                KayitYapiliyorOnOff();
+
+                $.post("/KazanFormu/deleteOlcu", { kazanDetayId: kazanDetayId }, function (deleteResponse) {
+                    KayitYapiliyorOnOff();
+
+                    if (deleteResponse == "OK") {
+                        SecimOrder();
+                    }
+                   
+
+                }).fail(function (deleteResponseError) {
+                    KayitYapiliyorOnOff();
+                    alert('Error : ' + deleteResponseError.responseText);
+                });
+
+            }
+        });
+    }
+
+</script>
+

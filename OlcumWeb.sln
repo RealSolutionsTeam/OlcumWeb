@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OlcumWeb", "OlcumWeb\OlcumWeb.csproj", "{36CE3459-A431-4F07-8B7C-020B25307210}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OlcumVeriAktarimi", "OlcumVeriAktarimi\OlcumVeriAktarimi.csproj", "{23E8E51F-6354-4AE8-993C-44890D5ABB2F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{36CE3459-A431-4F07-8B7C-020B25307210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36CE3459-A431-4F07-8B7C-020B25307210}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36CE3459-A431-4F07-8B7C-020B25307210}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36CE3459-A431-4F07-8B7C-020B25307210}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23E8E51F-6354-4AE8-993C-44890D5ABB2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23E8E51F-6354-4AE8-993C-44890D5ABB2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23E8E51F-6354-4AE8-993C-44890D5ABB2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23E8E51F-6354-4AE8-993C-44890D5ABB2F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EA5163B0-A7A4-466C-8A20-B95BC1C0122A}
+	EndGlobalSection
+EndGlobal
